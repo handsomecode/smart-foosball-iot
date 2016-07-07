@@ -16,11 +16,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.api.model.StringList;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -133,8 +138,34 @@ public class MainActivity extends Activity {
             }
         };
 
+        InputStream data = this.getResources().openRawResource(R.raw.data);
+        BufferedReader bData = new BufferedReader(new InputStreamReader(data));
+        String login = "login";
+        String password = "password";
+        try {
+            login = bData.readLine();
+            Log.d("myLogs", "Login " + login);
+            password = bData.readLine();
+            Log.d("myLogs", "Password " + password);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                bData.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                data.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
         //TODO it's wrong to save password like this
-        mAuth.signInWithEmailAndPassword("handsomefoosball@gmail.com", "")
+        mAuth.signInWithEmailAndPassword(login, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="192dp"
+    android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/player"
+    android:layout_gravity="center"
+    card_view:cardCornerRadius="10dp"
+    card_view:cardBackgroundColor="#BB000000">
+
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:text="Large Text"
+    android:id="@+id/number"
+    android:layout_gravity="center_horizontal"
+    android:textSize="100sp" />
+
+</android.support.v7.widget.CardView>

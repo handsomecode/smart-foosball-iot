@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="222dp"
+        android:layout_height="match_parent"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/player"
+        android:layout_gravity="center"
+        card_view:cardCornerRadius="10dp"
+        card_view:cardBackgroundColor="#939393">
+
+    <ImageView
+        android:layout_width="330dp"
+        android:layout_height="330dp"
+        android:id="@+id/avatar"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Opengamer"
+        android:textStyle="bold"
+        android:id="@+id/nick"
+        android:layout_gravity="top|left|center_horizontal"
+        android:background="#B45a595b"
+        android:padding="4dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        android:text=""
+        android:id="@+id/score"
+        android:layout_gravity="right|bottom"
+        android:background="#B45a595b"
+        android:padding="4dp"/>
+
+    <!--<ImageView-->
+        <!--android:layout_width="50dp"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:id="@+id/medal"-->
+        <!--android:layout_gravity="left|bottom"-->
+        <!--android:background="@mipmap/gold" />-->
+
+</android.support.v7.widget.CardView>

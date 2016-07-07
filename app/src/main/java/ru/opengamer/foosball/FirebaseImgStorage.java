@@ -29,6 +29,8 @@ public class FirebaseImgStorage {
     }
 
     public void setImg(final String link, final ImageView imageView) {
+        imageView.setImageResource(R.mipmap.opengamer);
+        imageView.setTag(link); //protection from reusing unactual img
         if (!links.containsKey(link)) {
             StorageReference pathRef = storageRef.child(link);
             pathRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -36,13 +38,15 @@ public class FirebaseImgStorage {
                 public void onSuccess(Uri uri) {
                     Log.d("myLog", "save Uri link to " + link + " is " + uri.toString());
                     links.put(link, uri);
-                    Picasso.with(context).load(uri).into(imageView);
+                    if (imageView.getTag() == link)
+                        Picasso.with(context).load(uri).into(imageView);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Log.d("exception", e.toString());
-                    Picasso.with(context).load(R.mipmap.opengamer).into(imageView);
+                    if (imageView.getTag() == link)
+                        Picasso.with(context).load(R.mipmap.opengamer).into(imageView);
                 }
             });
         }

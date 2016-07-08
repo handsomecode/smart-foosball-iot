@@ -14,9 +14,6 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * Created by Opengamer on 03.07.2016.
- */
 public class FirebaseImgStorage {
     private HashMap<String,Uri> links;
     private StorageReference storageRef;

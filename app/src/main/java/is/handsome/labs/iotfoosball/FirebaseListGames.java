@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Created by Opengamer on 30.06.2016.
- */
 public class FirebaseListGames extends FirebaseList<Game> {
     private FirebaseListPlayers players;
     private ArrayList<IncludePlayer> includeplayers;

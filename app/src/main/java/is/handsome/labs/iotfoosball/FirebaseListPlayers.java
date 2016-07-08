@@ -7,9 +7,6 @@ import com.google.firebase.database.DatabaseReference;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Created by Opengamer on 30.06.2016.
- */
 public class FirebaseListPlayers extends FirebaseList<Player> {
 
     FirebaseImgStorage firebaseImgStorage;

@@ -6,9 +6,6 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 
-/**
- * Created by Opengamer on 28.06.2016.
- */
 class IncludePlayer {
     @BindView(R.id.nick)
     TextView nick;

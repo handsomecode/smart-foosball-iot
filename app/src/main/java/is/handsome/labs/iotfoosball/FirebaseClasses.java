@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-/**
- * Created by Opengamer on 21.06.2016.
- */
 class Player {
 
     private String nick;

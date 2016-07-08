@@ -7,9 +7,6 @@ import android.view.View;
 
 import java.util.Locale;
 
-/**
- * Created by Opengamer on 03.07.2016.
- */
 public class DragListenerForIncludes implements View.OnDragListener {
     private int index;
     private IncludePlayer includePlayer;

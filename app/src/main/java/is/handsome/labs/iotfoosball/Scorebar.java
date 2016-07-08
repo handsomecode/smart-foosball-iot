@@ -5,9 +5,6 @@ import android.support.v4.view.ViewPager;
 
 import java.util.ArrayList;
 
-/**
- * Created by Opengamer on 05.07.2016.
- */
 public class Scorebar {
     ArrayList<ScoreViewPager> scorebarsView;
     CurentGame curentGame;

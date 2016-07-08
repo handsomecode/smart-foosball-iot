@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-/**
- * Created by Opengamer on 05.07.2016.
- */
 public class CurentGame {
     //TODO extends from game ?
     private Game game;

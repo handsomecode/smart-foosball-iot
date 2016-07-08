@@ -37,11 +37,9 @@ public class DragListenerForIncludes implements View.OnDragListener {
                     firebaseListPlayers.getDataList().get(index).getLose());
             includePlayer.score.setText(score);
 
-            firebaseListPlayers.getFirebaseImgStorage().
-                    setImg("avatars/" +
-                            firebaseListPlayers.getDataList().get(index).getNick().toLowerCase() +
-                            ".jpg", includePlayer.avatar);
-
+            firebaseListPlayers.getFirebaseImgSetter().
+                    setAvatar(firebaseListPlayers.getDataList().get(index).getNick(),
+                            includePlayer.avatar);
         }
         return true;
     }

@@ -11,44 +11,49 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class FirebaseImgStorage {
+public class FirebaseImgSetter {
     private HashMap<String,Uri> links;
     private StorageReference storageRef;
-    private Context context;
+    private Picasso picasso;
 
-    public FirebaseImgStorage(StorageReference storageReference, Context context) {
+    public FirebaseImgSetter(StorageReference storageReference, Context context) {
         this.storageRef = storageReference;
-        this.context = context;
+        picasso = Picasso.with(context);
         links = new HashMap<>();
     }
 
-    public void setImg(final String link, final ImageView imageView) {
-        imageView.setImageResource(R.mipmap.opengamer);
+    public void setImg(final String link, ImageView imageView) {
+        final WeakReference<ImageView> sImageView = new WeakReference<ImageView>(imageView);
         imageView.setTag(link); //protection from reusing unactual img
+        imageView.setImageResource(R.mipmap.opengamer);
         if (!links.containsKey(link)) {
             StorageReference pathRef = storageRef.child(link);
             pathRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
+                    ImageView imageView = sImageView.get();
                     Log.d("myLog", "save Uri link to " + link + " is " + uri.toString());
                     links.put(link, uri);
-                    if (imageView.getTag() == link)
-                        Picasso.with(context).load(uri).into(imageView);
+                    if ((imageView.getTag() == link) && (imageView != null))
+                        picasso.load(uri).into(imageView);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    ImageView imageView = sImageView.get();
                     Log.d("exception", e.toString());
-                    if (imageView.getTag() == link)
-                        Picasso.with(context).load(R.mipmap.opengamer).into(imageView);
+                    if ((imageView.getTag() == link) && (imageView != null))
+                        picasso.load(R.mipmap.opengamer).into(imageView);
                 }
             });
         }
         else {
-            Picasso.with(context).load(links.get(link)).into(imageView);
+            picasso.load(links.get(link)).into(imageView);
         }
 
         //  Same but w\o picasso
@@ -78,6 +83,10 @@ public class FirebaseImgStorage {
 //                exception.printStackTrace();
 //            }
 //        });
+    }
+
+    public void setAvatar (String nick, ImageView imageView) {
+        setImg("avatars/" + nick.toLowerCase() + ".jpg", imageView);
     }
 
     public void delImg(final String link) {

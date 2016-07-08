@@ -16,7 +16,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.api.model.StringList;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -26,11 +25,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,7 +46,7 @@ public class MainActivity extends Activity {
     private FirebaseListGames firebaseGames;
     private DatabaseReference mDatabase;
     private StorageReference storageRef;
-    private FirebaseImgStorage firebaseImgStorage;
+    private FirebaseImgSetter firebaseImgSetter;
     private SoundPool soundPool;
     private int soundId;
 
@@ -185,17 +180,17 @@ public class MainActivity extends Activity {
         RecyclerView.setAdapter(mRecyclerAdapter);
 
         storageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://handsomefoosball.appspot.com");
-        firebaseImgStorage = new FirebaseImgStorage(storageRef, this);
+        firebaseImgSetter = new FirebaseImgSetter(storageRef, this);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         firebaseGames = new FirebaseListGames(mDatabase.child("games"), includeplayers);
 
-        firebasePlayers = new FirebaseListPlayers(mDatabase.child("players"), mRecyclerAdapter, firebaseGames.getDataList(), firebaseImgStorage);
+        firebasePlayers = new FirebaseListPlayers(mDatabase.child("players"), mRecyclerAdapter, firebaseGames.getDataList(), firebaseImgSetter);
 
         firebaseGames.setPlayer(firebasePlayers);
 
-        mRecyclerAdapter.setFirebase(firebasePlayers, firebaseImgStorage);
+        mRecyclerAdapter.setFirebase(firebasePlayers, firebaseImgSetter);
 
         for (int i = 0; i < 4; i++) {
             includeplayers.get(i).getInc().setOnDragListener(new DragListenerForIncludes(i, includeplayers.get(i), firebasePlayers, this));

@@ -9,21 +9,21 @@ import java.util.Objects;
 
 public class FirebaseListPlayers extends FirebaseList<Player> {
 
-    FirebaseImgStorage firebaseImgStorage;
+    FirebaseImgSetter firebaseImgSetter;
 
     private RecyclerAdapter recyclerAdapter;
     private List<Game> games;
 
     public FirebaseListPlayers(DatabaseReference mRef, RecyclerAdapter recyclerAdapter, List<Game> games,
-                               FirebaseImgStorage firebaseImgStorage) {
+                               FirebaseImgSetter firebaseImgSetter) {
         super(mRef, Player.class);
         this.games = games;
         this.recyclerAdapter = recyclerAdapter;
-        this.firebaseImgStorage = firebaseImgStorage;
+        this.firebaseImgSetter = firebaseImgSetter;
     }
 
-    public FirebaseImgStorage getFirebaseImgStorage() {
-        return firebaseImgStorage;
+    public FirebaseImgSetter getFirebaseImgSetter() {
+        return firebaseImgSetter;
     }
 
     @Override

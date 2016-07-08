@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingLeft="38dp"
+    android:paddingRight="38dp"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="ru.opengamer.foosball.MainActivity"
+    tools:context="is.handsome.labs.iotfoosball.MainActivity"
     android:background="@mipmap/back">
 
     <LinearLayout
@@ -63,7 +63,7 @@
                     android:layout_gravity="center"
                     android:layout_width="205dp"
                     android:layout_height="200dp">
-                    <ru.opengamer.foosball.ScoreViewPager
+                    <is.handsome.labs.iotfoosball.ScoreViewPager
                         xmlns:android="http://schemas.android.com/apk/res/android"
                         android:id="@+id/t1d"
                         android:layout_width="0dp"
@@ -75,7 +75,7 @@
                         android:layout_weight="0.05">
 
                     </FrameLayout>
-                    <ru.opengamer.foosball.ScoreViewPager
+                    <is.handsome.labs.iotfoosball.ScoreViewPager
                         xmlns:android="http://schemas.android.com/apk/res/android"
                         android:id="@+id/t1u"
                         android:layout_width="0dp"
@@ -111,7 +111,7 @@
                     android:layout_gravity="center"
                     android:layout_width="205dp"
                     android:layout_height="200dp">
-                    <ru.opengamer.foosball.ScoreViewPager
+                    <is.handsome.labs.iotfoosball.ScoreViewPager
                         xmlns:android="http://schemas.android.com/apk/res/android"
                         android:id="@+id/t2d"
                         android:layout_width="0dp"
@@ -123,7 +123,7 @@
                         android:layout_weight="0.05">
 
                     </FrameLayout>
-                    <ru.opengamer.foosball.ScoreViewPager
+                    <is.handsome.labs.iotfoosball.ScoreViewPager
                         xmlns:android="http://schemas.android.com/apk/res/android"
                         android:id="@+id/t2u"
                         android:layout_width="0dp"
@@ -171,7 +171,8 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/RecyclerView"
             android:scrollbars="horizontal"
-            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:layout_width="1200dp"
             android:layout_height="0dp"
             android:layout_weight="200"/>
 

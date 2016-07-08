@@ -1,4 +1,4 @@
-package ru.opengamer.foosball;
+package is.handsome.labs.iotfoosball;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-/**
- * Created by Opengamer on 21.06.2016.
- */
 class Player {
 
     private String nick;

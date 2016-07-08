@@ -1,4 +1,4 @@
-package ru.opengamer.foosball;
+package is.handsome.labs.iotfoosball;
 
 import android.util.Log;
 
@@ -7,26 +7,23 @@ import com.google.firebase.database.DatabaseReference;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Created by Opengamer on 30.06.2016.
- */
 public class FirebaseListPlayers extends FirebaseList<Player> {
 
-    FirebaseImgStorage firebaseImgStorage;
+    FirebaseImgSetter firebaseImgSetter;
 
     private RecyclerAdapter recyclerAdapter;
     private List<Game> games;
 
     public FirebaseListPlayers(DatabaseReference mRef, RecyclerAdapter recyclerAdapter, List<Game> games,
-                               FirebaseImgStorage firebaseImgStorage) {
+                               FirebaseImgSetter firebaseImgSetter) {
         super(mRef, Player.class);
         this.games = games;
         this.recyclerAdapter = recyclerAdapter;
-        this.firebaseImgStorage = firebaseImgStorage;
+        this.firebaseImgSetter = firebaseImgSetter;
     }
 
-    public FirebaseImgStorage getFirebaseImgStorage() {
-        return firebaseImgStorage;
+    public FirebaseImgSetter getFirebaseImgSetter() {
+        return firebaseImgSetter;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package ru.opengamer.foosball;
+package is.handsome.labs.iotfoosball;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
@@ -11,9 +11,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Opengamer on 05.07.2016.
- */
 public class ScorebarPagerAdapter extends PagerAdapter {
 
     private ArrayList<View> pages;

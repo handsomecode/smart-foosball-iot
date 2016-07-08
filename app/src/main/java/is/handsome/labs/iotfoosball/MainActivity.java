@@ -1,4 +1,4 @@
-package ru.opengamer.foosball;
+package is.handsome.labs.iotfoosball;
 
 import android.app.Activity;
 import android.media.SoundPool;
@@ -21,11 +21,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,7 +46,7 @@ public class MainActivity extends Activity {
     private FirebaseListGames firebaseGames;
     private DatabaseReference mDatabase;
     private StorageReference storageRef;
-    private FirebaseImgStorage firebaseImgStorage;
+    private FirebaseImgSetter firebaseImgSetter;
     private SoundPool soundPool;
     private int soundId;
 
@@ -94,6 +94,119 @@ public class MainActivity extends Activity {
         ButterKnife.bind(this);
         Log.d("myLog", "New start");
 
+        includesInit();
+
+        soundPool = new SoundPool.Builder().build();
+        soundId = soundPool.load(this, R.raw.countdown, 1);
+
+        firebaseAuth();
+
+        recyclerViewInit();
+
+        storageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://handsomefoosball.appspot.com");
+        firebaseImgSetter = new FirebaseImgSetter(storageRef, this);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        firebaseGames = new FirebaseListGames(mDatabase.child("games"), includeplayers);
+
+        firebasePlayers = new FirebaseListPlayers(mDatabase.child("players"), mRecyclerAdapter, firebaseGames.getDataList(), firebaseImgSetter);
+
+        firebaseGames.setPlayer(firebasePlayers);
+
+        mRecyclerAdapter.setFirebase(firebasePlayers, firebaseImgSetter);
+
+        for (int i = 0; i < 4; i++) {
+            includeplayers.get(i).getInc().setOnDragListener(new DragListenerForIncludes(i, includeplayers.get(i), firebasePlayers, this));
+        }
+
+        curentGameInit();
+    }
+
+    private void curentGameInit() {
+        ArrayList<ScoreViewPager> score1 = new ArrayList<>();
+        score1.add(t1u);
+        score1.add(t1d);
+        scorebar1 = new Scorebar(score1, this);
+
+        ArrayList<ScoreViewPager> score2 = new ArrayList<>();
+        score2.add(t2u);
+        score2.add(t2d);
+        scorebar2 = new Scorebar(score2, this);
+
+        curentGame = new CurentGame(includeplayers, mDatabase.child("games"), t1u, t2u);
+
+        scorebar1.setCurentGame(curentGame);
+        scorebar2.setCurentGame(curentGame);
+    }
+
+    private void recyclerViewInit() {
+        RecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerAdapter = new RecyclerAdapter();
+        RecyclerView.setAdapter(mRecyclerAdapter);
+    }
+
+    private void firebaseAuth() {
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d("firebaseauth", "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d("firebaseauth", "onAuthStateChanged:signed_out");
+                }
+            }
+        };
+
+        InputStream data = this.getResources().openRawResource(R.raw.data);
+        BufferedReader bData = new BufferedReader(new InputStreamReader(data));
+        String login = "login";
+        String password = "password";
+        try {
+            login = bData.readLine();
+            Log.d("myLogs", "Login " + login);
+            password = bData.readLine();
+            Log.d("myLogs", "Password " + password);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                bData.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                data.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        //TODO it's wrong to save password like this
+        mAuth.signInWithEmailAndPassword(login, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d("firebase auth", "signInWithEmail:onComplete:" + task.isSuccessful());
+                        if (!task.isSuccessful()) {
+                            Log.w("firebase auth", "signInWithEmail", task.getException());
+                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void includesInit() {
         includeplayers = new ArrayList<>(4);
         includes = new ArrayList<>(4);
 
@@ -111,79 +224,7 @@ public class MainActivity extends Activity {
             includeplayers.get(i).nick.setText("player");
             includeplayers.get(i).score.setText("");
         }
-
         Log.d("myLog", "components added");
-
-        soundPool = new SoundPool.Builder().build();
-        soundId = soundPool.load(this, R.raw.countdown, 1);
-
-        mAuth = FirebaseAuth.getInstance();
-
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-                    Log.d("firebaseauth", "onAuthStateChanged:signed_in:" + user.getUid());
-                } else {
-                    // User is signed out
-                    Log.d("firebaseauth", "onAuthStateChanged:signed_out");
-                }
-            }
-        };
-
-        //TODO it's wrong to save password like this
-        mAuth.signInWithEmailAndPassword("handsomefoosball@gmail.com", "")
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d("firebase auth", "signInWithEmail:onComplete:" + task.isSuccessful());
-                        if (!task.isSuccessful()) {
-                            Log.w("firebase auth", "signInWithEmail", task.getException());
-                            Toast.makeText(MainActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-        RecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        RecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerAdapter = new RecyclerAdapter();
-        RecyclerView.setAdapter(mRecyclerAdapter);
-
-        storageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://handsomefoosball.appspot.com");
-        firebaseImgStorage = new FirebaseImgStorage(storageRef, this);
-
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        firebaseGames = new FirebaseListGames(mDatabase.child("games"), includeplayers);
-
-        firebasePlayers = new FirebaseListPlayers(mDatabase.child("players"), mRecyclerAdapter, firebaseGames.getDataList(), firebaseImgStorage);
-
-        firebaseGames.setPlayer(firebasePlayers);
-
-        mRecyclerAdapter.setFirebase(firebasePlayers, firebaseImgStorage);
-
-        for (int i = 0; i < 4; i++) {
-            includeplayers.get(i).getInc().setOnDragListener(new DragListenerForIncludes(i, includeplayers.get(i), firebasePlayers, this));
-        }
-
-        ArrayList<ScoreViewPager> score1 = new ArrayList<>();
-        score1.add(t1u);
-        score1.add(t1d);
-        scorebar1 = new Scorebar(score1, this);
-
-        ArrayList<ScoreViewPager> score2 = new ArrayList<>();
-        score2.add(t2u);
-        score2.add(t2d);
-        scorebar2 = new Scorebar(score2, this);
-
-        curentGame = new CurentGame(includeplayers, mDatabase.child("games"), t1u, t2u);
-
-        scorebar1.setCurentGame(curentGame);
-        scorebar2.setCurentGame(curentGame);
     }
 
     @Override

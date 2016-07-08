@@ -1,4 +1,4 @@
-package ru.opengamer.foosball;
+package is.handsome.labs.iotfoosball;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -15,19 +15,16 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by Opengamer on 04.07.2016.
- */
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder>{
 
     private FirebaseListPlayers firebaseListPlayers;
-    private FirebaseImgStorage firebaseImgStorage;
+    private FirebaseImgSetter firebaseImgSetter;
 
     public RecyclerAdapter() {}
 
-    public void setFirebase(FirebaseListPlayers firebaseListPlayers, FirebaseImgStorage firebaseImgStorage){
+    public void setFirebase(FirebaseListPlayers firebaseListPlayers, FirebaseImgSetter firebaseImgSetter){
         this.firebaseListPlayers = firebaseListPlayers;
-        this.firebaseImgStorage = firebaseImgStorage;
+        this.firebaseImgSetter = firebaseImgSetter;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -73,7 +70,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             }
         });
         String link = "avatars/" + firebaseListPlayers.getDataList().get(position).getNick().toLowerCase() + ".jpg";
-        firebaseImgStorage.setImg(link, holder.avatar);
+        firebaseImgSetter.setImg(link, holder.avatar);
     }
 
     @Override

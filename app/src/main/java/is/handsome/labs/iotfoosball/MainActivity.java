@@ -94,29 +94,61 @@ public class MainActivity extends Activity {
         ButterKnife.bind(this);
         Log.d("myLog", "New start");
 
-        includeplayers = new ArrayList<>(4);
-        includes = new ArrayList<>(4);
-
-        //adding butterknife for player's include
-        includes.add(inc0);
-        includes.add(inc1);
-        includes.add(inc2);
-        includes.add(inc3);
-
-        Log.d("myLog", "inc added");
-
-        for (int i = 0; i < 4; i++) {
-            includeplayers.add(new IncludePlayer(includes.get(i)));
-            ButterKnife.bind(includeplayers.get(i), includes.get(i));
-            includeplayers.get(i).nick.setText("player");
-            includeplayers.get(i).score.setText("");
-        }
-
-        Log.d("myLog", "components added");
+        includesInit();
 
         soundPool = new SoundPool.Builder().build();
         soundId = soundPool.load(this, R.raw.countdown, 1);
 
+        firebaseAuth();
+
+        recyclerViewInit();
+
+        storageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://handsomefoosball.appspot.com");
+        firebaseImgSetter = new FirebaseImgSetter(storageRef, this);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        firebaseGames = new FirebaseListGames(mDatabase.child("games"), includeplayers);
+
+        firebasePlayers = new FirebaseListPlayers(mDatabase.child("players"), mRecyclerAdapter, firebaseGames.getDataList(), firebaseImgSetter);
+
+        firebaseGames.setPlayer(firebasePlayers);
+
+        mRecyclerAdapter.setFirebase(firebasePlayers, firebaseImgSetter);
+
+        for (int i = 0; i < 4; i++) {
+            includeplayers.get(i).getInc().setOnDragListener(new DragListenerForIncludes(i, includeplayers.get(i), firebasePlayers, this));
+        }
+
+        curentGameInit();
+    }
+
+    private void curentGameInit() {
+        ArrayList<ScoreViewPager> score1 = new ArrayList<>();
+        score1.add(t1u);
+        score1.add(t1d);
+        scorebar1 = new Scorebar(score1, this);
+
+        ArrayList<ScoreViewPager> score2 = new ArrayList<>();
+        score2.add(t2u);
+        score2.add(t2d);
+        scorebar2 = new Scorebar(score2, this);
+
+        curentGame = new CurentGame(includeplayers, mDatabase.child("games"), t1u, t2u);
+
+        scorebar1.setCurentGame(curentGame);
+        scorebar2.setCurentGame(curentGame);
+    }
+
+    private void recyclerViewInit() {
+        RecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerAdapter = new RecyclerAdapter();
+        RecyclerView.setAdapter(mRecyclerAdapter);
+    }
+
+    private void firebaseAuth() {
         mAuth = FirebaseAuth.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -172,44 +204,27 @@ public class MainActivity extends Activity {
                         }
                     }
                 });
+    }
 
-        RecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        RecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerAdapter = new RecyclerAdapter();
-        RecyclerView.setAdapter(mRecyclerAdapter);
+    private void includesInit() {
+        includeplayers = new ArrayList<>(4);
+        includes = new ArrayList<>(4);
 
-        storageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://handsomefoosball.appspot.com");
-        firebaseImgSetter = new FirebaseImgSetter(storageRef, this);
+        //adding butterknife for player's include
+        includes.add(inc0);
+        includes.add(inc1);
+        includes.add(inc2);
+        includes.add(inc3);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-
-        firebaseGames = new FirebaseListGames(mDatabase.child("games"), includeplayers);
-
-        firebasePlayers = new FirebaseListPlayers(mDatabase.child("players"), mRecyclerAdapter, firebaseGames.getDataList(), firebaseImgSetter);
-
-        firebaseGames.setPlayer(firebasePlayers);
-
-        mRecyclerAdapter.setFirebase(firebasePlayers, firebaseImgSetter);
+        Log.d("myLog", "inc added");
 
         for (int i = 0; i < 4; i++) {
-            includeplayers.get(i).getInc().setOnDragListener(new DragListenerForIncludes(i, includeplayers.get(i), firebasePlayers, this));
+            includeplayers.add(new IncludePlayer(includes.get(i)));
+            ButterKnife.bind(includeplayers.get(i), includes.get(i));
+            includeplayers.get(i).nick.setText("player");
+            includeplayers.get(i).score.setText("");
         }
-
-        ArrayList<ScoreViewPager> score1 = new ArrayList<>();
-        score1.add(t1u);
-        score1.add(t1d);
-        scorebar1 = new Scorebar(score1, this);
-
-        ArrayList<ScoreViewPager> score2 = new ArrayList<>();
-        score2.add(t2u);
-        score2.add(t2d);
-        scorebar2 = new Scorebar(score2, this);
-
-        curentGame = new CurentGame(includeplayers, mDatabase.child("games"), t1u, t2u);
-
-        scorebar1.setCurentGame(curentGame);
-        scorebar2.setCurentGame(curentGame);
+        Log.d("myLog", "components added");
     }
 
     @Override

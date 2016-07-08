@@ -1,4 +1,4 @@
-package ru.opengamer.foosball;
+package is.handsome.labs.iotfoosball;
 
 import android.view.View;
 import android.widget.ImageView;

@@ -1,4 +1,4 @@
-package ru.opengamer.foosball;
+package is.handsome.labs.iotfoosball;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;

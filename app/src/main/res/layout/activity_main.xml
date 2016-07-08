@@ -8,7 +8,7 @@
     android:paddingLeft="38dp"
     android:paddingRight="38dp"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="ru.opengamer.foosball.MainActivity"
+    tools:context="is.handsome.labs.iotfoosball.MainActivity"
     android:background="@mipmap/back">
 
     <LinearLayout
@@ -63,7 +63,7 @@
                     android:layout_gravity="center"
                     android:layout_width="205dp"
                     android:layout_height="200dp">
-                    <ru.opengamer.foosball.ScoreViewPager
+                    <is.handsome.labs.iotfoosball.ScoreViewPager
                         xmlns:android="http://schemas.android.com/apk/res/android"
                         android:id="@+id/t1d"
                         android:layout_width="0dp"
@@ -75,7 +75,7 @@
                         android:layout_weight="0.05">
 
                     </FrameLayout>
-                    <ru.opengamer.foosball.ScoreViewPager
+                    <is.handsome.labs.iotfoosball.ScoreViewPager
                         xmlns:android="http://schemas.android.com/apk/res/android"
                         android:id="@+id/t1u"
                         android:layout_width="0dp"
@@ -111,7 +111,7 @@
                     android:layout_gravity="center"
                     android:layout_width="205dp"
                     android:layout_height="200dp">
-                    <ru.opengamer.foosball.ScoreViewPager
+                    <is.handsome.labs.iotfoosball.ScoreViewPager
                         xmlns:android="http://schemas.android.com/apk/res/android"
                         android:id="@+id/t2d"
                         android:layout_width="0dp"
@@ -123,7 +123,7 @@
                         android:layout_weight="0.05">
 
                     </FrameLayout>
-                    <ru.opengamer.foosball.ScoreViewPager
+                    <is.handsome.labs.iotfoosball.ScoreViewPager
                         xmlns:android="http://schemas.android.com/apk/res/android"
                         android:id="@+id/t2u"
                         android:layout_width="0dp"

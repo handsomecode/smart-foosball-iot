@@ -1,4 +1,4 @@
-package ru.opengamer.foosball;
+package is.handsome.labs.iotfoosball;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;

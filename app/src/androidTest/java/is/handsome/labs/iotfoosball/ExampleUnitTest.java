@@ -1,4 +1,4 @@
-package ru.opengamer.foosball;
+package is.handsome.labs.iotfoosball;
 
 import org.junit.Test;
 

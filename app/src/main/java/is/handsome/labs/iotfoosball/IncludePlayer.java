@@ -7,6 +7,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 
 class IncludePlayer {
+    //TODO devide model and view
     @BindView(R.id.nick)
     TextView nick;
     @BindView(R.id.avatar)

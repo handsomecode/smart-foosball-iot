@@ -3,6 +3,7 @@ package is.handsome.labs.iotfoosball;
 import android.content.Context;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,11 +17,12 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public abstract class SerialUsb {
+public class SerialUsb {
 
     private static final String TAG = "serial";
     private static final int BAUD_RATE = 115200;
 
+    private Handler mHandler;
     private UsbSerialPort mUsbSerialPort;
     private SerialInputOutputManager mSerialIOManager;
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
@@ -33,14 +35,18 @@ public abstract class SerialUsb {
 
         @Override
         public void onNewData(byte[] data) {
-            SerialUsb.this.onNewData(data);
+            int k;
+            for (byte d: data) {
+                k = d;
+                mHandler.sendEmptyMessage(k);
+            }
         }
     };
 
-    public SerialUsb() {
+    public SerialUsb(Context context, Handler handler) {
+        init(context);
+        mHandler = handler;
     }
-
-    public abstract void onNewData(byte[] date); //for do smthng with new data
 
     public void init(Context context) {
         UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
@@ -59,6 +65,7 @@ public abstract class SerialUsb {
             try {
                 mUsbSerialPort.open(connection);
                 mUsbSerialPort.setParameters(BAUD_RATE, UsbSerialPort.DATABITS_8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+                Toast.makeText(context, "ÜSB device have been found", Toast.LENGTH_LONG).show();
             } catch (IOException e) {
                 Log.e(TAG, "Error setting up device: " + e.getMessage(), e);
                 try {

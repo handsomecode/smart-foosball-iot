@@ -1,8 +1,11 @@
 package is.handsome.labs.iotfoosball;
 
 import android.app.Activity;
+import android.content.Context;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -34,6 +38,7 @@ import butterknife.OnClick;
 public class MainActivity extends Activity {
 
     ArrayList<IncludePlayer> includeplayers;
+    private static SerialHandler sSerialHandler;
 
     //TODO use dagger for injecting all firebase object when it is necessary
     //TODO change transp color in textview to Theme transp color
@@ -49,6 +54,7 @@ public class MainActivity extends Activity {
     private FirebaseImgSetter firebaseImgSetter;
     private SoundPool soundPool;
     private int soundId;
+    private SerialUsb mSerialUsb;
 
     private ArrayList<View> includes;
 
@@ -121,6 +127,16 @@ public class MainActivity extends Activity {
         }
 
         curentGameInit();
+
+        sSerialHandler = new SerialHandler(this, scorebar1, scorebar2);
+
+        mSerialUsb = new SerialUsb(getApplicationContext(), sSerialHandler);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mSerialUsb.close();
     }
 
     private void curentGameInit() {
@@ -254,5 +270,27 @@ public class MainActivity extends Activity {
                 soundPool.play(soundId, 1, 1, 1, 0, 1);
                 break;
         }
+    }
+
+    static class SerialHandler extends Handler{
+        private WeakReference<Activity> mActivity;
+        private WeakReference<Scorebar> mScorebar1;
+        private WeakReference<Scorebar> mScorebar2;
+
+        public SerialHandler(Activity activity, Scorebar scorebar1, Scorebar scorebar2) {
+            mActivity = new WeakReference<Activity>(activity);
+            mScorebar1 = new WeakReference<Scorebar>(scorebar1);
+            mScorebar2 = new WeakReference<Scorebar>(scorebar2);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            Toast.makeText(mActivity.get().getApplicationContext(),
+                    "Rec " + String.valueOf(msg.what),
+                    Toast.LENGTH_SHORT) .show();
+            if (msg.what == 48) mScorebar1.get().goal();
+            if (msg.what == 49) mScorebar2.get().goal();
+        }
+
     }
 }

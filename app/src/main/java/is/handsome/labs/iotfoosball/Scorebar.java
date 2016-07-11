@@ -2,10 +2,12 @@ package is.handsome.labs.iotfoosball;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 
 import java.util.ArrayList;
 
 public class Scorebar {
+    //TODO devide to model and view
     ArrayList<ScoreViewPager> scorebarsView;
     CurentGame curentGame;
 
@@ -58,5 +60,10 @@ public class Scorebar {
 
     public void setCurentGame(CurentGame curentGame) {
         this.curentGame = curentGame;
+    }
+
+    public void goal() {
+        Log.d("score2", "REALY GOAL" + (scorebarsView.get(0).getCurrentItem() + 1));
+        scorebarsView.get(0).setCurrentItem(scorebarsView.get(0).getCurrentItem() + 1);
     }
 }

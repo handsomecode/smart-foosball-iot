@@ -241,18 +241,18 @@ public class MainActivity extends Activity {
         }
     }
 
-    @OnClick({R.id.btnstart, R.id.btnend, R.id.btncntdwn})
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btnstart:
-                curentGame.startGame();
-                break;
-            case R.id.btnend:
-                curentGame.endGame();
-                break;
-            case R.id.btncntdwn:
-                soundPool.play(soundId, 1, 1, 1, 0, 1);
-                break;
-        }
+    @OnClick(R.id.btnstart)
+    public void onStartClick() {
+        curentGame.startGame();
+    }
+
+    @OnClick(R.id.btnend)
+    public void onEndClick() {
+        curentGame.endGame();
+    }
+
+    @OnClick(R.id.btncntdwn)
+    public void onCntdwnClick() {
+        soundPool.play(soundId, 1, 1, 1, 0, 1);
     }
 }

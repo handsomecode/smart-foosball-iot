@@ -285,9 +285,9 @@ public class MainActivity extends Activity {
 
         @Override
         public void handleMessage(Message msg) {
-            Toast.makeText(mActivity.get().getApplicationContext(),
-                    "Rec " + String.valueOf(msg.what),
-                    Toast.LENGTH_SHORT) .show();
+//            Toast.makeText(mActivity.get().getApplicationContext(),
+//                    "Rec " + String.valueOf(msg.what),
+//                    Toast.LENGTH_SHORT) .show();
             if (msg.what == 48) mScorebar1.get().goal();
             if (msg.what == 49) mScorebar2.get().goal();
         }

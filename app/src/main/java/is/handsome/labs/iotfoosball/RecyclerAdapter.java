@@ -40,6 +40,19 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         public ViewHolder(View v) {
             super(v);
             ButterKnife.bind(this,v);
+            player.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    Log.d("drag", "click on " + String.valueOf(ViewHolder.this.getAdapterPosition()));
+                    View.DragShadowBuilder shadow = new View.DragShadowBuilder(v);
+                    ClipData.Item item = new ClipData.Item(String.valueOf(ViewHolder.this.getAdapterPosition()));
+                    ClipData playerId = new ClipData("playerid",
+                            new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
+                    v.startDrag(playerId, shadow, null, 0);
+                    Log.d("drag", "drag started on " + String.valueOf(ViewHolder.this.getAdapterPosition()));
+                    return true;
+                }
+            });
         }
     }
 
@@ -57,18 +70,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                 firebaseListPlayers.getDataList().get(position).getWin(),
                 firebaseListPlayers.getDataList().get(position).getLose());
         holder.score.setText(score);
-        holder.player.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Log.d("drag", "click on " + String.valueOf(position));
-                View.DragShadowBuilder shadow = new View.DragShadowBuilder(v);
-                ClipData.Item item = new ClipData.Item(String.valueOf(position));
-                ClipData playerid = new ClipData("playerid",
-                        new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
-                v.startDrag(playerid, shadow, null, 0);
-                return true;
-            }
-        });
         String link = "avatars/" + firebaseListPlayers.getDataList().get(position).getNick().toLowerCase() + ".jpg";
         firebaseImgSetter.setImg(link, holder.avatar);
     }

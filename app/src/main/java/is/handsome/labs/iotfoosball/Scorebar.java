@@ -34,6 +34,7 @@ public class Scorebar {
         scorebarsView.get(0).setAdapter(new ScorebarPagerAdapter(context, (int) Math.pow(10,scorebarsView.size())));
         for (int i = 1; i < scorebarsView.size(); i++) {
             ScorebarPagerAdapter spAdapter = new ScorebarPagerAdapter(context, (int) Math.pow(10,scorebarsView.size()-1));
+            scorebarsView.get(i).setFirstDigitViewPager(scorebarsView.get(0));
             scorebarsView.get(i).setListing(false);
             scorebarsView.get(i).setAdapter(spAdapter);
             if (i != (scorebarsView.size() - 1)) {

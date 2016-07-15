@@ -73,17 +73,18 @@ public class ScoreViewPager extends ViewPager {
      * Swaps the X and Y coordinates of your touch event.
      */
     private MotionEvent swapXY(MotionEvent ev) {
+
         float width = getWidth();
         float height = getHeight();
         Timber.d(" before "+ ev.toString());
-        //TODO invert Y direction
 
-        float newX = (ev.getY() / height) * width;
+        float newX = width - (ev.getY() / height) * width;
         float newY = (ev.getX() / width) * height;
 
         ev.setLocation(newX, newY);
 
         Timber.d(" after "+ ev.toString());
+
         return ev;
     }
 
@@ -94,16 +95,13 @@ public class ScoreViewPager extends ViewPager {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         //TODO catch MotionEvent in common frame and redirect it to 1st digit
+        Timber.d("onInterceptTouchEvent");
         Timber.d("Event = " + ev.toString());
         if (isListing) {
-            boolean intercepted = super.onInterceptTouchEvent(swapXY(ev));
-            swapXY(ev); // return touch coordinates to original reference frame for any child views
-            return intercepted;
+            return super.onInterceptTouchEvent(ev);
         } else if (mFirstDigitViewPager != null) {
             Timber.d("redirected");
-            swapXY(ev);
-            boolean intercepted = mFirstDigitViewPager.onInterceptTouchEvent(ev);
-            return intercepted;
+            return mFirstDigitViewPager.onInterceptTouchEvent(ev);
         } else {
             Timber.d("rejected");
             return true;
@@ -114,12 +112,14 @@ public class ScoreViewPager extends ViewPager {
     public boolean onTouchEvent(MotionEvent ev) {
         Timber.d("OnTouchEvent");
         if (isListing) {
-            return isListing && super.onTouchEvent(swapXY(ev));
+            boolean intercepted = super.onTouchEvent(swapXY(ev));
+            swapXY(ev);
+            return intercepted;
         }
         else if (mFirstDigitViewPager != null) {
             return mFirstDigitViewPager.onTouchEvent(ev);
         } else {
-            return true;
+            return false;
         }
     }
 

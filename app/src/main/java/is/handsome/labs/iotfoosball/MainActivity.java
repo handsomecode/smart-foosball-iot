@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 public class MainActivity extends Activity {
 
@@ -101,6 +102,8 @@ public class MainActivity extends Activity {
         Log.d("myLog", "New start");
 
         includesInit();
+
+        Timber.plant(new Timber.DebugTree());
 
         soundPool = new SoundPool.Builder().build();
         soundId = soundPool.load(this, R.raw.countdown, 1);
@@ -206,8 +209,6 @@ public class MainActivity extends Activity {
             }
         }
 
-
-        //TODO it's wrong to save password like this
         mAuth.signInWithEmailAndPassword(login, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override

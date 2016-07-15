@@ -3,9 +3,10 @@ package is.handsome.labs.iotfoosball;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import timber.log.Timber;
 
 /**
  /**
@@ -18,6 +19,7 @@ import android.view.View;
 public class ScoreViewPager extends ViewPager {
 
     private Boolean isListing = true;
+    private ViewPager mFirstDigitViewPager;
 
     public ScoreViewPager(Context context) {
         super(context);
@@ -57,7 +59,7 @@ public class ScoreViewPager extends ViewPager {
                 view.setTranslationX(view.getWidth() * -position);
 
                 //set Y position to swipe in from top
-                float yPosition = position * view.getHeight();
+                float yPosition = -position * view.getHeight();
                 view.setTranslationY(yPosition);
 
             } else { // (1,+Infinity]
@@ -71,32 +73,54 @@ public class ScoreViewPager extends ViewPager {
      * Swaps the X and Y coordinates of your touch event.
      */
     private MotionEvent swapXY(MotionEvent ev) {
-        //TODO inverse UP DOWN
+
         float width = getWidth();
         float height = getHeight();
+        Timber.d(" before "+ ev.toString());
 
-        float newX = (ev.getY() / height) * width;
+        float newX = width - (ev.getY() / height) * width;
         float newY = (ev.getX() / width) * height;
 
         ev.setLocation(newX, newY);
 
+        Timber.d(" after "+ ev.toString());
+
         return ev;
     }
 
+    public void setFirstDigitViewPager(ViewPager viewPager) {
+        mFirstDigitViewPager = viewPager;
+    }
+
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev){
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        //TODO catch MotionEvent in common frame and redirect it to 1st digit
+        Timber.d("onInterceptTouchEvent");
+        Timber.d("Event = " + ev.toString());
         if (isListing) {
-            boolean intercepted = super.onInterceptTouchEvent(swapXY(ev));
-            swapXY(ev); // return touch coordinates to original reference frame for any child views
-            return intercepted;
-        } else
-        //TODO redirect Motion to 1st digit
-            return false;
+            return super.onInterceptTouchEvent(ev);
+        } else if (mFirstDigitViewPager != null) {
+            Timber.d("redirected");
+            return mFirstDigitViewPager.onInterceptTouchEvent(ev);
+        } else {
+            Timber.d("rejected");
+            return true;
+        }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        return isListing && super.onTouchEvent(swapXY(ev));
+        Timber.d("OnTouchEvent");
+        if (isListing) {
+            boolean intercepted = super.onTouchEvent(swapXY(ev));
+            swapXY(ev);
+            return intercepted;
+        }
+        else if (mFirstDigitViewPager != null) {
+            return mFirstDigitViewPager.onTouchEvent(ev);
+        } else {
+            return false;
+        }
     }
 
 }

@@ -21,6 +21,7 @@ android {
 }
 
 dependencies {
+    compile 'com.jakewharton.timber:timber:4.1.2'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile project(':usbSerialForAndroid')
     compile fileTree(dir: 'libs', include: ['*.jar'])

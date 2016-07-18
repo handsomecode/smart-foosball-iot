@@ -10,8 +10,10 @@ import java.util.Locale;
 public class FirebaseListGames extends FirebaseList<Game> {
     private FirebaseListPlayers mPlayers;
     private ArrayList<IncludePlayer> mIncludePlayers;
+    private CurentGame mCurentGame;
 
-    public FirebaseListGames(DatabaseReference Ref, ArrayList<IncludePlayer> includePlayers) {
+    public FirebaseListGames(DatabaseReference Ref,
+            ArrayList<IncludePlayer> includePlayers) {
         super(Ref, Game.class);
         this.mIncludePlayers = includePlayers;
     }
@@ -50,14 +52,20 @@ public class FirebaseListGames extends FirebaseList<Game> {
         this.mPlayers = players;
     }
 
+    public void setCurentGame(CurentGame curentGame) {
+        this.mCurentGame = curentGame;
+    }
+
     protected void reCalcIncludes() {
-        for (int i = 0; i < 4; i++) {
-            if (mIncludePlayers.get(i).getPlayerId() != "") {
-            int index = mPlayers.getKeyList().indexOf(mIncludePlayers.get(i).getPlayerId());
-                String score = String.format(Locale.US, "%d:%d",
-                        mPlayers.getDataList().get(index).getWins(),
-                        mPlayers.getDataList().get(index).getLoses());
-                mIncludePlayers.get(i).score.setText(score);
+        if (mCurentGame != null) {
+            for (int i = 0; i < 4; i++) {
+                if (mCurentGame.getPlayerId(i) != "") {
+                    int index = mPlayers.getKeyList().indexOf(mCurentGame.getPlayerId(i));
+                    String score = String.format(Locale.US, "%d:%d",
+                            mPlayers.getDataList().get(index).getWins(),
+                            mPlayers.getDataList().get(index).getLoses());
+                    mIncludePlayers.get(i).score.setText(score);
+                }
             }
         }
     }

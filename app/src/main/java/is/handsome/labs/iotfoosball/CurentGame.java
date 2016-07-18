@@ -10,27 +10,40 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
+import timber.log.Timber;
+
 public class CurentGame {
-    //TODO extends from mGame ?
     private Game mGame;
     private boolean mIsGameStarted;
     private ArrayList<IncludePlayer> mIncludePlayers;
     private DatabaseReference mReference;
-    private ScoreViewPager mTeamA;
-    private ScoreViewPager mTeamB;
     private int mThreshold;
+    private int mScoreA;
+    private Scorebar mScorebarA;
+    private int mScoreB;
+    private Scorebar mScorebarB;
+    private ArrayList<String> mPlayersId;
+    private FirebaseListPlayers mFirebaseListPlayers;
 
     public CurentGame(ArrayList<IncludePlayer> includePlayers,
-                      DatabaseReference databaseReference,
-                      ScoreViewPager teamA,
-                      ScoreViewPager teamB) {
-        mIsGameStarted = false;
-        this.mTeamA = teamA;
-        this.mTeamB = teamB;
+            DatabaseReference databaseReference,
+            Scorebar teamA,
+            Scorebar teamB,
+            FirebaseListPlayers firebaseListPlayers) {
         mGame = new Game();
+        mIsGameStarted = false;
+        this.mScorebarA = teamA;
+        mScoreA = 0;
+        this.mScorebarB = teamB;
+        mScoreB = 0;
+        this.mFirebaseListPlayers = firebaseListPlayers;
         this.mIncludePlayers = includePlayers;
         this.mReference = databaseReference;
         mThreshold = 50;
+        mPlayersId = new ArrayList<>(4);
+        for (int i = 0; i < 4; i++) {
+            mPlayersId.add(i, "");
+        }
     }
 
     public void setThreshold(int threshold) {
@@ -58,19 +71,54 @@ public class CurentGame {
             String dateend = dateFormat.format(Calendar.getInstance().getTime());
             Log.d("gamesave", "set dateend to " + dateend);
             mGame.setDateEnd(dateend);
-            mGame.setIds(mIncludePlayers.get(0).getPlayerId(),
-                    mIncludePlayers.get(1).getPlayerId(),
-                    mIncludePlayers.get(2).getPlayerId(),
-                    mIncludePlayers.get(3).getPlayerId());
+            mGame.setIds(mPlayersId.get(0),
+                    mPlayersId.get(1),
+                    mPlayersId.get(2),
+                    mPlayersId.get(3));
             mGame.setMode("2x2mb");
-            //mGame.setScore(mTeamA.getCurrentItem(), mTeamB.getCurrentItem());
+            mGame.setScore(mScoreA, mScoreB);
             mReference.push().setValue(mGame);
         }
     }
 
-    public void notify_game() {
-        Log.d("score2", "mGame notified");
-        mGame.setScore(mTeamA.getCurrentItem(), mTeamB.getCurrentItem());
-        if ((mGame.getScoreA() >= mThreshold)|| (mGame.getScoreB() >= mThreshold)) endGame();
+    public void notifyScored(String teamScored) {
+        Timber.d("game notified");
+        if (teamScored.equals("A")) {
+            mScoreA++;
+            mScorebarA.setScore(mScoreA);
+        }
+        if (teamScored.equals("B")) {
+            mScoreB++;
+            mScorebarB.setScore(mScoreB);
+        }
+        if ((mScoreA >= mThreshold)|| (mScoreB >= mThreshold)) endGame();
+    }
+
+    public void notifyListed(Scorebar scorebar, int position) {
+        if(scorebar == mScorebarA) {
+            mScoreA = position;
+        }
+        if (scorebar == mScorebarB) {
+            mScoreB = position;
+        }
+    }
+
+    public void notifyDraged(int position, int index) {
+        mPlayersId.set(position, mFirebaseListPlayers.getKeyList().get(index));
+        mIncludePlayers.get(position)
+                .nick
+                .setText(mFirebaseListPlayers.getDataList().get(index).getNick());
+        String score = String.format(Locale.US, "%d:%d",
+                mFirebaseListPlayers.getDataList().get(index).getWins(),
+                mFirebaseListPlayers.getDataList().get(index).getLoses());
+        mIncludePlayers.get(position).score.setText(score);
+
+        mFirebaseListPlayers.getFirebaseImgSetter()
+                .setAvatar(mFirebaseListPlayers.getDataList().get(index).getNick(),
+                        mIncludePlayers.get(position).avatar);
+    }
+
+    public String getPlayerId(int position) {
+        return mPlayersId.get(position);
     }
 }

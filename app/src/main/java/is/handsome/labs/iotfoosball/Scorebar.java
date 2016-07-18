@@ -2,7 +2,6 @@ package is.handsome.labs.iotfoosball;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -23,11 +22,10 @@ public class Scorebar {
 
             @Override
             public void onPageSelected(int position) {
-                //TODO need i use Math lib?
                 if (scorebarsView.size() > 1) {
                     scorebarsView.get(1).setCurrentItem(((position - (position % 10)) / 10), true);
                 }
-                if (mCurentGame != null) mCurentGame.notify_game();
+                if (mCurentGame != null) mCurentGame.notifyListed(Scorebar.this, position);
             }
 
             @Override
@@ -74,8 +72,7 @@ public class Scorebar {
         this.mCurentGame = curentGame;
     }
 
-    public void goal() {
-        Log.d("score2", "REALY GOAL" + (mScorebarsView.get(0).getCurrentItem() + 1));
-        mScorebarsView.get(0).setCurrentItem(mScorebarsView.get(0).getCurrentItem() + 1);
+    public void setScore(int score) {
+        mScorebarsView.get(0).setCurrentItem(score);
     }
 }

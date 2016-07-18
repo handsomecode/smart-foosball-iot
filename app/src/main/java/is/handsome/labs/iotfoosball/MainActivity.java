@@ -113,14 +113,18 @@ public class MainActivity extends Activity {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mFirebaseGames = new FirebaseListGames(mDatabase.child("games"), mIncludeplayers);
+        mFirebaseGames = new FirebaseListGames(mDatabase.child("games"),
+                mIncludeplayers);
 
         mFirebasePlayers = new FirebaseListPlayers(mDatabase.child("players"),
                 mRecyclerAdapter,
                 mFirebaseGames.getDataList(),
                 mFirebaseImgSetter);
 
+        curentGameInit();
+
         mFirebaseGames.setPlayer(mFirebasePlayers);
+        mFirebaseGames.setCurentGame(mCurentGame);
 
         mRecyclerAdapter.setFirebase(mFirebasePlayers, mFirebaseImgSetter);
 
@@ -129,13 +133,10 @@ public class MainActivity extends Activity {
         for (int i = 0; i < 4; i++) {
             mIncludeplayers.get(i)
                     .getInc()
-                    .setOnDragListener(new DragListenerForIncludes(mIncludeplayers.get(i),
-                            mFirebasePlayers));
+                    .setOnDragListener(new DragListenerForIncludes(i, mCurentGame));
         }
 
-        curentGameInit();
-
-        sSerialHandler = new SerialHandler(this, mScorebarA, mScorebarB);
+        sSerialHandler = new SerialHandler(mCurentGame);
 
         mSerialUsb = new SerialUsb(getApplicationContext(), sSerialHandler);
     }
@@ -187,7 +188,11 @@ public class MainActivity extends Activity {
         score2.add(t2d);
         mScorebarB = new Scorebar(this, score2);
 
-        mCurentGame = new CurentGame(mIncludeplayers, mDatabase.child("games"), t1u, t2u);
+        mCurentGame = new CurentGame(mIncludeplayers,
+                        mDatabase.child("games"),
+                        mScorebarA,
+                        mScorebarB,
+                        mFirebasePlayers);
 
         mScorebarA.setCurentGame(mCurentGame);
         mScorebarB.setCurentGame(mCurentGame);
@@ -266,20 +271,18 @@ public class MainActivity extends Activity {
     }
 
     static class SerialHandler extends Handler{
-        private WeakReference<Activity> mActivity;
-        private WeakReference<Scorebar> mScorebarA;
-        private WeakReference<Scorebar> mScorebarB;
+        private WeakReference<CurentGame> mCurrentGameWeakRef;
 
-        public SerialHandler(Activity activity, Scorebar scorebarA, Scorebar scorebarB) {
-            mActivity = new WeakReference<Activity>(activity);
-            mScorebarA = new WeakReference<Scorebar>(scorebarA);
-            mScorebarB = new WeakReference<Scorebar>(scorebarB);
+        public SerialHandler(CurentGame curentGame) {
+            mCurrentGameWeakRef = new WeakReference<CurentGame>(curentGame);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == 48) mScorebarA.get().goal();
-            if (msg.what == 49) mScorebarB.get().goal();
+            if (mCurrentGameWeakRef.get() != null) {
+                if (msg.what == 48) mCurrentGameWeakRef.get().notifyScored("A");
+                if (msg.what == 49) mCurrentGameWeakRef.get().notifyScored("B");
+            }
         }
 
     }

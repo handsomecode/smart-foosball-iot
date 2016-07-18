@@ -1,28 +1,19 @@
 package is.handsome.labs.iotfoosball;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
 class Player {
 
-    private String nick;
+    private String nick; //TODO Firebase API forgiben to change name of field to mNick
     private String avatar;
-    private int ind;
-    private int win;
-    private int lose;
-
-    private Player() {}
+    private int mWins;
+    private int mLoses;
 
     public Player(String nick, String avatar) {
         this.nick = nick;
         this.avatar = avatar;
     }
 
-    public void setInd(int ind) {
-        this.ind = ind;
+    private Player() { //Constructor required by Firebase API
+
     }
 
     public String getNick() {
@@ -33,87 +24,94 @@ class Player {
         return avatar;
     }
 
-    public int getWin() {
-        return win;
+    public int getWins() {
+        return mWins;
     }
 
-    public void setWin(int win) {
-        this.win = win;
+    public void setWins(int wins) {
+        this.mWins = wins;
     }
 
-    public int getLose() {
-        return lose;
+    public int getLoses() {
+        return mLoses;
     }
 
-    public void setLose(int lose) {
-        this.lose = lose;
+    public void setLoses(int loses) {
+        this.mLoses = loses;
     }
 }
 
 class Game {
-    private String datestart;
-    private String dateend;
-    private String idplayer11;
-    private String idplayer12;
-    private String idplayer21;
-    private String idplayer22;
+    private String dateStart;
+    private String dateEnd;
+    private String idPlayerA1;
+    private String idPlayerA2;
+    private String idPlayerB1;
+    private String idPlayerB2;
     private String mode;
-    private int score1;
-    private int score2;
+    private int scoreA;
+    private int scoreB;
 
-    public Game() {}
-
-    public Game(String datestart, String dateend,
-                String idplayer11, String idplayer12, String idplayer21, String idplayer22,
-                 String mode, int score1, int score2) {
-        this.datestart = datestart;
-        this.dateend = dateend;
-        this.idplayer11 = idplayer11;
-        this.idplayer12 = idplayer12;
-        this.idplayer21 = idplayer21;
-        this.idplayer22 = idplayer22;
+    public Game(String dateStart,
+            String dateEnd,
+            String idPlayerA1,
+            String idPlayerA2,
+            String idPlayerB1,
+            String idPlayerB2, String mode,
+            int scoreA,
+            int scoreB) {
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.idPlayerA1 = idPlayerA1;
+        this.idPlayerA2 = idPlayerA2;
+        this.idPlayerB1 = idPlayerB1;
+        this.idPlayerB2 = idPlayerB2;
         this.mode = mode;
-        this.score1 = score1;
-        this.score2 = score2;
+        this.scoreA = scoreA;
+        this.scoreB = scoreB;
     }
 
-    public String getDatestart() {
-        return datestart;
+    public Game() { //Constructor required by Firebase API
+
     }
 
-    public void setDatestart(String datestart) {
-        this.datestart = datestart;
+    public String getDateStart() {
+        return dateStart;
     }
 
-    public String getDateend() {
-        return dateend;
+    public void setDateStart(String dateStart) {
+        this.dateStart = dateStart;
     }
 
-    public void setDateend(String dateend) {
-        this.dateend = dateend;
+    public String getDateEnd() {
+        return dateEnd;
     }
 
-    public String getIdplayer11() {
-        return idplayer11;
+    public void setDateEnd(String dateEnd) {
+        this.dateEnd = dateEnd;
     }
 
-    public String getIdplayer12() {
-        return idplayer12;
+    public String getIdPlayerA1() {
+        return idPlayerA1;
     }
 
-    public String getIdplayer21() {
-        return idplayer21;
+    public String getIdPlayerA2() {
+        return idPlayerA2;
     }
 
-    public String getIdplayer22() {
-        return idplayer22;
+    public String getIdPlayerB1() {
+        return idPlayerB1;
     }
 
-    public void setIds(String id11, String id12, String id21, String id22) {
-        this.idplayer11 = id11;
-        this.idplayer12 = id12;
-        this.idplayer21 = id21;
-        this.idplayer22 = id22;
+    public String getIdPlayerB2() {
+        return idPlayerB2;
+    }
+
+    public void setIds(String idA1, String idA2, String idB1, String idB2) {
+        this.idPlayerA1 = idA1;
+        this.idPlayerA2 = idA2;
+        this.idPlayerB1 = idB1;
+        this.idPlayerB2 = idB2;
     }
 
     public String getMode() {
@@ -124,16 +122,16 @@ class Game {
         this.mode = mode;
     }
 
-    public int getScore1() {
-        return score1;
+    public int getScoreA() {
+        return scoreA;
     }
 
-    public int getScore2() {
-        return score2;
+    public int getScoreB() {
+        return scoreB;
     }
 
-    public void setScore(int score1, int score2) {
-        this.score1 = score1;
-        this.score2 = score2;
+    public void setScore(int scoreA, int scoreB) {
+        this.scoreA = scoreA;
+        this.scoreB = scoreB;
     }
 }

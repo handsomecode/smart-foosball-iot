@@ -17,20 +17,23 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import timber.log.Timber;
+
 public class SerialUsb {
 
-    private static final String TAG = "serial";
     private static final int BAUD_RATE = 115200;
 
     private Handler mHandler;
     private UsbSerialPort mUsbSerialPort;
     private SerialInputOutputManager mSerialIOManager;
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
-    private SerialInputOutputManager.Listener mSerialInputListener = new SerialInputOutputManager.Listener() {
+    private SerialInputOutputManager.Listener mSerialInputListener =
+            new SerialInputOutputManager.Listener() {
+    //TODO check this place for fitting guidelines
 
         @Override
         public void onRunError(Exception e) {
-            Log.d(TAG, "Runner stopped.");
+            Timber.d("Runner stopped");
         }
 
         @Override
@@ -50,28 +53,33 @@ public class SerialUsb {
 
     public void init(Context context) {
         UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
-        List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
+        List<UsbSerialDriver> availableDrivers =
+                UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
         if (availableDrivers.isEmpty()) {
             Toast.makeText(context, "ÜSB devices Not found", Toast.LENGTH_LONG).show();
         } else {
             UsbSerialDriver driver = availableDrivers.get(0);
             mUsbSerialPort = driver.getPorts().get(0);
 
-            UsbDeviceConnection connection = usbManager.openDevice(mUsbSerialPort.getDriver().getDevice());
+            UsbDeviceConnection connection =
+                    usbManager.openDevice(mUsbSerialPort.getDriver().getDevice());
             if (connection == null) {
                 return;
             }
 
             try {
                 mUsbSerialPort.open(connection);
-                mUsbSerialPort.setParameters(BAUD_RATE, UsbSerialPort.DATABITS_8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+                mUsbSerialPort.setParameters(BAUD_RATE,
+                        UsbSerialPort.DATABITS_8,
+                        UsbSerialPort.STOPBITS_1,
+                        UsbSerialPort.PARITY_NONE);
                 Toast.makeText(context, "ÜSB device have been found", Toast.LENGTH_LONG).show();
             } catch (IOException e) {
-                Log.e(TAG, "Error setting up device: " + e.getMessage(), e);
+                Timber.d(e, "Error setting up device");
                 try {
                     mUsbSerialPort.close();
                 } catch (IOException e2) {
-                    Log.e(TAG, "Close serial port", e2);
+                    Timber.d(e2, "Close serial port");
                 }
                 mUsbSerialPort = null;
                 return;
@@ -86,7 +94,7 @@ public class SerialUsb {
             try {
                 mUsbSerialPort.close();
             } catch (IOException e) {
-                Log.e(TAG, "Close serial port", e);
+                Timber.d(e, "Close serial port");
             }
             mUsbSerialPort = null;
         }
@@ -94,7 +102,7 @@ public class SerialUsb {
 
     private void stopIoManager() {
         if (mSerialIOManager != null) {
-            Log.i(TAG, "Stopping io manager ..");
+            Timber.d("Stopping io manager ..");
             mSerialIOManager.stop();
             mSerialIOManager = null;
         }
@@ -102,7 +110,7 @@ public class SerialUsb {
 
     private void startIoManager() {
         if (mUsbSerialPort != null) {
-            Log.i(TAG, "Starting io manager ..");
+            Timber.d("Starting io manager ..");
             mSerialIOManager = new SerialInputOutputManager(mUsbSerialPort, mSerialInputListener);
             mExecutor.submit(mSerialIOManager);
         }

@@ -18,7 +18,7 @@ import timber.log.Timber;
  */
 public class ScoreViewPager extends ViewPager {
 
-    private Boolean isListing = true;
+    private Boolean mIsListing = true;
     private ViewPager mFirstDigitViewPager;
 
     public ScoreViewPager(Context context) {
@@ -32,8 +32,43 @@ public class ScoreViewPager extends ViewPager {
         init();
     }
 
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        //TODO catch MotionEvent in common frame and redirect it to 1st digit
+        Timber.d("onInterceptTouchEvent");
+        Timber.d("Event = " + ev.toString());
+        if (mIsListing) {
+            return super.onInterceptTouchEvent(ev);
+        } else if (mFirstDigitViewPager != null) {
+            Timber.d("redirected");
+            return mFirstDigitViewPager.onInterceptTouchEvent(ev);
+        } else {
+            Timber.d("rejected");
+            return true;
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        Timber.d("OnTouchEvent");
+        if (mIsListing) {
+            boolean intercepted = super.onTouchEvent(swapXY(ev));
+            swapXY(ev);
+            return intercepted;
+        }
+        else if (mFirstDigitViewPager != null) {
+            return mFirstDigitViewPager.onTouchEvent(ev);
+        } else {
+            return false;
+        }
+    }
+
     public void setListing(boolean listing) {
-        isListing = listing;
+        mIsListing = listing;
+    }
+
+    public void setFirstDigitViewPager(ViewPager viewPager) {
+        mFirstDigitViewPager = viewPager;
     }
 
     private void init() {
@@ -41,6 +76,25 @@ public class ScoreViewPager extends ViewPager {
         setPageTransformer(true, new VerticalPageTransformer());
         // The easiest way to get rid of the overscroll drawing that happens on the left and right
         setOverScrollMode(OVER_SCROLL_NEVER);
+    }
+
+    /**
+     * Swaps the X and Y coordinates of your touch event.
+     */
+    private MotionEvent swapXY(MotionEvent ev) {
+
+        float width = getWidth();
+        float height = getHeight();
+        Timber.d(" before "+ ev.toString());
+
+        float newX = width - (ev.getY() / height) * width;
+        float newY = (ev.getX() / width) * height;
+
+        ev.setLocation(newX, newY);
+
+        Timber.d(" after "+ ev.toString());
+
+        return ev;
     }
 
     private class VerticalPageTransformer implements ViewPager.PageTransformer {
@@ -68,59 +122,4 @@ public class ScoreViewPager extends ViewPager {
             }
         }
     }
-
-    /**
-     * Swaps the X and Y coordinates of your touch event.
-     */
-    private MotionEvent swapXY(MotionEvent ev) {
-
-        float width = getWidth();
-        float height = getHeight();
-        Timber.d(" before "+ ev.toString());
-
-        float newX = width - (ev.getY() / height) * width;
-        float newY = (ev.getX() / width) * height;
-
-        ev.setLocation(newX, newY);
-
-        Timber.d(" after "+ ev.toString());
-
-        return ev;
-    }
-
-    public void setFirstDigitViewPager(ViewPager viewPager) {
-        mFirstDigitViewPager = viewPager;
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        //TODO catch MotionEvent in common frame and redirect it to 1st digit
-        Timber.d("onInterceptTouchEvent");
-        Timber.d("Event = " + ev.toString());
-        if (isListing) {
-            return super.onInterceptTouchEvent(ev);
-        } else if (mFirstDigitViewPager != null) {
-            Timber.d("redirected");
-            return mFirstDigitViewPager.onInterceptTouchEvent(ev);
-        } else {
-            Timber.d("rejected");
-            return true;
-        }
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        Timber.d("OnTouchEvent");
-        if (isListing) {
-            boolean intercepted = super.onTouchEvent(swapXY(ev));
-            swapXY(ev);
-            return intercepted;
-        }
-        else if (mFirstDigitViewPager != null) {
-            return mFirstDigitViewPager.onTouchEvent(ev);
-        } else {
-            return false;
-        }
-    }
-
 }

@@ -15,24 +15,24 @@ class IncludePlayer {
     @BindView(R.id.score)
     TextView score;
 
-    private View inc;
-    private String playerid;
+    private View mInc;
+    private String mPlayerId;
 
     public IncludePlayer(View view) {
-        this.inc = view;
-        playerid = "";
+        this.mInc = view;
+        mPlayerId = "";
     }
 
     public View getInc() {
-        return inc;
+        return mInc;
     }
 
-    public String getPlayerid() {
-        return playerid;
+    public String getPlayerId() {
+        return mPlayerId;
     }
 
-    public void setPlayerid(String playerid) {
-        this.playerid = playerid;
+    public void setPlayerId(String mPlayerId) {
+        this.mPlayerId = mPlayerId;
     }
 
     //    @BindView(R.id.medal)

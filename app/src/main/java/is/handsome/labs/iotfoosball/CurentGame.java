@@ -1,6 +1,5 @@
 package is.handsome.labs.iotfoosball;
 
-import android.media.SoundPool;
 import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
@@ -11,65 +10,115 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class CurentGame {
-    //TODO extends from game ?
-    private Game game;
-    private boolean isgamestarted;
-    private ArrayList<IncludePlayer> includePlayers;
-    private DatabaseReference mReference;
-    private ScoreViewPager t1;
-    private ScoreViewPager t2;
-    private int threshold;
+import timber.log.Timber;
 
-    public CurentGame(ArrayList<IncludePlayer> includePlayers, DatabaseReference databaseReference,
-                      ScoreViewPager t1, ScoreViewPager t2) {
-        isgamestarted = false;
-        this.t1 = t1;
-        this.t2 = t2;
-        game = new Game();
-        this.includePlayers = includePlayers;
+public class CurentGame {
+    private Game mGame;
+    private boolean mIsGameStarted;
+    private ArrayList<IncludePlayer> mIncludePlayers;
+    private DatabaseReference mReference;
+    private int mThreshold;
+    private int mScoreA;
+    private Scorebar mScorebarA;
+    private int mScoreB;
+    private Scorebar mScorebarB;
+    private ArrayList<String> mPlayersId;
+    private FirebaseListPlayers mFirebaseListPlayers;
+
+    public CurentGame(ArrayList<IncludePlayer> includePlayers,
+            DatabaseReference databaseReference,
+            Scorebar teamA,
+            Scorebar teamB,
+            FirebaseListPlayers firebaseListPlayers) {
+        mGame = new Game();
+        mIsGameStarted = false;
+        this.mScorebarA = teamA;
+        mScoreA = 0;
+        this.mScorebarB = teamB;
+        mScoreB = 0;
+        this.mFirebaseListPlayers = firebaseListPlayers;
+        this.mIncludePlayers = includePlayers;
         this.mReference = databaseReference;
-        threshold = 50;
+        mThreshold = 50;
+        mPlayersId = new ArrayList<>(4);
+        for (int i = 0; i < 4; i++) {
+            mPlayersId.add(i, "");
+        }
     }
 
     public void setThreshold(int threshold) {
-        this.threshold = threshold;
+        this.mThreshold = threshold;
     }
 
     public void setMode(String mode) {
-        game.setMode(mode);
+        mGame.setMode(mode);
     }
 
     public void startGame() {
-        if (!isgamestarted) {
+        if (!mIsGameStarted) {
             DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.ROOT);
             String datestart = dateFormat.format(Calendar.getInstance().getTime());
             Log.d("gamesave", "set datestart to " + datestart);
-            game.setDatestart(datestart);
-            isgamestarted = true;
+            mGame.setDateStart(datestart);
+            mIsGameStarted = true;
         }
     }
 
     public void endGame() {
-        if (isgamestarted) {
-            isgamestarted = false;
+        if (mIsGameStarted) {
+            mIsGameStarted = false;
             DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.ROOT);
             String dateend = dateFormat.format(Calendar.getInstance().getTime());
             Log.d("gamesave", "set dateend to " + dateend);
-            game.setDateend(dateend);
-            game.setIds(includePlayers.get(0).getPlayerid(),
-                    includePlayers.get(1).getPlayerid(),
-                    includePlayers.get(2).getPlayerid(),
-                    includePlayers.get(3).getPlayerid());
-            game.setMode("2x2mb");
-            //game.setScore(t1.getCurrentItem(), t2.getCurrentItem());
-            mReference.push().setValue(game);
+            mGame.setDateEnd(dateend);
+            mGame.setIds(mPlayersId.get(0),
+                    mPlayersId.get(1),
+                    mPlayersId.get(2),
+                    mPlayersId.get(3));
+            mGame.setMode("2x2mb");
+            mGame.setScore(mScoreA, mScoreB);
+            mReference.push().setValue(mGame);
         }
     }
 
-    public void notify_game() {
-        Log.d("score2", "game notified");
-        game.setScore(t1.getCurrentItem(), t2.getCurrentItem());
-        if ((game.getScore1() >= threshold)|| (game.getScore2() >= threshold)) endGame();
+    public void notifyScored(String teamScored) {
+        Timber.d("game notified");
+        if (teamScored.equals("A")) {
+            mScoreA++;
+            mScorebarA.setScore(mScoreA);
+        }
+        if (teamScored.equals("B")) {
+            mScoreB++;
+            mScorebarB.setScore(mScoreB);
+        }
+        if ((mScoreA >= mThreshold)|| (mScoreB >= mThreshold)) endGame();
+    }
+
+    public void notifyListed(Scorebar scorebar, int position) {
+        if(scorebar == mScorebarA) {
+            mScoreA = position;
+        }
+        if (scorebar == mScorebarB) {
+            mScoreB = position;
+        }
+    }
+
+    public void notifyDraged(int position, int index) {
+        mPlayersId.set(position, mFirebaseListPlayers.getKeyList().get(index));
+        mIncludePlayers.get(position)
+                .nick
+                .setText(mFirebaseListPlayers.getDataList().get(index).getNick());
+        String score = String.format(Locale.US, "%d:%d",
+                mFirebaseListPlayers.getDataList().get(index).getWins(),
+                mFirebaseListPlayers.getDataList().get(index).getLoses());
+        mIncludePlayers.get(position).score.setText(score);
+
+        mFirebaseListPlayers.getFirebaseImgSetter()
+                .setAvatar(mFirebaseListPlayers.getDataList().get(index).getNick(),
+                        mIncludePlayers.get(position).avatar);
+    }
+
+    public String getPlayerId(int position) {
+        return mPlayersId.get(position);
     }
 }

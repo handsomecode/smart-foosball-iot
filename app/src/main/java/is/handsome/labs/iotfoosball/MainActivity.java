@@ -1,7 +1,6 @@
 package is.handsome.labs.iotfoosball;
 
 import android.app.Activity;
-import android.content.Context;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,34 +37,29 @@ import timber.log.Timber;
 
 public class MainActivity extends Activity {
 
-    ArrayList<IncludePlayer> includeplayers;
-    private static SerialHandler sSerialHandler;
-
     //TODO use dagger for injecting all firebase object when it is necessary
     //TODO change transp color in textview to Theme transp color
     //TODO correct Layout (scorebars position is wrong)
     //TODO creat enum for modeselect
 
+    private ArrayList<IncludePlayer> mIncludeplayers;
+    private static SerialHandler sSerialHandler;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseListPlayers firebasePlayers;
-    private FirebaseListGames firebaseGames;
+    private FirebaseListPlayers mFirebasePlayers;
+    private FirebaseListGames mFirebaseGames;
     private DatabaseReference mDatabase;
-    private StorageReference storageRef;
-    private FirebaseImgSetter firebaseImgSetter;
-    private SoundPool soundPool;
-    private int soundId;
+    private StorageReference mStorageRef;
+    private FirebaseImgSetter mFirebaseImgSetter;
+    private SoundPool mSoundPool;
+    private int mSoundId;
     private SerialUsb mSerialUsb;
-
-    private ArrayList<View> includes;
-
+    private ArrayList<View> mIncludes;
     private android.support.v7.widget.RecyclerView.LayoutManager mLayoutManager;
     private RecyclerAdapter mRecyclerAdapter;
-
-    private Scorebar scorebar1;
-    private Scorebar scorebar2;
-
-    private CurentGame curentGame;
+    private Scorebar mScorebarA;
+    private Scorebar mScorebarB;
+    private CurentGame mCurentGame;
 
     @BindView(R.id.inc0)
     CardView inc0;
@@ -105,33 +99,44 @@ public class MainActivity extends Activity {
 
         Timber.plant(new Timber.DebugTree());
 
-        soundPool = new SoundPool.Builder().build();
-        soundId = soundPool.load(this, R.raw.countdown, 1);
+        mSoundPool = new SoundPool.Builder().build();
+        mSoundId = mSoundPool.load(this, R.raw.countdown, 1);
 
         firebaseAuth();
 
         recyclerViewInit();
 
-        storageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://handsomefoosball.appspot.com");
-        firebaseImgSetter = new FirebaseImgSetter(storageRef, this);
+        mStorageRef = FirebaseStorage
+                .getInstance()
+                .getReferenceFromUrl("gs://handsomefoosball.appspot.com");
+        mFirebaseImgSetter = new FirebaseImgSetter(this, mStorageRef);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        firebaseGames = new FirebaseListGames(mDatabase.child("games"), includeplayers);
+        mFirebaseGames = new FirebaseListGames(mDatabase.child("games"),
+                mIncludeplayers);
 
-        firebasePlayers = new FirebaseListPlayers(mDatabase.child("players"), mRecyclerAdapter, firebaseGames.getDataList(), firebaseImgSetter);
-
-        firebaseGames.setPlayer(firebasePlayers);
-
-        mRecyclerAdapter.setFirebase(firebasePlayers, firebaseImgSetter);
-
-        for (int i = 0; i < 4; i++) {
-            includeplayers.get(i).getInc().setOnDragListener(new DragListenerForIncludes(i, includeplayers.get(i), firebasePlayers, this));
-        }
+        mFirebasePlayers = new FirebaseListPlayers(mDatabase.child("players"),
+                mRecyclerAdapter,
+                mFirebaseGames.getDataList(),
+                mFirebaseImgSetter);
 
         curentGameInit();
 
-        sSerialHandler = new SerialHandler(this, scorebar1, scorebar2);
+        mFirebaseGames.setPlayer(mFirebasePlayers);
+        mFirebaseGames.setCurentGame(mCurentGame);
+
+        mRecyclerAdapter.setFirebase(mFirebasePlayers, mFirebaseImgSetter);
+
+        RecyclerView.setAdapter(mRecyclerAdapter);
+
+        for (int i = 0; i < 4; i++) {
+            mIncludeplayers.get(i)
+                    .getInc()
+                    .setOnDragListener(new DragListenerForIncludes(i, mCurentGame));
+        }
+
+        sSerialHandler = new SerialHandler(mCurentGame);
 
         mSerialUsb = new SerialUsb(getApplicationContext(), sSerialHandler);
     }
@@ -142,21 +147,55 @@ public class MainActivity extends Activity {
         mSerialUsb.close();
     }
 
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
+    @OnClick(R.id.btnstart)
+    public void onStartClick() {
+        mCurentGame.startGame();
+    }
+
+    @OnClick(R.id.btnend)
+    public void onEndClick() {
+        mCurentGame.endGame();
+    }
+
+    @OnClick(R.id.btncntdwn)
+    public void onCntdwnClick() {
+        mSoundPool.play(mSoundId, 1, 1, 1, 0, 1);
+    }
+
     private void curentGameInit() {
         ArrayList<ScoreViewPager> score1 = new ArrayList<>();
         score1.add(t1u);
         score1.add(t1d);
-        scorebar1 = new Scorebar(score1, this);
+        mScorebarA = new Scorebar(this, score1);
 
         ArrayList<ScoreViewPager> score2 = new ArrayList<>();
         score2.add(t2u);
         score2.add(t2d);
-        scorebar2 = new Scorebar(score2, this);
+        mScorebarB = new Scorebar(this, score2);
 
-        curentGame = new CurentGame(includeplayers, mDatabase.child("games"), t1u, t2u);
+        mCurentGame = new CurentGame(mIncludeplayers,
+                        mDatabase.child("games"),
+                        mScorebarA,
+                        mScorebarB,
+                        mFirebasePlayers);
 
-        scorebar1.setCurentGame(curentGame);
-        scorebar2.setCurentGame(curentGame);
+        mScorebarA.setCurentGame(mCurentGame);
+        mScorebarB.setCurentGame(mCurentGame);
     }
 
     private void recyclerViewInit() {
@@ -164,7 +203,6 @@ public class MainActivity extends Activity {
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerAdapter = new RecyclerAdapter();
-        RecyclerView.setAdapter(mRecyclerAdapter);
     }
 
     private void firebaseAuth() {
@@ -194,19 +232,7 @@ public class MainActivity extends Activity {
             password = bData.readLine();
             Log.d("myLogs", "Password " + password);
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                bData.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                data.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Timber.d(e, "File with login pass error");
         }
 
         mAuth.signInWithEmailAndPassword(login, password)
@@ -224,73 +250,39 @@ public class MainActivity extends Activity {
     }
 
     private void includesInit() {
-        includeplayers = new ArrayList<>(4);
-        includes = new ArrayList<>(4);
+        mIncludeplayers = new ArrayList<>(4);
+        mIncludes = new ArrayList<>(4);
 
         //adding butterknife for player's include
-        includes.add(inc0);
-        includes.add(inc1);
-        includes.add(inc2);
-        includes.add(inc3);
+        mIncludes.add(inc0);
+        mIncludes.add(inc1);
+        mIncludes.add(inc2);
+        mIncludes.add(inc3);
 
         Log.d("myLog", "inc added");
 
         for (int i = 0; i < 4; i++) {
-            includeplayers.add(new IncludePlayer(includes.get(i)));
-            ButterKnife.bind(includeplayers.get(i), includes.get(i));
-            includeplayers.get(i).nick.setText("player");
-            includeplayers.get(i).score.setText("");
+            mIncludeplayers.add(new IncludePlayer(mIncludes.get(i)));
+            ButterKnife.bind(mIncludeplayers.get(i), mIncludes.get(i));
+            mIncludeplayers.get(i).nick.setText("player");
+            mIncludeplayers.get(i).score.setText("");
         }
         Log.d("myLog", "components added");
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
-    }
-
-    @OnClick(R.id.btnstart)
-    public void onStartClick() {
-        curentGame.startGame();
-    }
-
-    @OnClick(R.id.btnend)
-    public void onEndClick() {
-        curentGame.endGame();
-    }
-
-    @OnClick(R.id.btncntdwn)
-    public void onCntdwnClick() {
-        soundPool.play(soundId, 1, 1, 1, 0, 1);
-    }
-
     static class SerialHandler extends Handler{
-        private WeakReference<Activity> mActivity;
-        private WeakReference<Scorebar> mScorebar1;
-        private WeakReference<Scorebar> mScorebar2;
+        private WeakReference<CurentGame> mCurrentGameWeakRef;
 
-        public SerialHandler(Activity activity, Scorebar scorebar1, Scorebar scorebar2) {
-            mActivity = new WeakReference<Activity>(activity);
-            mScorebar1 = new WeakReference<Scorebar>(scorebar1);
-            mScorebar2 = new WeakReference<Scorebar>(scorebar2);
+        public SerialHandler(CurentGame curentGame) {
+            mCurrentGameWeakRef = new WeakReference<CurentGame>(curentGame);
         }
 
         @Override
         public void handleMessage(Message msg) {
-//            Toast.makeText(mActivity.get().getApplicationContext(),
-//                    "Rec " + String.valueOf(msg.what),
-//                    Toast.LENGTH_SHORT) .show();
-            if (msg.what == 48) mScorebar1.get().goal();
-            if (msg.what == 49) mScorebar2.get().goal();
+            if (mCurrentGameWeakRef.get() != null) {
+                if (msg.what == 48) mCurrentGameWeakRef.get().notifyScored("A");
+                if (msg.what == 49) mCurrentGameWeakRef.get().notifyScored("B");
+            }
         }
 
     }

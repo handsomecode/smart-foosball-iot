@@ -9,24 +9,23 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ScorebarPagerAdapter extends PagerAdapter {
 
-    private ArrayList<View> pages;
-    int count;
+    private ArrayList<View> mPages;
+    int mCount;
 
     public ScorebarPagerAdapter(Context context, int count) {
-        this.count = count;
+        this.mCount = count;
         //TODO reuse invisible views and use ViewHolder
-        pages = new ArrayList<View>();
+        mPages = new ArrayList<View>();
         for (int i = 0; i < 10; i++) {
             Log.d("score", "crating view # " + i);
             LayoutInflater layoutInflater = LayoutInflater.from(context);
             View v = layoutInflater.inflate(R.layout.barnumber, null);
             ((TextView) v.findViewById(R.id.number)).setText(String.valueOf(i));
             Log.d("score", "view # " + i + " created " + v.toString());
-            pages.add(v);
+            mPages.add(v);
             Log.d("score", "view # " + i + " added");
         }
     }
@@ -34,18 +33,18 @@ public class ScorebarPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         Log.d("score", "adding # " + String.valueOf(position));
-        container.addView(pages.get(position % 10));
-        return pages.get(position % 10);
+        container.addView(mPages.get(position % 10));
+        return mPages.get(position % 10);
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        container.removeView(pages.get(position % 10));
+        container.removeView(mPages.get(position % 10));
     }
 
     @Override
     public int getCount() {
-        return count;
+        return mCount;
     }
 
     @Override

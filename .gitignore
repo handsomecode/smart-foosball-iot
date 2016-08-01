@@ -1,8 +1,8 @@
 *.iml
 .gradle
-/local.properties
-/.idea/*
+AndroidApp/local.properties
+AndroidApp/.idea/*
 .DS_Store
-/build
+AndroidApp/build
 /captures
-/app/src/main/res/raw/data
+AndroidApp/app/src/main/res/raw/data

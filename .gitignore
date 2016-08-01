@@ -1,8 +1,14 @@
+#Android
 *.iml
 .gradle
-/local.properties
-/.idea/*
+AndroidApp/local.properties
+.idea
 .DS_Store
-/build
+AndroidApp/build
 /captures
-/app/src/main/res/raw/data
+AndroidApp/app/src/main/res/raw/data
+
+#Platform IO
+.pioenvs
+.clang_complete
+.gcc-flags.json

@@ -4,7 +4,7 @@
 AndroidApp/local.properties
 .idea
 .DS_Store
-AndroidApp/build
+build/
 /captures
 AndroidApp/app/src/main/res/raw/data
 

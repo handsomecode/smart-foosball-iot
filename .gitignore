@@ -1,3 +1,4 @@
+#Android
 *.iml
 .gradle
 AndroidApp/local.properties
@@ -6,3 +7,8 @@ AndroidApp/local.properties
 AndroidApp/build
 /captures
 AndroidApp/app/src/main/res/raw/data
+
+#Platform IO
+.pioenvs
+.clang_complete
+.gcc-flags.json

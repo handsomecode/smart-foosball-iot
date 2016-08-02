@@ -280,8 +280,8 @@ public class MainActivity extends Activity {
         @Override
         public void handleMessage(Message msg) {
             if (mCurrentGameWeakRef.get() != null) {
-                if (msg.what == 48) mCurrentGameWeakRef.get().notifyScored("A");
-                if (msg.what == 49) mCurrentGameWeakRef.get().notifyScored("B");
+                if (msg.what == 'a') mCurrentGameWeakRef.get().notifyScored("A");
+                if (msg.what == 'b') mCurrentGameWeakRef.get().notifyScored("B");
             }
         }
 

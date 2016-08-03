@@ -2,7 +2,7 @@
 #include <GateListener.h>
 
 GateListener gateA(A0, 'a', 800);
-GateListener gateB(A1, 'b', 800);
+GateListener gateB(A1, 'b', 700);
 
 void setup() {
   Serial.begin(115200);

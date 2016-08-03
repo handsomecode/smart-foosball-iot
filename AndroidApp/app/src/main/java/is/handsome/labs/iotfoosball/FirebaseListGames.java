@@ -10,7 +10,7 @@ import java.util.Locale;
 public class FirebaseListGames extends FirebaseList<Game> {
     private FirebaseListPlayers mPlayers;
     private ArrayList<IncludePlayer> mIncludePlayers;
-    private CurentGame mCurentGame;
+    private CurrentGame mCurrentGame;
 
     public FirebaseListGames(DatabaseReference Ref,
             ArrayList<IncludePlayer> includePlayers) {
@@ -52,15 +52,15 @@ public class FirebaseListGames extends FirebaseList<Game> {
         this.mPlayers = players;
     }
 
-    public void setCurentGame(CurentGame curentGame) {
-        this.mCurentGame = curentGame;
+    public void setCurentGame(CurrentGame currentGame) {
+        this.mCurrentGame = currentGame;
     }
 
     protected void reCalcIncludes() {
-        if (mCurentGame != null) {
+        if (mCurrentGame != null) {
             for (int i = 0; i < 4; i++) {
-                if (mCurentGame.getPlayerId(i) != "") {
-                    int index = mPlayers.getKeyList().indexOf(mCurentGame.getPlayerId(i));
+                if (mCurrentGame.getPlayerId(i) != "") {
+                    int index = mPlayers.getKeyList().indexOf(mCurrentGame.getPlayerId(i));
                     String score = String.format(Locale.US, "%d:%d",
                             mPlayers.getDataList().get(index).getWins(),
                             mPlayers.getDataList().get(index).getLoses());

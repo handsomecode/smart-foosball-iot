@@ -16,17 +16,33 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import timber.log.Timber;
 
 public class SerialUsb {
+
+    private class WorkerThreadFactory implements ThreadFactory {
+        private int counter = 0;
+        private String prefix = "";
+
+        public WorkerThreadFactory(String prefix) {
+            this.prefix = prefix;
+        }
+
+        public Thread newThread(Runnable r) {
+            return new Thread(r, prefix + "-" + counter++);
+        }
+    }
+
+    private WorkerThreadFactory threadFactory = new WorkerThreadFactory("myThread");
 
     private static final int BAUD_RATE = 115200;
 
     private Handler mHandler;
     private UsbSerialPort mUsbSerialPort;
     private SerialInputOutputManager mSerialIOManager;
-    private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+    private ExecutorService mExecutor = Executors.newSingleThreadExecutor(threadFactory);
     private SerialInputOutputManager.Listener mSerialInputListener =
             new SerialInputOutputManager.Listener() {
     //TODO check this place for fitting guidelines
@@ -46,8 +62,7 @@ public class SerialUsb {
         }
     };
 
-    public SerialUsb(Context context, Handler handler) {
-        init(context);
+    public SerialUsb(Handler handler) {
         mHandler = handler;
     }
 

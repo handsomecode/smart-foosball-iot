@@ -9,6 +9,7 @@ private:
   uint16_t treshold;
   uint8_t port;
   char serialMsg;
+  uint16_t count;
 public:
   GateListener(uint8_t _port, char _serialMsg, uint16_t _treshold);
   void check();

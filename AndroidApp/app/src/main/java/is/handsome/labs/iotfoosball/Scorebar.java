@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Scorebar {
     //TODO devide to model and view
     private ArrayList<ScoreViewPager> mScorebarsView;
-    private CurentGame mCurentGame;
+    private CurrentGame mCurrentGame;
 
     public Scorebar (Context context, final ArrayList<ScoreViewPager> scorebarsView) {
         this.mScorebarsView = scorebarsView;
@@ -25,7 +25,7 @@ public class Scorebar {
                 if (scorebarsView.size() > 1) {
                     scorebarsView.get(1).setCurrentItem(((position - (position % 10)) / 10), true);
                 }
-                if (mCurentGame != null) mCurentGame.notifyListed(Scorebar.this, position);
+                if (mCurrentGame != null) mCurrentGame.notifyListed(Scorebar.this, position);
             }
 
             @Override
@@ -68,8 +68,8 @@ public class Scorebar {
         }
     }
 
-    public void setCurentGame(CurentGame curentGame) {
-        this.mCurentGame = curentGame;
+    public void setCurentGame(CurrentGame currentGame) {
+        this.mCurrentGame = currentGame;
     }
 
     public void setScore(int score) {

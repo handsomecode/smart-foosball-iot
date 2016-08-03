@@ -7,11 +7,11 @@ import android.view.View;
 public class DragListenerForIncludes implements View.OnDragListener {
 
     private int mPosition;
-    private CurentGame mCurentGame;
+    private CurrentGame mCurrentGame;
 
-    public DragListenerForIncludes(int position, CurentGame curentGame) {
+    public DragListenerForIncludes(int position, CurrentGame currentGame) {
         this.mPosition = position;
-        this.mCurentGame = curentGame;
+        this.mCurrentGame = currentGame;
     }
 
     @Override
@@ -20,7 +20,7 @@ public class DragListenerForIncludes implements View.OnDragListener {
         if (action == DragEvent.ACTION_DROP) {
             Log.d("drag", "drag " + event.getClipData().getItemAt(0).getText());
             int index = Integer.parseInt((String) event.getClipData().getItemAt(0).getText());
-            mCurentGame.notifyDraged(mPosition, index);
+            mCurrentGame.notifyDraged(mPosition, index);
         }
         return true;
     }

@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
     private RecyclerAdapter mRecyclerAdapter;
     private Scorebar mScorebarA;
     private Scorebar mScorebarB;
-    private CurentGame mCurentGame;
+    private CurrentGame mCurrentGame;
 
     @BindView(R.id.inc0)
     CardView inc0;
@@ -124,7 +124,7 @@ public class MainActivity extends Activity {
         curentGameInit();
 
         mFirebaseGames.setPlayer(mFirebasePlayers);
-        mFirebaseGames.setCurentGame(mCurentGame);
+        mFirebaseGames.setCurentGame(mCurrentGame);
 
         mRecyclerAdapter.setFirebase(mFirebasePlayers, mFirebaseImgSetter);
 
@@ -133,12 +133,18 @@ public class MainActivity extends Activity {
         for (int i = 0; i < 4; i++) {
             mIncludeplayers.get(i)
                     .getInc()
-                    .setOnDragListener(new DragListenerForIncludes(i, mCurentGame));
+                    .setOnDragListener(new DragListenerForIncludes(i, mCurrentGame));
         }
 
-        sSerialHandler = new SerialHandler(mCurentGame);
+        sSerialHandler = new SerialHandler(mCurrentGame);
 
-        mSerialUsb = new SerialUsb(getApplicationContext(), sSerialHandler);
+        mSerialUsb = new SerialUsb(sSerialHandler);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSerialUsb.init(getApplicationContext());
     }
 
     @Override
@@ -164,12 +170,12 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.btnstart)
     public void onStartClick() {
-        mCurentGame.startGame();
+        mCurrentGame.startGame();
     }
 
     @OnClick(R.id.btnend)
     public void onEndClick() {
-        mCurentGame.endGame();
+        mCurrentGame.endGame();
     }
 
     @OnClick(R.id.btncntdwn)
@@ -188,14 +194,14 @@ public class MainActivity extends Activity {
         score2.add(t2d);
         mScorebarB = new Scorebar(this, score2);
 
-        mCurentGame = new CurentGame(mIncludeplayers,
+        mCurrentGame = new CurrentGame(mIncludeplayers,
                         mDatabase.child("games"),
                         mScorebarA,
                         mScorebarB,
                         mFirebasePlayers);
 
-        mScorebarA.setCurentGame(mCurentGame);
-        mScorebarB.setCurentGame(mCurentGame);
+        mScorebarA.setCurentGame(mCurrentGame);
+        mScorebarB.setCurentGame(mCurrentGame);
     }
 
     private void recyclerViewInit() {
@@ -271,10 +277,10 @@ public class MainActivity extends Activity {
     }
 
     static class SerialHandler extends Handler{
-        private WeakReference<CurentGame> mCurrentGameWeakRef;
+        private WeakReference<CurrentGame> mCurrentGameWeakRef;
 
-        public SerialHandler(CurentGame curentGame) {
-            mCurrentGameWeakRef = new WeakReference<CurentGame>(curentGame);
+        public SerialHandler(CurrentGame currentGame) {
+            mCurrentGameWeakRef = new WeakReference<CurrentGame>(currentGame);
         }
 
         @Override

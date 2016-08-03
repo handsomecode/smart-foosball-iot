@@ -6,6 +6,7 @@ GateListener::GateListener (uint8_t _port, char _serialMsg, uint16_t _treshold) 
   port = _port;
   serialMsg = _serialMsg;
   treshold = _treshold;
+  count = 0;
 }
 
 void GateListener::check() {
@@ -16,7 +17,8 @@ void GateListener::check() {
    }
 
    if ((current_value > treshold) && isBallIn) {
-     Serial.print(serialMsg);
+     count++;
+     Serial.print(serialMsg);Serial.println(count);
      isBallIn = false;
    }
 

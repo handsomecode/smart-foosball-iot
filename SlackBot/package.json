@@ -2,7 +2,7 @@
   "name": "slackbot",
   "version": "1.0.0",
   "description": "",
-  "main": "foosbot.js",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js"
   },

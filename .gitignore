@@ -15,6 +15,6 @@ AndroidApp/app/src/main/res/raw/data
 
 #node JS
 node_modules
-nom-debug.log
+npm-debug.log
 *.seed
 .npm

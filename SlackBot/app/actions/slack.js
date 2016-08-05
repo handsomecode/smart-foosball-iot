@@ -60,16 +60,10 @@ module.exports = {
         });
     },
 
-    clearCurrentGame: function (bot, message) {
-        bot.reply(message, 'Sorry guys, no one more want to play :sad: ' + utils.generatePlayersString(this.playerListInCurrentGame));
-
-        this.playerListInCurrentGame = [];
-    },
-
     initGameStartListener: function () {
         var self = this;
 
-        slackBot.hears(['foosball', 'play', 'game'], ['direct_message', 'direct_mention', 'mention'], function (bot, message) {
+        slackBot.hears(['foosball', 'play', 'game'], ['direct_mention', 'mention'], function (bot, message) {
             console.log('User slack ID ' + message.user);
 
             self.getUserData(message.user)
@@ -84,8 +78,9 @@ module.exports = {
             if (utils.isInFirebasePlayerList(message.user, self.playersList)) {
                 if (!self.playerListInCurrentGame.length) {
                     self.timerCleaning = setTimeout(function () {
-                        self.clearCurrentGame(bot, message);
-                    }, 1 * 60 * 1000); // 5*60*1000 5 минут
+                        bot.reply(message, 'Sorry guys, no one more want to play :sad: ' + utils.generatePlayersString(self.playerListInCurrentGame));
+                        self.playerListInCurrentGame = [];
+                    }, 5 * 60 * 1000); // 5*60*1000 5 минут
                 }
 
                 if (!utils.isInCurrentPlayerList(message.user, self.playerListInCurrentGame)) {
@@ -96,9 +91,10 @@ module.exports = {
                     if (self.playerListInCurrentGame.length >= settingsConfig.maxPlayers) {
                         bot.reply(message, 'Hey guys ' + utils.generatePlayersString(self.playerListInCurrentGame) + '. You are next.');
 
-                        self.clearCurrentGame(bot, message);
+                        clearTimeout(self.timerCleaning);
+                        self.playerListInCurrentGame = [];
                     } else {
-                        bot.reply(message, '<!here> Who want to play foosball with ' + utils.generatePlayersString(self.playerListInCurrentGame) + '.');
+                        bot.reply(message, '<!here> Who want to play foosball with ' + utils.generatePlayersString(self.playerListInCurrentGame) + '. (just type \'play\' to me)');
                     }
                 } else {
                     bot.reply(message, '<@' + message.user + '> You are already in list.');

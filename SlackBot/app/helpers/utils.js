@@ -18,7 +18,7 @@ module.exports = {
     },
 
     isInCurrentPlayerList: function (userId, playerList) {
-        playerList.some(function (player) {
+        return playerList.some(function (player) {
             return userId === player.playerSlackId;
         });
     }

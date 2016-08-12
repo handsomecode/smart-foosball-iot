@@ -13,6 +13,9 @@ import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,6 +49,8 @@ public class SerialUsb {
     private SerialInputOutputManager.Listener mSerialInputListener =
             new SerialInputOutputManager.Listener() {
     //TODO check this place for fitting guidelines
+        private
+            String serialMessage = "";
 
         @Override
         public void onRunError(Exception e) {
@@ -54,10 +59,15 @@ public class SerialUsb {
 
         @Override
         public void onNewData(byte[] data) {
-            int k;
-            for (byte d: data) {
-                k = d;
-                mHandler.sendEmptyMessage(k);
+            for (byte aData : data) {
+                if ((int)aData != 13 && (int)aData != 10) {
+                    serialMessage += Character.toString((char) aData);
+                    mHandler.sendEmptyMessage((int)aData);
+                }
+                if ((int)aData == 10) {
+                    Timber.d("Serial port message = " + serialMessage);
+                    serialMessage = "";
+                }
             }
         }
     };

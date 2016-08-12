@@ -286,8 +286,14 @@ public class MainActivity extends Activity {
         @Override
         public void handleMessage(Message msg) {
             if (mCurrentGameWeakRef.get() != null) {
-                if (msg.what == 'a') mCurrentGameWeakRef.get().notifyScored("A");
-                if (msg.what == 'b') mCurrentGameWeakRef.get().notifyScored("B");
+                if (msg.what == 'a') {
+                    mCurrentGameWeakRef.get().notifyScored("A");
+                    Timber.d("Serial port message = GOAL in A");
+                }
+                if (msg.what == 'b') {
+                    mCurrentGameWeakRef.get().notifyScored("B");
+                    Timber.d("Serial port message = GOAL in B");
+                }
             }
         }
 

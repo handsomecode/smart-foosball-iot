@@ -68,7 +68,7 @@ module.exports = {
 
         //simple message
         var defaultmessage = {
-            "text": "<!here> Who want some foosball?",
+            "text": "<!here> Who wants some foosball?",
             "attachments": [
                 {
                     "text": "Team A",

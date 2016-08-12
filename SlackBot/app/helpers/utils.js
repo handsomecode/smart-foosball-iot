@@ -18,8 +18,30 @@ module.exports = {
     },
 
     isInCurrentPlayerList: function (userId, playerList) {
-        playerList.some(function (player) {
+        return playerList.some(function (player) {
             return userId === player.playerSlackId;
         });
+    },
+
+    isInCurrentPlayerActionList: function (userId, original_message) {
+        for (var j = 0; j < 2; j++) {
+            for (var i = 0; i < 2; i++) {
+                if (original_message.attachments[j].actions[i].value === userId) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    },
+
+    generatePlayersStringFromActionMessage: function (userId, original_message) {
+        var playerString = "";
+        for (var j = 0; j < 2; j++) {
+            for (var i = 0; i < 2; i++) {
+                if (original_message.attachments[j].actions[i].value !== "")
+                    playerString = playerString + "<@" + original_message.attachments[j].actions[i].value + "> ";
+            }
+        }
+        return playerString;
     }
 };

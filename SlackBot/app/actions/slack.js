@@ -25,7 +25,7 @@ var slackBot = Botkit.slackbot({
         clientId: slackConfig.clientId,
         clientSecret: slackConfig.clientSecret,
         redirectUri: slackConfig.redirectUri,
-        scopes: ['bot','users:read']
+        scopes: ['bot', 'users:read']
     }
 );
 
@@ -61,6 +61,15 @@ module.exports = {
                 resolve(response);
             });
         });
+    },
+
+    constructEphemeralMessage: function (text) {
+        return {
+            "text": text,
+            "response_type": "ephemeral",
+            "replace_original": false,
+            "delete_original": false
+        };
     },
 
     initInteractiveFoosballButtons: function () {
@@ -119,7 +128,7 @@ module.exports = {
 
         slackBot.createWebhookEndpoints(appHttps);
 
-        slackBot.createOauthEndpoints(appHttps,function(err, req, res) {
+        slackBot.createOauthEndpoints(appHttps, function (err, req, res) {
             if (err) {
                 res.status(500).send('ERROR: ' + err);
             } else {
@@ -141,20 +150,20 @@ module.exports = {
             _bots[bot.config.token] = bot;
         }
 
-        slackBot.on('create_bot',function(bot,config) {
+        slackBot.on('create_bot', function (bot, config) {
 
             console.log('bot config = ' + JSON.stringify(bot.config, null, 4));
 
             if (_bots[bot.config.token]) {
                 // already online! do nothing.
             } else {
-                bot.startRTM(function(err) {
+                bot.startRTM(function (err) {
 
                     if (!err) {
                         trackBot(bot);
                     }
 
-                    bot.startPrivateConversation({user: config.createdBy},function(err,convo) {
+                    bot.startPrivateConversation({user: config.createdBy}, function (err, convo) {
                         if (err) {
                             console.log(err);
                         } else {
@@ -168,7 +177,7 @@ module.exports = {
 
         });
 
-        slackBot.hears(['game', 'play'] , ['direct_mention'], function (bot,message) {
+        slackBot.hears(['game', 'play'], ['direct_mention'], function (bot, message) {
             // if (currentmessage === null) {
             //     console.log("cm = null");
             //     var currentmessage = Object.assign({}, defaultmessage);
@@ -177,66 +186,68 @@ module.exports = {
         });
 
         // receive an interactive message, and reply with a message that will replace the original
-        slackBot.on('interactive_message_callback', function(bot, message) {
-            console.log("request info about " + message.user);
-            self.getUserData(message.user).then(function (response) {
-                console.log("success\n" + JSON.stringify(response, null, 4));
+        slackBot.on('interactive_message_callback', function (bot, message) {
+                console.log("request info about " + message.user);
                 // if (utils.isInFirebasePlayerList(message.user, self.playersList)) {
-                var user_info = response;
+
                 if (!utils.isInCurrentPlayerActionList(message.user, message.original_message)) {
                     if (message.actions[0].value === "") {
-                        var team;
-                        if (message.callback_id === "teamA") {
-                            team = 0;
-                        } else {
-                            team = 1;
-                        }
-                        var player;
-                        if (message.actions[0].name === "player1") {
-                            player = 0;
-                        } else {
-                            player = 1;
-                        }
-                        var new_message = message.original_message;
-                        console.log("++++");
-                        console.log(message);
-                        console.log("----");
-                        // self.playerListInCurrentGame[team * 2 + player] = {};
-                        // self.playerListInCurrentGame[team * 2 + player].playerSlackId = message.user;
-                        new_message.attachments[team].actions[player].text = user_info.user.profile.real_name_normalized;
-                        new_message.attachments[team].actions[player].value = message.user;
-                        new_message.attachments[team].actions[player].style = "primary";
-                        console.log(new_message.attachments[team].actions[player]);
-                        bot.replyInteractive(message, new_message);
-                        bot.reply(message, '<@' + message.user + '> will take place');
-                        var playercount = 0;
-                        for (var j = 0; j < 2; j++) {
-                            for (var i = 0; i < 2; i++) {
-                                if (message.original_message.attachments[j].actions[i].value !== "") {
-                                    playercount++;
+                        self.getUserData(message.user).then(function (response) {
+                            console.log("success\n" + JSON.stringify(response, null, 4));
+                            var user_info = response;
+                            var team;
+                            if (message.callback_id === "teamA") {
+                                team = 0;
+                            } else {
+                                team = 1;
+                            }
+                            var player;
+                            if (message.actions[0].name === "player1") {
+                                player = 0;
+                            } else {
+                                player = 1;
+                            }
+                            var new_message = message.original_message;
+                            console.log("++++");
+                            console.log(message);
+                            console.log("----");
+                            // self.playerListInCurrentGame[team * 2 + player] = {};
+                            // self.playerListInCurrentGame[team * 2 + player].playerSlackId = message.user;
+                            new_message.attachments[team].actions[player].text = user_info.user.profile.real_name_normalized;
+                            new_message.attachments[team].actions[player].value = message.user;
+                            new_message.attachments[team].actions[player].style = "primary";
+                            console.log(new_message.attachments[team].actions[player]);
+                            bot.replyInteractive(message, new_message);
+                            bot.replyInteractive(message, self.constructEphemeralMessage("You will take place"));
+
+                            //bot.reply(message, '<@' + message.user + '> will take place');
+                            var playercount = 0;
+                            for (var j = 0; j < 2; j++) {
+                                for (var i = 0; i < 2; i++) {
+                                    if (message.original_message.attachments[j].actions[i].value !== "") {
+                                        playercount++;
+                                    }
                                 }
                             }
-                        }
-                        if (playercount >= 4) {
-                            bot.reply(message, 'Hey guys ' + utils.generatePlayersStringFromActionMessage(message.user, message.original_message) + '. You are next.');
-                            self.playerListInCurrentGame = [];
-                        }
+                            if (playercount >= 4) {
+                                bot.reply(message, 'Hey guys ' + utils.generatePlayersStringFromActionMessage(message.user, message.original_message) + '. You are next.');
+                                self.playerListInCurrentGame = [];
+                            }
+                        }).catch(function (err) {
+                            console.log("error\n" + JSON.stringify(err, null, 4));
+                        });
                     } else {
-                        bot.reply(message, '<@' + message.user + '> You are already in list.');
+                        bot.replyInteractive(message, self.constructEphemeralMessage("Sorry place has been already taken."));
                     }
                 } else {
-                    bot.reply(message, '<@' + message.user + '> You are already in list.');
+                    bot.replyInteractive(message, self.constructEphemeralMessage("You are already in list."));
                 }
                 // } else {
-                //     bot.reply(message, '<@' + message.user + '> You are not registered in Handsome foosball team.');
+                //     bot.replyInteractive(message, self.constructEphemeralMessage("You are not registered in Handsome foosball team."));
                 // }
-            }).catch(function (err) {
-                console.log("error\n" + JSON.stringify(err, null, 4));
-            });
+
 
             }
-
-
         );
 
 

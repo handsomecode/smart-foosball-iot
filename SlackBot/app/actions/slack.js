@@ -186,6 +186,10 @@ module.exports = {
                 console.log("request info about " + message.user);
                 // if (utils.isInFirebasePlayerList(message.user, self.playersList)) {
                 //TODO mb it will be effective to create function to calculate team inex and player index
+                if (message.original_message.text !== defaultmessage.text) {
+                    bot.replyInteractive(message, self.constructEphemeralMessage("This game is already started"));
+                    return;
+                }
                 var team;
                 if (message.callback_id === "teamA") {
                     team = 0;
@@ -214,7 +218,6 @@ module.exports = {
                             new_message.attachments[team].actions[player].value = message.user;
                             new_message.attachments[team].actions[player].style = "primary";
                             console.log(new_message.attachments[team].actions[player]);
-                            bot.replyInteractive(message, new_message);
                             bot.replyInteractive(message, self.constructEphemeralMessage("You will take place"));
                             var playercount = 0;
                             for (var j = 0; j < 2; j++) {
@@ -230,7 +233,9 @@ module.exports = {
                                         message.original_message)
                                     + '. You are next.');
                                 self.playerListInCurrentGame = [];
+                                new_message.text = "Game is started";
                             }
+                            bot.replyInteractive(message, new_message);
                         }).catch(function (err) {
                             console.log("error\n" + JSON.stringify(err, null, 4));
                         });

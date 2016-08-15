@@ -78,6 +78,21 @@ public class CurrentGame {
             mGame.setMode("2x2mb");
             mGame.setScore(mScoreA, mScoreB);
             mReference.push().setValue(mGame);
+            while ((mScoreA != 0 || mScoreB != 0)) {
+                if (mScoreA != 0) {
+                    mScoreA--;
+                    mScorebarA.setScore(mScoreA);
+                }
+                if (mScoreB != 0) {
+                    mScoreB--;
+                    mScorebarB.setScore(mScoreB);
+                }
+            }
+            for (int i = 0; i < 4; i++) {
+                mIncludePlayers.get(i).nick.setText("player");
+                mIncludePlayers.get(i).score.setText("");
+                mIncludePlayers.get(i).avatar.setImageDrawable(null);
+            }
         }
     }
 

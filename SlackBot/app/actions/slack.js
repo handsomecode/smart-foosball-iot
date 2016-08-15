@@ -178,10 +178,6 @@ module.exports = {
         });
 
         slackBot.hears(['game', 'play'], ['direct_mention'], function (bot, message) {
-            // if (currentmessage === null) {
-            //     console.log("cm = null");
-            //     var currentmessage = Object.assign({}, defaultmessage);
-            // }
             bot.reply(message, defaultmessage);
         });
 
@@ -189,38 +185,37 @@ module.exports = {
         slackBot.on('interactive_message_callback', function (bot, message) {
                 console.log("request info about " + message.user);
                 // if (utils.isInFirebasePlayerList(message.user, self.playersList)) {
-
+                //TODO mb it will be effective to create function to calculate team inex and player index
+                var team;
+                if (message.callback_id === "teamA") {
+                    team = 0;
+                } else {
+                    team = 1;
+                }
+                var player;
+                if (message.actions[0].name === "player1") {
+                    player = 0;
+                } else {
+                    player = 1;
+                }
                 if (!utils.isInCurrentPlayerActionList(message.user, message.original_message)) {
                     if (message.actions[0].value === "") {
                         self.getUserData(message.user).then(function (response) {
                             console.log("success\n" + JSON.stringify(response, null, 4));
                             var user_info = response;
-                            var team;
-                            if (message.callback_id === "teamA") {
-                                team = 0;
-                            } else {
-                                team = 1;
-                            }
-                            var player;
-                            if (message.actions[0].name === "player1") {
-                                player = 0;
-                            } else {
-                                player = 1;
-                            }
                             var new_message = message.original_message;
                             console.log("++++");
                             console.log(message);
                             console.log("----");
                             // self.playerListInCurrentGame[team * 2 + player] = {};
                             // self.playerListInCurrentGame[team * 2 + player].playerSlackId = message.user;
-                            new_message.attachments[team].actions[player].text = user_info.user.profile.real_name_normalized;
+                            new_message.attachments[team].actions[player].text =
+                                user_info.user.profile.real_name_normalized;
                             new_message.attachments[team].actions[player].value = message.user;
                             new_message.attachments[team].actions[player].style = "primary";
                             console.log(new_message.attachments[team].actions[player]);
                             bot.replyInteractive(message, new_message);
                             bot.replyInteractive(message, self.constructEphemeralMessage("You will take place"));
-
-                            //bot.reply(message, '<@' + message.user + '> will take place');
                             var playercount = 0;
                             for (var j = 0; j < 2; j++) {
                                 for (var i = 0; i < 2; i++) {
@@ -230,73 +225,39 @@ module.exports = {
                                 }
                             }
                             if (playercount >= 4) {
-                                bot.reply(message, 'Hey guys ' + utils.generatePlayersStringFromActionMessage(message.user, message.original_message) + '. You are next.');
+                                bot.reply(message, 'Hey guys '
+                                    + utils.generatePlayersStringFromActionMessage(message.user,
+                                        message.original_message)
+                                    + '. You are next.');
                                 self.playerListInCurrentGame = [];
                             }
                         }).catch(function (err) {
                             console.log("error\n" + JSON.stringify(err, null, 4));
                         });
                     } else {
-                        bot.replyInteractive(message, self.constructEphemeralMessage("Sorry place has been already taken."));
+                        bot.replyInteractive(message,
+                            self.constructEphemeralMessage("Sorry place has been already taken."));
                     }
                 } else {
-                    bot.replyInteractive(message, self.constructEphemeralMessage("You are already in list."));
+                    if (message.actions[0].value === message.user) {
+                        var new_message = message.original_message;
+                        new_message.attachments[team].actions[player] =
+                            defaultmessage.attachments[team].actions[player];
+                        bot.replyInteractive(message, new_message);
+                        bot.replyInteractive(message,
+                            self.constructEphemeralMessage("Slot has been released."));
+                    } else {
+                        bot.replyInteractive(message,
+                            self.constructEphemeralMessage("You are already in list."));
+                    }
                 }
                 // } else {
                 //     bot.replyInteractive(message, self.constructEphemeralMessage("You are not registered in Handsome foosball team."));
                 // }
-
-
             }
         );
-
-
     },
 
-    // initGameStartListener: function () {
-    //     var self = this;
-    //
-    //     slackBot.hears(['foosball', 'play', 'game'], ['direct_mention', 'mention'], function (bot, message) {
-    //         console.log('User slack ID ' + message.user);
-    //
-    //         self.getUserData(message.user)
-    //             .then(function (response) {
-    //                 console.log('response ' + response); // Show the HTML for the Modulus homepage.
-    //                 console.log('Real name' + response.user.profile.real_name_normalized);
-    //             })
-    //             .catch(function (error) {
-    //                 console.error(error);
-    //             });
-    //
-    //         if (utils.isInFirebasePlayerList(message.user, self.playersList)) {
-    //             if (!self.playerListInCurrentGame.length) {
-    //                 self.timerCleaning = setTimeout(function () {
-    //                     bot.reply(message, 'Sorry guys, no one more want to play :sad: ' + utils.generatePlayersString(self.playerListInCurrentGame));
-    //                     self.playerListInCurrentGame = [];
-    //                 }, 5 * 60 * 1000); // 5*60*1000 5 минут
-    //             }
-    //
-    //             if (!utils.isInCurrentPlayerList(message.user, self.playerListInCurrentGame)) {
-    //                 self.playerListInCurrentGame.push({
-    //                     playerSlackId: message.user
-    //                 });
-    //                 console.log(self.playerListInCurrentGame);
-    //                 if (self.playerListInCurrentGame.length >= settingsConfig.maxPlayers) {
-    //                     bot.reply(message, 'Hey guys ' + utils.generatePlayersString(self.playerListInCurrentGame) + '. You are next.');
-    //
-    //                     clearTimeout(self.timerCleaning);
-    //                     self.playerListInCurrentGame = [];
-    //                 } else {
-    //                     bot.reply(message, '<!here> Who want to play foosball with ' + utils.generatePlayersString(self.playerListInCurrentGame) + '. (just type \'play\' to me)');
-    //                 }
-    //             } else {
-    //                 bot.reply(message, '<@' + message.user + '> You are already in list.');
-    //             }
-    //         } else {
-    //             bot.reply(message, '<@' + message.user + '> You are not registered in Handsome foosball team.');
-    //         }
-    //     });
-    // },
 
     init: function () {
         var self = this;

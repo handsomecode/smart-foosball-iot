@@ -77,7 +77,7 @@ module.exports = {
 
         //simple message
         var defaultmessage = {
-            "text": "<!here> Who wants some foosball?",
+            "text": "<!here> Who would like to play foosball?",
             "attachments": [
                 {
                     "text": "Team A",
@@ -187,7 +187,7 @@ module.exports = {
                 // if (utils.isInFirebasePlayerList(message.user, self.playersList)) {
                 //TODO mb it will be effective to create function to calculate team inex and player index
                 if (message.original_message.text !== defaultmessage.text) {
-                    bot.replyInteractive(message, self.constructEphemeralMessage("This game is already started"));
+                    bot.replyInteractive(message, self.constructEphemeralMessage("This game has already started"));
                     return;
                 }
                 var team;
@@ -218,7 +218,7 @@ module.exports = {
                             new_message.attachments[team].actions[player].value = message.user;
                             new_message.attachments[team].actions[player].style = "primary";
                             console.log(new_message.attachments[team].actions[player]);
-                            bot.replyInteractive(message, self.constructEphemeralMessage("You will take place"));
+                            bot.replyInteractive(message, self.constructEphemeralMessage("The slot has been taken"));
                             var playercount = 0;
                             for (var j = 0; j < 2; j++) {
                                 for (var i = 0; i < 2; i++) {
@@ -241,7 +241,7 @@ module.exports = {
                         });
                     } else {
                         bot.replyInteractive(message,
-                            self.constructEphemeralMessage("Sorry place has been already taken."));
+                            self.constructEphemeralMessage("Sorry, this slot has already been taken"));
                     }
                 } else {
                     if (message.actions[0].value === message.user) {
@@ -250,10 +250,10 @@ module.exports = {
                             defaultmessage.attachments[team].actions[player];
                         bot.replyInteractive(message, new_message);
                         bot.replyInteractive(message,
-                            self.constructEphemeralMessage("Slot has been released."));
+                            self.constructEphemeralMessage("The slot has been released"));
                     } else {
                         bot.replyInteractive(message,
-                            self.constructEphemeralMessage("You are already in list."));
+                            self.constructEphemeralMessage("You are already on the list"));
                     }
                 }
                 // } else {

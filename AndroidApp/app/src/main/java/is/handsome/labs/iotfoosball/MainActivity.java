@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,6 +61,7 @@ public class MainActivity extends Activity {
     private Scorebar mScorebarA;
     private Scorebar mScorebarB;
     private CurrentGame mCurrentGame;
+    private TimerForClock mTimerClock;
 
     @BindView(R.id.inc0)
     CardView inc0;
@@ -78,6 +80,8 @@ public class MainActivity extends Activity {
     Button btncntdwn;
     @BindView(R.id.RecyclerView)
     android.support.v7.widget.RecyclerView RecyclerView;
+    @BindView(R.id.Timer)
+    Button btntimer;
 
     @BindView(R.id.t1d)
     ScoreViewPager t1d;
@@ -139,6 +143,8 @@ public class MainActivity extends Activity {
         sSerialHandler = new SerialHandler(mCurrentGame);
 
         mSerialUsb = new SerialUsb(sSerialHandler);
+
+        mTimerClock = new TimerForClock(1000, false, btntimer);
     }
 
     @Override
@@ -176,12 +182,23 @@ public class MainActivity extends Activity {
     @OnClick(R.id.btnend)
     public void onEndClick() {
         mCurrentGame.endGame();
+        mTimerClock.reset();
     }
 
     @OnClick(R.id.btncntdwn)
     public void onCntdwnClick() {
         mSoundPool.play(mSoundId, 1, 1, 1, 0, 1);
     }
+
+    @OnClick(R.id.Timer)
+    public void inTimerClick() {
+        if (mTimerClock.isPaused()) {
+            mTimerClock.resume();
+        } else {
+            mTimerClock.pause();
+        }
+    }
+
 
     private void curentGameInit() {
         ArrayList<ScoreViewPager> score1 = new ArrayList<>();
@@ -297,5 +314,33 @@ public class MainActivity extends Activity {
             }
         }
 
+    }
+
+    private class TimerForClock extends TimerWithPause {
+        private Button mTimerButton;
+        private long mUpdateInterval;
+
+        private void updateTimer(long millisOn) {
+            long minutes = millisOn / (60 * mUpdateInterval);
+            long seconds = (millisOn / mUpdateInterval) % 60;
+            mTimerButton.setText(String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds));
+        }
+
+        public TimerForClock(long refreshInterval, boolean runAtStart, Button TimerButton) {
+            super(refreshInterval, runAtStart);
+            mTimerButton = TimerButton;
+            mUpdateInterval = refreshInterval;
+        }
+
+        @Override
+        public void onTick(long timeOnTimer) {
+            updateTimer(timeOnTimer);
+        }
+
+        @Override
+        public void reset() {
+            super.reset();
+            mTimerButton.setText("00:00");
+        }
     }
 }

@@ -97,7 +97,8 @@
                     android:layout_height="93dp"
                     android:text="Countdown"
                     android:id="@+id/btncntdwn"
-                    android:layout_gravity="left|bottom" />
+                    android:layout_gravity="left|bottom"
+                    android:textSize="20sp"/>
 
             </FrameLayout>
 
@@ -129,6 +130,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="match_parent" />
+
                 </LinearLayout>
 
                 <Button
@@ -137,6 +139,14 @@
                     android:text="end"
                     android:id="@+id/btnend"
                     android:layout_gravity="left|bottom" />
+
+                <Button
+                    android:layout_width="161dp"
+                    android:layout_height="93dp"
+                    android:text="0:00"
+                    android:id="@+id/Timer"
+                    android:layout_gravity="right|bottom"
+                    android:textSize="30sp"/>
 
             </FrameLayout>
 

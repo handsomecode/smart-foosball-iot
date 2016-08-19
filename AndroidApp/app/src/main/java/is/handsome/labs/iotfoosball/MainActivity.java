@@ -5,6 +5,7 @@ import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,6 +28,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -91,6 +94,13 @@ public class MainActivity extends Activity {
     ScoreViewPager t2d;
     @BindView(R.id.t2u)
     ScoreViewPager t2u;
+
+    public static final int GOAL_A = 1;
+    public static final int GOAL_B = 2;
+
+    @IntDef({GOAL_A, GOAL_B})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface GOALS {}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,7 +222,7 @@ public class MainActivity extends Activity {
         mScorebarB = new Scorebar(this, score2);
 
         mCurrentGame = new CurrentGame(mIncludeplayers,
-                        mDatabase.child("games"),
+                        mDatabase,
                         mScorebarA,
                         mScorebarB,
                         mFirebasePlayers);
@@ -304,11 +314,11 @@ public class MainActivity extends Activity {
         public void handleMessage(Message msg) {
             if (mCurrentGameWeakRef.get() != null) {
                 if (msg.what == 'a') {
-                    mCurrentGameWeakRef.get().notifyScored("A");
+                    mCurrentGameWeakRef.get().notifyScored(GOAL_A);
                     Timber.d("Serial port message = GOAL in A");
                 }
                 if (msg.what == 'b') {
-                    mCurrentGameWeakRef.get().notifyScored("B");
+                    mCurrentGameWeakRef.get().notifyScored(GOAL_B);
                     Timber.d("Serial port message = GOAL in B");
                 }
             }

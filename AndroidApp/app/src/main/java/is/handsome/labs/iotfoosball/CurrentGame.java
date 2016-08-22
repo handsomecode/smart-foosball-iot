@@ -96,17 +96,19 @@ public class CurrentGame {
         }
     }
 
-    public void notifyScored(String teamScored) {
+    public void notifyScored(@MainActivity.GOALS int teamScored) {
         Timber.d("game notified");
-        if (teamScored.equals("A")) {
+        if (teamScored == MainActivity.GOAL_A) {
+            startGame();
             mScoreA++;
             mScorebarA.setScore(mScoreA);
         }
-        if (teamScored.equals("B")) {
+        if (teamScored == MainActivity.GOAL_B) {
+            startGame();
             mScoreB++;
             mScorebarB.setScore(mScoreB);
         }
-        if ((mScoreA >= mThreshold)|| (mScoreB >= mThreshold)) endGame();
+        //if ((mScoreA >= mThreshold)|| (mScoreB >= mThreshold)) endGame();
     }
 
     public void notifyListed(Scorebar scorebar, int position) {
@@ -119,18 +121,17 @@ public class CurrentGame {
     }
 
     public void notifyDraged(int position, int index) {
+        Player player = mFirebaseListPlayers.getDataList().get(index);
         mPlayersId.set(position, mFirebaseListPlayers.getKeyList().get(index));
-        mIncludePlayers.get(position)
-                .nick
-                .setText(mFirebaseListPlayers.getDataList().get(index).getNick());
+        mIncludePlayers.get(position).nick.setText(player.getNick());
         String score = String.format(Locale.US, "%d:%d",
-                mFirebaseListPlayers.getDataList().get(index).getWins(),
-                mFirebaseListPlayers.getDataList().get(index).getLoses());
+                player.getWins(),
+                player.getLoses());
         mIncludePlayers.get(position).score.setText(score);
 
-        mFirebaseListPlayers.getFirebaseImgSetter()
-                .setAvatar(mFirebaseListPlayers.getDataList().get(index).getNick(),
-                        mIncludePlayers.get(position).avatar);
+        mFirebaseListPlayers.getFirebaseImgSetter().setAvatar(
+                player.getNick(),
+                mIncludePlayers.get(position).avatar);
     }
 
     public String getPlayerId(int position) {

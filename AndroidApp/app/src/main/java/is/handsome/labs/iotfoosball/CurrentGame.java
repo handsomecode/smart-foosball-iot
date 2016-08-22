@@ -99,10 +99,12 @@ public class CurrentGame {
     public void notifyScored(@MainActivity.GOALS int teamScored) {
         Timber.d("game notified");
         if (teamScored == MainActivity.GOAL_A) {
+            startGame();
             mScoreA++;
             mScorebarA.setScore(mScoreA);
         }
         if (teamScored == MainActivity.GOAL_B) {
+            startGame();
             mScoreB++;
             mScorebarB.setScore(mScoreB);
         }

@@ -19,7 +19,7 @@ var _bots = {};
 
 var slackBot = Botkit.slackbot({
     interactive_replies: true,
-    debug: true
+    debug: false
 }).configureSlackApp(
     {
         clientId: slackConfig.clientId,
@@ -29,7 +29,9 @@ var slackBot = Botkit.slackbot({
     }
 );
 
-var slack = new Slack(slackConfig.token);
+var slack = new Slack(slackConfig.token); //TODO refactor to use slackBot.api.channels.list (for example)
+
+var playerListFromFirebase = {}; //TODO collect all players info (slackInfo) in one class
 
 // slack.api('chat.postMessage', {
 //     text: 'hello from nodejs',
@@ -38,30 +40,28 @@ var slack = new Slack(slackConfig.token);
 //     console.log(response);
 // });
 
-module.exports = {
-    playerListFromFirebase: [],
+var getUserDataFunction = function (userId) {
+    console.log("get data start");
+    return new Promise(function (resolve, reject) {
+        slack.api('users.info', {
+            user: userId
+        }, function (error, response) {
+            if (error) {
+                console.log("ERROR ! = " + error);
+                return reject(error);
+            }
 
-    playerListInCurrentGame: [],
+            // if (response.statusCode !== 200) {
+            //     return reject(response);
+            // }
 
-    timerCleaning: 0,
-
-    getUserData: function (userId) {
-        return new Promise(function (resolve, reject) {
-            slack.api('users.info', {
-                user: userId
-            }, function (error, response) {
-                if (error) {
-                    return reject(error);
-                }
-
-                // if (response.statusCode !== 200) {
-                //     return reject(response);
-                // }
-
-                resolve(response);
-            });
+            resolve(response);
         });
-    },
+    });
+}
+
+module.exports = {
+    getUserData: getUserDataFunction,
 
     constructEphemeralMessage: function (text) {
         return {
@@ -204,7 +204,7 @@ module.exports = {
                 }
                 if (!utils.isInCurrentPlayerActionList(message.user, message.original_message)) {
                     if (message.actions[0].value === "") {
-                        self.getUserData(message.user).then(function (response) {
+                        getUserDataFunction(message.user).then(function (response) {
                             console.log("success\n" + JSON.stringify(response, null, 4));
                             var user_info = response;
                             var new_message = message.original_message;
@@ -263,15 +263,98 @@ module.exports = {
         );
     },
 
+    gameResult: function (newGame) {
+        var messageNotification = "Foosball Breaking News: ";
+        console.log("game Result = " + JSON.stringify(newGame, "", 4));
+        console.log(playerListFromFirebase);
+        // var teamA = "<@" + playerListFromFirebase[newGame.idPlayerA1].slackID + ">" + " and "
+        //         + "<@" + playerListFromFirebase[newGame.idPlayerA2].slackID + ">";
+        // var teamB = "<@" + playerListFromFirebase[newGame.idPlayerB1].slackID + ">" + " and "
+        //     + "<@" + playerListFromFirebase[newGame.idPlayerB2].slackID + ">";
+        // if (newGame.scoreA > newGame.scoreB) {
+        //     messageNotification = teamA + " WIN " + teamB;
+        // } else if (newGame.scoreB > newGame.scoreA) {
+        //     messageNotification = teamB + " WIN " + teamA;
+        // } else {
+        //     messageNotification = teamA + " and " + teamB + "played in a draw";
+        // }
+        // _bots[slackConfig.token].say({
+        //     text: messageNotification,
+        //     channel: 'G21AT0509'
+        // });
+        var playerA1;
+        var playerA2;
+        var playerB1;
+        var playerB2;
+        getUserDataFunction(playerListFromFirebase[newGame.idPlayerA1].slackID).then(
+            function (response) {
+                playerA1 = response;
+                console.log("player A1 = " + playerA1.user.profile.real_name_normalized);
+                getUserDataFunction(playerListFromFirebase[newGame.idPlayerA2].slackID).then(
+                    function (response) {
+                        playerA2 = response;
+                        console.log("player A2 = " + playerA2.user.profile.real_name_normalized);
+                        getUserDataFunction(playerListFromFirebase[newGame.idPlayerB1].slackID).then(
+                            function (response) {
+                                playerB1 = response;
+                                console.log("player B1 = " + playerB1.user.profile.real_name_normalized);
+                                getUserDataFunction(playerListFromFirebase[newGame.idPlayerB2].slackID).then(
+                                    function (response) {
+                                        playerB2 = response;
+                                        console.log("player B2 = " + playerB2.user.profile.real_name_normalized);
+
+                                        var teamA = playerA1.user.profile.real_name_normalized + " and "
+                                                + playerA2.user.profile.real_name_normalized;
+                                        var teamB = playerB1.user.profile.real_name_normalized + " and "
+                                            + playerB2.user.profile.real_name_normalized;
+                                        if (newGame.scoreA > newGame.scoreB) {
+                                            messageNotification += teamA + " WIN " + teamB
+                                                    + " (" + newGame.scoreA + " : " + newGame.scoreB + ")";
+                                        } else if (newGame.scoreB > newGame.scoreA) {
+                                            messageNotification += teamB + " WIN " + teamA
+                                                    + " (" + newGame.scoreB + " : " + newGame.scoreA + ")";
+                                        } else {
+                                            messageNotification += teamA + " and " + teamB + "played in a draw"
+                                                    + " (" + newGame.scoreA + " : " + newGame.scoreB + ")";
+                                        }
+
+                                        _bots[slackConfig.token].say({
+                                            text: messageNotification,
+                                            channel: 'C03U0BRS0' //TODO redirect to channel where game was started
+                                        })
+                                    }
+                                );
+                            }
+                        );
+                    }
+                );
+            }
+        );
+    },
+
+    findPlayerIdFromSlackId: function (slackId) {
+        var self = this;
+
+        for (var player in playerListFromFirebase) {
+            if (player.slackID === slackId) {
+                return player;
+            }
+        }
+        return undefined;
+    },
 
     init: function () {
         var self = this;
 
         firebase.getPlayers()
             .then(function (players) {
-                self.playersList = players;
+                playerListFromFirebase = players;
+
+                console.log(playerListFromFirebase);
 
                 self.initInteractiveFoosballButtons();
+
+                firebase.getNewGamesListener(self.gameResult);
             });
     }
 };

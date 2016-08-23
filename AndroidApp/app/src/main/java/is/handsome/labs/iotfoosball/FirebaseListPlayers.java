@@ -42,14 +42,14 @@ public class FirebaseListPlayers extends FirebaseList<Player> {
     }
 
     public void recalcScore(String key) {
-        Log.d("score", "trying to reacalc " + key);
+        //Log.d("score", "trying to reacalc " + key);
         int index = mKeyList.indexOf(key);
-        Log.d("score", "index of key " + index);
+        //Log.d("score", "index of key " + index);
         for (int i = 0; i < mKeyList.size(); i++) {
-            Log.d("score", "mKeyList " + i + " " + mKeyList.get(i));
+            //Log.d("score", "mKeyList " + i + " " + mKeyList.get(i));
         }
         if (index != -1) {
-            Log.d("score", "recalc in " + key);
+            //Log.d("score", "recalc in " + key);
             calcScore(index);
             mRecyclerAdapter.notifyDataSetChanged();
         }
@@ -62,16 +62,16 @@ public class FirebaseListPlayers extends FirebaseList<Player> {
     public String calcScore(int index) {
         int winCount = 0;
         int loseCount = 0;
-        Log.d("score", "calcScore game.size = " + String.valueOf(mGames.size()));
+        //Log.d("score", "calcScore game.size = " + String.valueOf(mGames.size()));
         for (int i = 0; i < mGames.size(); i++) {
-            Log.d("score", "calc game # " + i);
-            Log.d("score", "mKeyList.get(index) = " + mKeyList.get(index));
-            Log.d("score", "id11 " + mGames.get(i).getIdPlayerA1()
-                    + " id12 " + mGames.get(i).getIdPlayerA2()
-                    + " id21 " + mGames.get(i).getIdPlayerB1()
-                    + " id22 " + mGames.get(i).getIdPlayerB2());
-            Log.d("score", "score 1 " + mGames.get(i).getScoreA());
-            Log.d("score", "score 2 " + mGames.get(i).getScoreB());
+            //Log.d("score", "calc game # " + i);
+            //Log.d("score", "mKeyList.get(index) = " + mKeyList.get(index));
+            //Log.d("score", "id11 " + mGames.get(i).getIdPlayerA1()
+            //        + " id12 " + mGames.get(i).getIdPlayerA2()
+            //        + " id21 " + mGames.get(i).getIdPlayerB1()
+            //        + " id22 " + mGames.get(i).getIdPlayerB2());
+            //Log.d("score", "score 1 " + mGames.get(i).getScoreA());
+            //Log.d("score", "score 2 " + mGames.get(i).getScoreB());
             if (Objects.equals(mGames.get(i).getIdPlayerA1(), mKeyList.get(index)) ||
                     Objects.equals(mGames.get(i).getIdPlayerA2(), mKeyList.get(index))) {
                 if (mGames.get(i).getScoreA() > mGames.get(i).getScoreB()) {
@@ -93,7 +93,7 @@ public class FirebaseListPlayers extends FirebaseList<Player> {
         }
         mDataList.get(index).setWins(winCount);
         mDataList.get(index).setLoses(loseCount);
-        Log.d("score", mDataList.get(index).getNick() + " W " + winCount + " L " + loseCount);
+        //Log.d("score", mDataList.get(index).getNick() + " W " + winCount + " L " + loseCount);
         return (winCount+":"+loseCount);
     }
 }

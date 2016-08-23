@@ -4,7 +4,6 @@ import android.content.Context;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Handler;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
@@ -13,9 +12,6 @@ import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,19 +20,6 @@ import java.util.concurrent.ThreadFactory;
 import timber.log.Timber;
 
 public class SerialUsb {
-
-    private class WorkerThreadFactory implements ThreadFactory {
-        private int counter = 0;
-        private String prefix = "";
-
-        public WorkerThreadFactory(String prefix) {
-            this.prefix = prefix;
-        }
-
-        public Thread newThread(Runnable r) {
-            return new Thread(r, prefix + "-" + counter++);
-        }
-    }
 
     private WorkerThreadFactory threadFactory = new WorkerThreadFactory("myThread");
 
@@ -146,4 +129,16 @@ public class SerialUsb {
         startIoManager();
     }
 
+    private class WorkerThreadFactory implements ThreadFactory {
+        private int counter = 0;
+        private String prefix = "";
+
+        public WorkerThreadFactory(String prefix) {
+            this.prefix = prefix;
+        }
+
+        public Thread newThread(Runnable r) {
+            return new Thread(r, prefix + "-" + counter++);
+        }
+    }
 }

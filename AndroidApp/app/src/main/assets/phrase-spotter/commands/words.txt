@@ -1,0 +1,10 @@
+<eps> 0
+!SIL 1
+<NOISE> 2
+<SPOKEN_NOISE> 3
+<UNK> 4
+let's-go 5
+sil_word 6
+#0 7
+<s> 8
+</s> 9

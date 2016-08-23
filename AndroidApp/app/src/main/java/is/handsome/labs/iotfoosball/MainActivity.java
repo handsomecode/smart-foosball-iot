@@ -236,7 +236,7 @@ public class MainActivity extends Activity {
         mScorebarB = new Scorebar(this, score2);
 
         mCurrentGame = new CurrentGame(mIncludeplayers,
-                        mDatabase,
+                        mDatabase.child("/games/"),
                         mScorebarA,
                         mScorebarB,
                         mFirebasePlayers);

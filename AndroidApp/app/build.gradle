@@ -36,6 +36,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.3.0'
 
     apt 'com.jakewharton:butterknife-compiler:8.1.0'
+    compile 'com.yandex.android:speechkit:2.5.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

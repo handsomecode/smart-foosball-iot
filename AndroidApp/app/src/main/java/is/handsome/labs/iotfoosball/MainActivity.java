@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.PhantomReference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -65,6 +66,10 @@ public class MainActivity extends Activity {
     private Scorebar mScorebarB;
     private CurrentGame mCurrentGame;
     private TimerForClock mTimerClock;
+    private String mFirebaseLogin;
+    private String mFirebasePassword;
+    private String mYandexApi;
+    private PhraseSpotterForCountStart mPhraseSpotter;
 
     @BindView(R.id.inc0)
     CardView inc0;
@@ -107,6 +112,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
         Log.d("myLog", "New start");
 
         includesInit();
@@ -115,6 +121,8 @@ public class MainActivity extends Activity {
 
         mSoundPool = new SoundPool.Builder().build();
         mSoundId = mSoundPool.load(this, R.raw.countdown, 1);
+
+        dataRead();
 
         firebaseAuth();
 
@@ -155,6 +163,10 @@ public class MainActivity extends Activity {
         mSerialUsb = new SerialUsb(sSerialHandler);
 
         mTimerClock = new TimerForClock(1000, false, btntimer);
+
+        mPhraseSpotter = new PhraseSpotterForCountStart();
+
+        mPhraseSpotter.init(getApplicationContext(), mYandexApi);
     }
 
     @Override
@@ -174,11 +186,13 @@ public class MainActivity extends Activity {
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+        mPhraseSpotter.onStart(getApplicationContext());
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        mPhraseSpotter.onStop();
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
@@ -197,7 +211,7 @@ public class MainActivity extends Activity {
 
     @OnClick(R.id.btncntdwn)
     public void onCntdwnClick() {
-        mSoundPool.play(mSoundId, 1, 1, 1, 0, 1);
+        startCountdown();
     }
 
     @OnClick(R.id.Timer)
@@ -238,6 +252,24 @@ public class MainActivity extends Activity {
         mRecyclerAdapter = new RecyclerAdapter();
     }
 
+    private void dataRead() {
+        InputStream data = this.getResources().openRawResource(R.raw.data);
+        BufferedReader bData = new BufferedReader(new InputStreamReader(data));
+        mFirebaseLogin = "login";
+        mFirebasePassword = "password";
+        mYandexApi = "yandexAPI";
+        try {
+            mFirebaseLogin = bData.readLine();
+            Timber.d("Login " + mFirebaseLogin);
+            mFirebasePassword = bData.readLine();
+            Timber.d("Password " + mFirebasePassword);
+            mYandexApi = bData.readLine();
+            Timber.d("Yandex API " + mYandexApi);
+        } catch (IOException e) {
+            Timber.d(e, "File with login pass error");
+        }
+    }
+
     private void firebaseAuth() {
         mAuth = FirebaseAuth.getInstance();
 
@@ -255,20 +287,7 @@ public class MainActivity extends Activity {
             }
         };
 
-        InputStream data = this.getResources().openRawResource(R.raw.data);
-        BufferedReader bData = new BufferedReader(new InputStreamReader(data));
-        String login = "login";
-        String password = "password";
-        try {
-            login = bData.readLine();
-            Log.d("myLogs", "Login " + login);
-            password = bData.readLine();
-            Log.d("myLogs", "Password " + password);
-        } catch (IOException e) {
-            Timber.d(e, "File with login pass error");
-        }
-
-        mAuth.signInWithEmailAndPassword(login, password)
+        mAuth.signInWithEmailAndPassword(mFirebaseLogin, mFirebasePassword)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -301,6 +320,10 @@ public class MainActivity extends Activity {
             mIncludeplayers.get(i).score.setText("");
         }
         Log.d("myLog", "components added");
+    }
+
+    private void startCountdown() {
+        mSoundPool.play(mSoundId, 1, 1, 1, 0, 1);
     }
 
     static class SerialHandler extends Handler{
@@ -351,6 +374,14 @@ public class MainActivity extends Activity {
         public void reset() {
             super.reset();
             mTimerButton.setText("00:00");
+        }
+    }
+
+    private class PhraseSpotterForCountStart extends PhraseSpotter {
+
+        public void onPhraseSpotted(String s, int i) {
+            Timber.d("LET'S GO !!!!! ");
+            startCountdown();
         }
     }
 }

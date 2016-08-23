@@ -20,9 +20,9 @@ public class FirebaseListGames extends FirebaseList<Game> {
 
     @Override
     protected void afterAdded(int index) {
-        Log.d("score", "game add " + index + " size of data " + mDataList.size());
+        //Log.d("score", "game add " + index + " size of data " + mDataList.size());
         if (mPlayers != null) {
-            Log.d("score", "player = " + mPlayers.toString());
+            //Log.d("score", "player = " + mPlayers.toString());
             mPlayers.recalcScore(mDataList.get(index).getIdPlayerA1());
             mPlayers.recalcScore(mDataList.get(index).getIdPlayerA2());
             mPlayers.recalcScore(mDataList.get(index).getIdPlayerB1());
@@ -33,7 +33,7 @@ public class FirebaseListGames extends FirebaseList<Game> {
 
     @Override
     protected void afterChanged(int index) {
-        Log.d("score", "game change " + index + " size of data " + mDataList.size());
+        //Log.d("score", "game change " + index + " size of data " + mDataList.size());
         if (mPlayers != null) {
             mPlayers.recalcScore(mDataList.get(index).getIdPlayerA1());
             mPlayers.recalcScore(mDataList.get(index).getIdPlayerA2());

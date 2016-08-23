@@ -11,7 +11,14 @@ GateListener::GateListener (uint8_t _port, char _serialMsg, uint16_t _treshold) 
 
 void GateListener::check() {
   uint16_t current_value = analogRead(port);
-   if (current_value < treshold) {
+  // Serial.print("F");
+  // if (serialMsg == 'a') {
+  //   Serial.print('A');
+  // } else {
+  //   Serial.print('B');
+  // }
+  // Serial.println(current_value);
+   if (current_value < (treshold-75)) {
      isBallIn = true;
      timer_ms = millis() + 200;
    }

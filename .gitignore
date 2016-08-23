@@ -12,3 +12,10 @@ AndroidApp/app/src/main/res/raw/data
 .pioenvs
 .clang_complete
 .gcc-flags.json
+
+#node JS
+node_modules
+npm-debug.log
+*.seed
+.npm
+config.json

@@ -1,8 +1,8 @@
 #include <arduino.h>
 #include <GateListener.h>
 
-GateListener gateA(A0, 'a', 800);
-GateListener gateB(A1, 'b', 700);
+GateListener gateA(A0, 'a', 850);
+GateListener gateB(A1, 'b', 750);
 
 void setup() {
   Serial.begin(115200);

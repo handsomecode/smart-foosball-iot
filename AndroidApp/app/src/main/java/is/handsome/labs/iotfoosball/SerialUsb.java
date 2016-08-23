@@ -4,7 +4,6 @@ import android.content.Context;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Handler;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
@@ -22,19 +21,6 @@ import timber.log.Timber;
 
 public class SerialUsb {
 
-    private class WorkerThreadFactory implements ThreadFactory {
-        private int counter = 0;
-        private String prefix = "";
-
-        public WorkerThreadFactory(String prefix) {
-            this.prefix = prefix;
-        }
-
-        public Thread newThread(Runnable r) {
-            return new Thread(r, prefix + "-" + counter++);
-        }
-    }
-
     private WorkerThreadFactory threadFactory = new WorkerThreadFactory("myThread");
 
     private static final int BAUD_RATE = 115200;
@@ -46,6 +32,8 @@ public class SerialUsb {
     private SerialInputOutputManager.Listener mSerialInputListener =
             new SerialInputOutputManager.Listener() {
     //TODO check this place for fitting guidelines
+        private
+            String serialMessage = "";
 
         @Override
         public void onRunError(Exception e) {
@@ -54,10 +42,15 @@ public class SerialUsb {
 
         @Override
         public void onNewData(byte[] data) {
-            int k;
-            for (byte d: data) {
-                k = d;
-                mHandler.sendEmptyMessage(k);
+            for (byte aData : data) {
+                if ((int)aData != 13 && (int)aData != 10) {
+                    serialMessage += Character.toString((char) aData);
+                    mHandler.sendEmptyMessage((int)aData);
+                }
+                if ((int)aData == 10) {
+                    Timber.d("Serial port message = " + serialMessage);
+                    serialMessage = "";
+                }
             }
         }
     };
@@ -136,4 +129,16 @@ public class SerialUsb {
         startIoManager();
     }
 
+    private class WorkerThreadFactory implements ThreadFactory {
+        private int counter = 0;
+        private String prefix = "";
+
+        public WorkerThreadFactory(String prefix) {
+            this.prefix = prefix;
+        }
+
+        public Thread newThread(Runnable r) {
+            return new Thread(r, prefix + "-" + counter++);
+        }
+    }
 }

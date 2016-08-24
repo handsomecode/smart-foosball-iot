@@ -28,17 +28,10 @@ public class ActionGameListener extends ActionListener<Game> {
         isAWinner = data.getScoreA() < data.getScoreB();
         synchronized (mPlayerWithScores) {
             for (int i = 0; i < mPlayerWithScores.size(); i++) {
-                if (data.getIdPlayerA1().equals(mPlayerWithScores.get(i).getPlayerId())) {
-                    mPlayerWithScores.get(i).decreaseGame(isAWinner);
-                }
-                if (data.getIdPlayerA2().equals(mPlayerWithScores.get(i).getPlayerId())) {
-                    mPlayerWithScores.get(i).decreaseGame(isAWinner);
-                }
-                if (data.getIdPlayerB1().equals(mPlayerWithScores.get(i).getPlayerId())) {
-                    mPlayerWithScores.get(i).decreaseGame(!isAWinner);
-                }
-                if (data.getIdPlayerB1().equals(mPlayerWithScores.get(i).getPlayerId())) {
-                    mPlayerWithScores.get(i).decreaseGame(!isAWinner);
+                for (int j = 0; j < 4; j++) {
+                    if (data.getPlayer(j).equals(mPlayerWithScores.get(i).getPlayerId())){
+                        mPlayerWithScores.get(i).decreaseGame(j < 2 ? isAWinner : !isAWinner);
+                    }
                 }
             }
         }
@@ -59,44 +52,21 @@ public class ActionGameListener extends ActionListener<Game> {
         }
         boolean isAWinner;
         isAWinner = data.getScoreA() > data.getScoreB();
-        boolean isPlayerA1Found = false;
-        boolean isPlayerA2Found = false;
-        boolean isPlayerB1Found = false;
-        boolean isPlayerB2Found = false;
+        boolean isPlayerFound[] = {false, false, false, false};
         synchronized (mPlayerWithScores) {
             for (int i = 0; i < mPlayerWithScores.size(); i++) {
-                if (data.getIdPlayerA1().equals(mPlayerWithScores.get(i).getPlayerId())) {
-                    mPlayerWithScores.get(i).increaseGame(isAWinner);
-                    isPlayerA1Found = true;
-                }
-                if (data.getIdPlayerA2().equals(mPlayerWithScores.get(i).getPlayerId())) {
-                    mPlayerWithScores.get(i).increaseGame(isAWinner);
-                    isPlayerA2Found = true;
-                }
-                if (data.getIdPlayerB1().equals(mPlayerWithScores.get(i).getPlayerId())) {
-                    mPlayerWithScores.get(i).increaseGame(!isAWinner);
-                    isPlayerB1Found = true;
-                }
-                if (data.getIdPlayerB2().equals(mPlayerWithScores.get(i).getPlayerId())) {
-                    mPlayerWithScores.get(i).increaseGame(!isAWinner);
-                    isPlayerB2Found = true;
+                for (int j = 0; j < 4; j++) {
+                    if (data.getPlayer(j).equals(mPlayerWithScores.get(i).getPlayerId())){
+                        mPlayerWithScores.get(i).decreaseGame(j < 2 ? isAWinner : !isAWinner);
+                        isPlayerFound[j] = true;
+                    }
                 }
             }
-            if (!isPlayerA1Found && !data.getIdPlayerA1().equals("")) {
-                mPlayerWithScores.add(new PlayerWithScore(data.getIdPlayerA1()));
-                mPlayerWithScores.get(mPlayerWithScores.size()-1).increaseGame(isAWinner);
-            }
-            if (!isPlayerA2Found && !data.getIdPlayerA2().equals("")) {
-                mPlayerWithScores.add(new PlayerWithScore(data.getIdPlayerA2()));
-                mPlayerWithScores.get(mPlayerWithScores.size()-1).increaseGame(isAWinner);
-            }
-            if (!isPlayerB1Found && !data.getIdPlayerB1().equals("")) {
-                mPlayerWithScores.add(new PlayerWithScore(data.getIdPlayerB1()));
-                mPlayerWithScores.get(mPlayerWithScores.size()-1).increaseGame(isAWinner);
-            }
-            if (!isPlayerB2Found && !data.getIdPlayerB2().equals("")) {
-                mPlayerWithScores.add(new PlayerWithScore(data.getIdPlayerB2()));
-                mPlayerWithScores.get(mPlayerWithScores.size()-1).increaseGame(isAWinner);
+            for (int j = 0; j < 4; j++) {
+                if (!isPlayerFound[j] && !data.getPlayer(j).equals("")){
+                    mPlayerWithScores.add(new PlayerWithScore(data.getPlayer(j)));
+                    mPlayerWithScores.get(mPlayerWithScores.size()-1).increaseGame(isAWinner);
+                }
             }
         }
     }

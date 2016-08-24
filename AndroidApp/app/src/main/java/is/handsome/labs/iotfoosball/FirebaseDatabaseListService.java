@@ -8,6 +8,8 @@ import com.google.firebase.database.DatabaseReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class FirebaseDatabaseListService<T> {
     private Class<T> mModelClass;
     private List<T> mDataList;
@@ -16,8 +18,10 @@ public class FirebaseDatabaseListService<T> {
 
     public FirebaseDatabaseListService(DatabaseReference Ref, Class<T> modelClass) {
         this.mModelClass = modelClass;
+        mListenersList = new ArrayList<>();
         mDataList = new ArrayList<>();
         mKeyList = new ArrayList<>();
+        Timber.d("listenerlist = " + mListenersList.toString());
         ChildEventListener mChildEventListener = Ref.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
@@ -79,12 +83,12 @@ public class FirebaseDatabaseListService<T> {
         });
     }
 
-    public void AddListener(ActionListener<T> actionListener) {
+    public void addListener(ActionListener<T> actionListener) {
         actionListener.initialisation(mKeyList, mDataList);
         mListenersList.add(actionListener);
     }
 
-    public void RemoveListener(ActionListener<T> actionListener) {
+    public void removeListener(ActionListener<T> actionListener) {
         actionListener.listenerRemovingPerformed();
         mListenersList.remove(actionListener);
     }

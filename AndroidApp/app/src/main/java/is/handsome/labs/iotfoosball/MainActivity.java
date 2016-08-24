@@ -30,9 +30,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.ref.PhantomReference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -51,8 +51,6 @@ public class MainActivity extends Activity {
     private static SerialHandler sSerialHandler;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseListPlayers mFirebasePlayers;
-    private FirebaseListGames mFirebaseGames;
     private DatabaseReference mDatabase;
     private StorageReference mStorageRef;
     private FirebaseImgSetter mFirebaseImgSetter;
@@ -61,7 +59,7 @@ public class MainActivity extends Activity {
     private SerialUsb mSerialUsb;
     private ArrayList<View> mIncludes;
     private android.support.v7.widget.RecyclerView.LayoutManager mLayoutManager;
-    private RecyclerAdapter mRecyclerAdapter;
+    private PlayerRecyclerAdapter mPlayerRecyclerAdapter;
     private Scorebar mScorebarA;
     private Scorebar mScorebarB;
     private CurrentGame mCurrentGame;
@@ -70,6 +68,11 @@ public class MainActivity extends Activity {
     private String mFirebasePassword;
     private String mYandexApi;
     private PhraseSpotterForCountStart mPhraseSpotter;
+    private List<PlayerWithScore> mPlayerWithScoreList;
+    private FirebaseDatabaseListService<Player> mFbDatabaseServicePlayers;
+    private ActionGameListener mActionGameListener;
+    private FirebaseDatabaseListService<Game> mFbDatabaseServiceGames;
+    private ActionPlayerListener mActionPlayerListener;
 
     @BindView(R.id.inc0)
     CardView inc0;
@@ -122,35 +125,41 @@ public class MainActivity extends Activity {
         mSoundPool = new SoundPool.Builder().build();
         mSoundId = mSoundPool.load(this, R.raw.countdown, 1);
 
+        mPlayerWithScoreList = new ArrayList<>();
+
         dataRead();
 
         firebaseAuth();
-
-        recyclerViewInit();
 
         mStorageRef = FirebaseStorage
                 .getInstance()
                 .getReferenceFromUrl("gs://handsomefoosball.appspot.com");
         mFirebaseImgSetter = new FirebaseImgSetter(this, mStorageRef);
 
+        recyclerViewInit();
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mFirebaseGames = new FirebaseListGames(mDatabase.child("games"),
-                mIncludeplayers);
+        mFbDatabaseServiceGames =
+                new FirebaseDatabaseListService<>(mDatabase.getRef().child("/games/"), Game.class);
 
-        mFirebasePlayers = new FirebaseListPlayers(mDatabase.child("players"),
-                mRecyclerAdapter,
-                mFirebaseGames.getDataList(),
-                mFirebaseImgSetter);
+        mActionGameListener = new ActionGameListener(mPlayerWithScoreList, mPlayerRecyclerAdapter);
+
+        mFbDatabaseServiceGames.addListener(mActionGameListener);
+
+        mFbDatabaseServicePlayers =
+                new FirebaseDatabaseListService<>(mDatabase.getRef().child("/players/"),
+                        Player.class);
+
+        mActionPlayerListener =
+                new ActionPlayerListener(mPlayerWithScoreList, mPlayerRecyclerAdapter);
+
+        mFbDatabaseServicePlayers.addListener(mActionPlayerListener);
+
 
         curentGameInit();
 
-        mFirebaseGames.setPlayer(mFirebasePlayers);
-        mFirebaseGames.setCurentGame(mCurrentGame);
-
-        mRecyclerAdapter.setFirebase(mFirebasePlayers, mFirebaseImgSetter);
-
-        RecyclerView.setAdapter(mRecyclerAdapter);
+        RecyclerView.setAdapter(mPlayerRecyclerAdapter);
 
         for (int i = 0; i < 4; i++) {
             mIncludeplayers.get(i)
@@ -236,10 +245,11 @@ public class MainActivity extends Activity {
         mScorebarB = new Scorebar(this, score2);
 
         mCurrentGame = new CurrentGame(mIncludeplayers,
-                        mDatabase.child("/games/"),
-                        mScorebarA,
-                        mScorebarB,
-                        mFirebasePlayers);
+                mDatabase.child("/games/"),
+                mScorebarA,
+                mScorebarB,
+                mFirebaseImgSetter,
+                mPlayerWithScoreList);
 
         mScorebarA.setCurentGame(mCurrentGame);
         mScorebarB.setCurentGame(mCurrentGame);
@@ -249,7 +259,7 @@ public class MainActivity extends Activity {
         RecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerAdapter = new RecyclerAdapter();
+        mPlayerRecyclerAdapter = new PlayerRecyclerAdapter(mPlayerWithScoreList, mFirebaseImgSetter);
     }
 
     private void dataRead() {

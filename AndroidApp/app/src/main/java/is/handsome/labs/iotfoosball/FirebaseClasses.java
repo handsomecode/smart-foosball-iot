@@ -134,4 +134,20 @@ class Game {
         this.scoreA = scoreA;
         this.scoreB = scoreB;
     }
+
+    public String getPlayer(int i) {
+        if (i == 0) {
+            return idPlayerA1;
+        }
+        if (i == 1) {
+            return idPlayerA2;
+        }
+        if (i == 2) {
+            return idPlayerB1;
+        }
+        if (i == 3) {
+            return idPlayerB2;
+        }
+        return null;
+    }
 }

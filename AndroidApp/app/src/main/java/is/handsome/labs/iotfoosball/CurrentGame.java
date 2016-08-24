@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import timber.log.Timber;
@@ -23,20 +24,22 @@ public class CurrentGame {
     private int mScoreB;
     private Scorebar mScorebarB;
     private ArrayList<String> mPlayersId;
-    private FirebaseListPlayers mFirebaseListPlayers;
+    private List<PlayerWithScore> mPlayerWithScoreList;
+    private FirebaseImgSetter mFirebaseImgSetter;
 
     public CurrentGame(ArrayList<IncludePlayer> includePlayers,
             DatabaseReference databaseReference,
             Scorebar teamA,
             Scorebar teamB,
-            FirebaseListPlayers firebaseListPlayers) {
+            FirebaseImgSetter firebaseImgSetter,
+            List<PlayerWithScore> playerWithScoresList) {
         mGame = new Game();
         mIsGameStarted = false;
         this.mScorebarA = teamA;
         mScoreA = 0;
         this.mScorebarB = teamB;
         mScoreB = 0;
-        this.mFirebaseListPlayers = firebaseListPlayers;
+        this.mPlayerWithScoreList = playerWithScoresList;
         this.mIncludePlayers = includePlayers;
         this.mReference = databaseReference;
         mThreshold = 50;
@@ -44,6 +47,7 @@ public class CurrentGame {
         for (int i = 0; i < 4; i++) {
             mPlayersId.add(i, "");
         }
+        this.mFirebaseImgSetter = firebaseImgSetter;
     }
 
     public void setThreshold(int threshold) {
@@ -121,16 +125,16 @@ public class CurrentGame {
     }
 
     public void notifyDraged(int position, int index) {
-        Player player = mFirebaseListPlayers.getDataList().get(index);
-        mPlayersId.set(position, mFirebaseListPlayers.getKeyList().get(index));
-        mIncludePlayers.get(position).nick.setText(player.getNick());
+        PlayerWithScore player = mPlayerWithScoreList.get(index);
+        mPlayersId.set(position, player.getPlayerId());
+        mIncludePlayers.get(position).nick.setText(player.getPlayer().getNick());
         String score = String.format(Locale.US, "%d:%d",
                 player.getWins(),
-                player.getLoses());
+                player.getLosses());
         mIncludePlayers.get(position).score.setText(score);
 
-        mFirebaseListPlayers.getFirebaseImgSetter().setAvatar(
-                player.getNick(),
+        mFirebaseImgSetter.setAvatar(
+                player.getPlayer().getNick(),
                 mIncludePlayers.get(position).avatar);
     }
 

@@ -7,14 +7,14 @@ public class PlayerWithScore {
     private int mWins;
     private int mLosses;
 
-    PlayerWithScore(String playerId) {
+    public PlayerWithScore(String playerId) {
         this.mPlayerId = playerId;
         this.mPlayer = playerDummy;
         this.mWins = 0;
         this.mLosses = 0;
     }
 
-    PlayerWithScore(String playerId, Player player) {
+    public PlayerWithScore(String playerId, Player player) {
         this.mPlayerId = playerId;
         this.mPlayer = player;
         this.mWins = 0;

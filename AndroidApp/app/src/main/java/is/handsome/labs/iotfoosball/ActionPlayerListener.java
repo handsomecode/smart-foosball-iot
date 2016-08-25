@@ -42,8 +42,8 @@ public class ActionPlayerListener extends ActionListener<Player> {
     }
 
     private boolean addPlayer(String key, Player data, int index) {
+        boolean isExist = false;
         synchronized (mPlayerWithScores) {
-            boolean isExist = false;
             int i = 0;
             for (; i < mPlayerWithScores.size(); i++) {
                 if (mPlayerWithScores.get(i).getPlayerId().equals(key)) {
@@ -58,7 +58,7 @@ public class ActionPlayerListener extends ActionListener<Player> {
                 mPlayerWithScores.get(i).setPlayer(data);
                 Timber.d("already existed " + key);
             }
-            return !isExist;
         }
+        return !isExist;
     }
 }

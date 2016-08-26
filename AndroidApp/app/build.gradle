@@ -37,6 +37,7 @@ dependencies {
 
     apt 'com.jakewharton:butterknife-compiler:8.1.0'
     compile 'com.yandex.android:speechkit:2.5.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha7'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             xmlns:widget="http://schemas.android.com/apk/res-auto"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent"
+                                             tools:context="is.handsome.labs.iotfoosball.MainActivity"
+                                             android:background="@mipmap/back">
+
+
+    <FrameLayout
+        android:layout_width="196dp"
+        android:layout_height="400dp"
+        android:id="@+id/TeamA"
+        android:layout_marginTop="16dp"
+        widget:layout_constraintTop_toTopOf="parent"
+        widget:layout_constraintBottom_toTopOf="@+id/RecyclerView"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="32dp"
+        widget:layout_constraintLeft_toLeftOf="parent"
+        widget:layout_constraintVertical_bias="0.65999997">
+
+        <include
+            layout="@layout/player"
+            android:layout_width="196dp"
+            android:layout_height="196dp"
+            android:id="@+id/inc0"
+            android:layout_gravity="top"
+            />
+
+        <include
+            layout="@layout/player"
+            android:layout_width="196dp"
+            android:layout_height="196dp"
+            android:id="@+id/inc1"
+            android:layout_gravity="bottom"
+            />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="400dp"
+        android:id="@+id/TeamB"
+        widget:layout_constraintBottom_toBottomOf="@+id/TeamA"
+        android:layout_marginEnd="32dp"
+        widget:layout_constraintRight_toRightOf="parent">
+
+        <include
+            layout="@layout/player"
+            android:layout_width="196dp"
+            android:layout_height="196dp"
+            android:id="@+id/inc2"
+            android:layout_gravity="top"/>
+
+        <include
+            layout="@layout/player"
+            android:layout_width="196dp"
+            android:layout_height="196dp"
+            android:id="@+id/inc3"
+            android:layout_gravity="bottom"/>
+
+    </FrameLayout>
+
+
+    <Button
+        android:layout_width="161dp"
+        android:layout_height="93dp"
+        android:text="Countdown"
+        android:id="@+id/btncntdwn"
+        android:textSize="20sp"
+        widget:layout_constraintBottom_toBottomOf="@+id/frameLayout"
+        android:layout_marginStart="32dp"
+        widget:layout_constraintLeft_toRightOf="@+id/TeamA"/>
+
+
+    <Button
+        android:layout_width="161dp"
+        android:layout_height="93dp"
+        android:text="0:00"
+        android:id="@+id/Timer"
+        android:textSize="30sp"
+        widget:layout_constraintBottom_toBottomOf="@+id/TeamB"
+        widget:layout_constraintRight_toLeftOf="@+id/TeamB"
+        android:layout_marginEnd="32dp"/>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/RecyclerView"
+        android:scrollbars="horizontal"
+        android:layout_width="1176dp"
+        android:layout_height="wrap_content"
+        widget:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="24dp"
+        widget:layout_constraintRight_toRightOf="parent"
+        widget:layout_constraintLeft_toLeftOf="parent">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <FrameLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        widget:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginEnd="16dp"
+        widget:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/frameLayout"
+        widget:layout_constraintBottom_toBottomOf="@+id/TeamA">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="end"
+            android:id="@+id/btnend"
+            tools:layout_editor_absoluteX="777dp"
+            tools:layout_editor_absoluteY="448dp"
+            android:layout_gravity="right"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start"
+            android:id="@+id/btnstart"
+            tools:layout_editor_absoluteX="594dp"
+            tools:layout_editor_absoluteY="448dp"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/ScoreA"
+        android:layout_marginTop="16dp"
+        widget:layout_constraintTop_toTopOf="parent"
+        widget:layout_constraintBottom_toTopOf="@+id/RecyclerView"
+        android:layout_marginBottom="8dp"
+        widget:layout_constraintVertical_bias="0.35000002"
+        android:layout_marginStart="160dp"
+        widget:layout_constraintLeft_toRightOf="@+id/TeamA">
+
+        <is.handsome.labs.iotfoosball.ScoreViewPager
+            android:id="@+id/t1d"
+            android:layout_width="100dp"
+            android:layout_height="200dp"
+            tools:layout_editor_absoluteX="389dp"
+            tools:layout_editor_absoluteY="112dp"
+            android:layout_gravity="left"/>
+
+        <is.handsome.labs.iotfoosball.ScoreViewPager
+            android:id="@+id/t1u"
+            android:layout_width="100dp"
+            android:layout_height="200dp"
+            tools:layout_editor_absoluteX="518dp"
+            widget:layout_constraintBottom_toBottomOf="@+id/t1d"
+            android:layout_gravity="right"/>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/ScoreB"
+        widget:layout_constraintTop_toTopOf="@+id/ScoreA"
+        widget:layout_constraintRight_toLeftOf="@+id/TeamB"
+        android:layout_marginEnd="160dp">
+
+        <is.handsome.labs.iotfoosball.ScoreViewPager
+            android:id="@+id/t2d"
+            android:layout_width="100dp"
+            android:layout_height="200dp"
+            tools:layout_editor_absoluteX="818dp"
+            tools:layout_editor_absoluteY="100dp"
+            android:layout_gravity="left"/>
+
+        <is.handsome.labs.iotfoosball.ScoreViewPager
+            android:id="@+id/t2u"
+            android:layout_width="100dp"
+            android:layout_height="200dp"
+            tools:layout_editor_absoluteX="950dp"
+            widget:layout_constraintBottom_toBottomOf="@+id/t2d"
+            android:layout_gravity="right"/>
+    </FrameLayout>
+
+    <!--<com.meetme.android.horizontallistview.HorizontalListView-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:id="@+id/HorizontalListView"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="0dp"-->
+    <!--android:padding="8dp"-->
+    <!--android:layout_weight="206"-->
+    <!--android:divider="#878787" />-->
+
+
+</android.support.constraint.ConstraintLayout>

@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 
-class IncludePlayer {
+public class IncludePlayer {
     //TODO devide model and view
     @BindView(R.id.nick)
     TextView nick;

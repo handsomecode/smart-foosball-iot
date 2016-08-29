@@ -89,7 +89,7 @@ public class MainActivity extends Activity {
     Button btnend;
     @BindView(R.id.btncntdwn)
     Button btncntdwn;
-    @BindView(R.id.RecyclerView)
+    @BindView(R.id.playersRecyclerView)
     android.support.v7.widget.RecyclerView RecyclerView;
     @BindView(R.id.Timer)
     Button btntimer;

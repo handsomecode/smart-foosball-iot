@@ -28,7 +28,7 @@ public class FirebaseImgSetter {
     public void setImg(final String link, ImageView imageView) {
         final WeakReference<ImageView> ImageViewWeakRef = new WeakReference<ImageView>(imageView);
         imageView.setTag(link); //protection from reusing unactual img
-        imageView.setImageResource(R.mipmap.opengamer);
+        imageView.setImageResource(0);
         if (!mLinks.containsKey(link)) {
             StorageReference pathRef = mStorageRef.child(link);
             pathRef.getDownloadUrl()
@@ -38,7 +38,7 @@ public class FirebaseImgSetter {
                             ImageView imageView = ImageViewWeakRef.get();
                             Log.d("myLog", "save Uri link to " + link + " is " + uri.toString());
                             mLinks.put(link, uri);
-                            if ((imageView.getTag() == link) && (imageView != null))
+                            if ((imageView != null) && (imageView.getTag() == link))
                                 mPicasso.load(uri).into(imageView);
                         }
                     })
@@ -47,7 +47,7 @@ public class FirebaseImgSetter {
                         public void onFailure(@NonNull Exception e) {
                             ImageView imageView = ImageViewWeakRef.get();
                             Log.d("exception", e.toString());
-                            if ((imageView.getTag() == link) && (imageView != null))
+                            if ((imageView != null) && (imageView.getTag() == link))
                                 mPicasso.load(R.mipmap.opengamer).into(imageView);
                         }
                     });
@@ -64,5 +64,10 @@ public class FirebaseImgSetter {
         if (mLinks.containsKey(link)) {
             mLinks.remove(link);
         }
+    }
+
+    public void setNullImg(ImageView imageView) {
+        mPicasso.cancelRequest(imageView);
+        imageView.setImageDrawable(null);
     }
 }

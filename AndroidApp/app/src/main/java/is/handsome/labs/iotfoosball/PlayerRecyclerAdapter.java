@@ -1,9 +1,6 @@
 package is.handsome.labs.iotfoosball;
 
-import android.content.ClipData;
-import android.content.ClipDescription;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +26,7 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
 
     @Override
     public PlayerRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.player, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.player_rv_item, parent, false);
         return new ViewHolder(v);
     }
 
@@ -65,23 +62,7 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
         public ViewHolder(View v) {
             super(v);
             ButterKnife.bind(this,v);
-            player.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    Log.d("drag", "click on "
-                            + String.valueOf(ViewHolder.this.getAdapterPosition()));
-                    View.DragShadowBuilder shadow = new View.DragShadowBuilder(v);
-                    ClipData.Item item =
-                            new ClipData.Item(String.valueOf(ViewHolder.this.getAdapterPosition()));
-                    ClipData playerId =
-                            new ClipData("playerid",
-                                    new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
-                    v.startDrag(playerId, shadow, null, 0);
-                    Log.d("drag", "drag started on "
-                            + String.valueOf(ViewHolder.this.getAdapterPosition()));
-                    return true;
-                }
-            });
+            player.setOnLongClickListener(new OnPlayerLongClickListener(ViewHolder.this, v));
         }
     }
 

@@ -4,6 +4,8 @@ import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 
+import timber.log.Timber;
+
 public class DragListenerForIncludes implements View.OnDragListener {
 
     private int mPosition;
@@ -20,7 +22,11 @@ public class DragListenerForIncludes implements View.OnDragListener {
         if (action == DragEvent.ACTION_DROP) {
             Log.d("drag", "drag " + event.getClipData().getItemAt(0).getText());
             int index = Integer.parseInt((String) event.getClipData().getItemAt(0).getText());
-            mCurrentGame.notifyDraged(mPosition, index);
+            int positionFrom =
+                    event.getClipData().getItemCount() > 1 ?
+                            Integer.parseInt((String) event.getClipData().getItemAt(1).getText())
+                            : -1;
+            mCurrentGame.notifyDraged(mPosition, index, positionFrom);
         }
         return true;
     }

@@ -1,12 +1,15 @@
 package is.handsome.labs.iotfoosball;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipDescription;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -74,6 +77,9 @@ public class MainActivity extends Activity {
     private FirebaseDatabaseListService<Game> mFbDatabaseServiceGames;
     private ActionPlayerListener mActionPlayerListener;
 
+    @BindView(R.id.main_layout)
+    ConstraintLayout main_layout;
+
     @BindView(R.id.inc0)
     CardView inc0;
     @BindView(R.id.inc1)
@@ -89,7 +95,7 @@ public class MainActivity extends Activity {
     Button btnend;
     @BindView(R.id.btncntdwn)
     Button btncntdwn;
-    @BindView(R.id.RecyclerView)
+    @BindView(R.id.playersRecyclerView)
     android.support.v7.widget.RecyclerView RecyclerView;
     @BindView(R.id.Timer)
     Button btntimer;
@@ -156,7 +162,6 @@ public class MainActivity extends Activity {
 
         mFbDatabaseServicePlayers.addListener(mActionPlayerListener);
 
-
         curentGameInit();
 
         RecyclerView.setAdapter(mPlayerRecyclerAdapter);
@@ -166,6 +171,8 @@ public class MainActivity extends Activity {
                     .getInc()
                     .setOnDragListener(new DragListenerForIncludes(i, mCurrentGame));
         }
+
+        main_layout.setOnDragListener(new DragListenerForBackground(mCurrentGame));
 
         sSerialHandler = new SerialHandler(mCurrentGame);
 
@@ -331,6 +338,14 @@ public class MainActivity extends Activity {
         }
         Log.d("myLog", "components added");
     }
+//
+//    private void addOnLongClickListenerToIncludes() {
+//        for (int i = 0; i < 4; i++) {
+//            mIncludeplayers.get(i).avatar.setOnLongClickListener(
+//                    new OnPlayerLongClickListener(mCurrentGame.getPlayerIndex(i),
+//                            mIncludes.get(i)));
+//        }
+//    }
 
     private void startCountdown() {
         mSoundPool.play(mSoundId, 1, 1, 1, 0, 1);

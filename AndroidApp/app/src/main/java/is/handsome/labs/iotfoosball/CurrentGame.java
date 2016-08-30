@@ -141,6 +141,32 @@ public class CurrentGame {
                 clearInclude(i);
             }
         }
+
+        if (positionFrom != -1) {
+            setPlayer(positionFrom, mPlayerIndex.get(position));
+        }
+
+        setPlayer(position, index);
+
+
+    }
+
+    public void clearInclude(int position) {
+        if (position >=4 || position < 0) {
+            return;
+        }
+        mIncludePlayers.get(position).nick.setText("player");
+        mIncludePlayers.get(position).score.setText("");
+        mFirebaseImgSetter.setNullImg(mIncludePlayers.get(position).avatar);
+        mPlayerIndex.set(position, -1);
+        mIncludePlayers.get(position).avatar.setOnLongClickListener(null);
+    }
+
+    public String getPlayerId(int position) {
+        return mPlayerWithScoreList.get(mPlayerIndex.get(position)).getPlayerId();
+    }
+
+    private void setPlayer(int position, int index) {
         mPlayerIndex.set(position, index);
         Timber.d("mPlayerIndex = " + mPlayerIndex.get(position));
         PlayerWithScore player = mPlayerWithScoreList.get(mPlayerIndex.get(position));
@@ -158,24 +184,5 @@ public class CurrentGame {
                 new OnPlayerLongClickListener(index,
                         position,
                         mIncludePlayers.get(position).getInc()));
-
-        if (positionFrom != -1) {
-            clearInclude(positionFrom);
-        }
-    }
-
-    public void clearInclude(int position) {
-        if (position >=4 || position < 0) {
-            return;
-        }
-        mIncludePlayers.get(position).nick.setText("player");
-        mIncludePlayers.get(position).score.setText("");
-        mFirebaseImgSetter.setNullImg(mIncludePlayers.get(position).avatar);
-        mPlayerIndex.set(position, -1);
-        mIncludePlayers.get(position).avatar.setOnLongClickListener(null);
-    }
-
-    public String getPlayerId(int position) {
-        return mPlayerWithScoreList.get(mPlayerIndex.get(position)).getPlayerId();
     }
 }

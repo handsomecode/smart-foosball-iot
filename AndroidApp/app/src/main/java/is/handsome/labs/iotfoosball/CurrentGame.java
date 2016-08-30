@@ -23,7 +23,7 @@ public class CurrentGame {
     private Scorebar mScorebarA;
     private int mScoreB;
     private Scorebar mScorebarB;
-    private ArrayList<String> mPlayersId;
+    private ArrayList<Integer> mPlayerIndex;
     private List<PlayerWithScore> mPlayerWithScoreList;
     private FirebaseImgSetter mFirebaseImgSetter;
 
@@ -34,6 +34,7 @@ public class CurrentGame {
             FirebaseImgSetter firebaseImgSetter,
             List<PlayerWithScore> playerWithScoresList) {
         mGame = new Game();
+        mPlayerIndex = new ArrayList<>(4);
         mIsGameStarted = false;
         this.mScorebarA = teamA;
         mScoreA = 0;
@@ -43,9 +44,8 @@ public class CurrentGame {
         this.mIncludePlayers = includePlayers;
         this.mReference = databaseReference;
         mThreshold = 50;
-        mPlayersId = new ArrayList<>(4);
         for (int i = 0; i < 4; i++) {
-            mPlayersId.add(i, "");
+            mPlayerIndex.add(i, -1);
         }
         this.mFirebaseImgSetter = firebaseImgSetter;
     }
@@ -56,6 +56,10 @@ public class CurrentGame {
 
     public void setMode(String mode) {
         mGame.setMode(mode);
+    }
+
+    public Integer getPlayerIndex (int i) {
+        return this.mPlayerIndex.get(i);
     }
 
     public void startGame() {
@@ -75,10 +79,15 @@ public class CurrentGame {
             String dateend = dateFormat.format(Calendar.getInstance().getTime());
             Log.d("gamesave", "set dateend to " + dateend);
             mGame.setDateEnd(dateend);
-            mGame.setIds(mPlayersId.get(0),
-                    mPlayersId.get(1),
-                    mPlayersId.get(2),
-                    mPlayersId.get(3));
+            mGame.setIds(
+                    (mPlayerIndex.get(0) == -1) ? "" : mPlayerWithScoreList.
+                            get(mPlayerIndex.get(0)).getPlayerId(),
+                    (mPlayerIndex.get(1) == -1) ? "" : mPlayerWithScoreList.
+                            get(mPlayerIndex.get(1)).getPlayerId(),
+                    (mPlayerIndex.get(2) == -1) ? "" : mPlayerWithScoreList.
+                            get(mPlayerIndex.get(2)).getPlayerId(),
+                    (mPlayerIndex.get(3) == -1) ? "" : mPlayerWithScoreList.
+                            get(mPlayerIndex.get(3)).getPlayerId());
             mGame.setMode("2x2mb");
             mGame.setScore(mScoreA, mScoreB);
             mReference.push().setValue(mGame);
@@ -93,9 +102,7 @@ public class CurrentGame {
                 }
             }
             for (int i = 0; i < 4; i++) {
-                mIncludePlayers.get(i).nick.setText("player");
-                mIncludePlayers.get(i).score.setText("");
-                mIncludePlayers.get(i).avatar.setImageDrawable(null);
+                clearInclude(i);
             }
         }
     }
@@ -124,9 +131,19 @@ public class CurrentGame {
         }
     }
 
-    public void notifyDraged(int position, int index) {
-        PlayerWithScore player = mPlayerWithScoreList.get(index);
-        mPlayersId.set(position, player.getPlayerId());
+    public void notifyDraged(int position, int index, int positionFrom) {
+        Timber.d("Dragged to " + position + " with index = " + index);
+        if ((index < 0) || (index >= mPlayerWithScoreList.size())) {
+            return;
+        }
+        for (int i = 0; i < 4; i++) {
+            if (index == mPlayerIndex.get(i)) {
+                clearInclude(i);
+            }
+        }
+        mPlayerIndex.set(position, index);
+        Timber.d("mPlayerIndex = " + mPlayerIndex.get(position));
+        PlayerWithScore player = mPlayerWithScoreList.get(mPlayerIndex.get(position));
         mIncludePlayers.get(position).nick.setText(player.getPlayer().getNick());
         String score = String.format(Locale.US, "%d:%d",
                 player.getWins(),
@@ -136,9 +153,29 @@ public class CurrentGame {
         mFirebaseImgSetter.setAvatar(
                 player.getPlayer().getNick(),
                 mIncludePlayers.get(position).avatar);
+
+        mIncludePlayers.get(position).avatar.setOnLongClickListener(
+                new OnPlayerLongClickListener(index,
+                        position,
+                        mIncludePlayers.get(position).getInc()));
+
+        if (positionFrom != -1) {
+            clearInclude(positionFrom);
+        }
+    }
+
+    public void clearInclude(int position) {
+        if (position >=4 || position < 0) {
+            return;
+        }
+        mIncludePlayers.get(position).nick.setText("player");
+        mIncludePlayers.get(position).score.setText("");
+        mFirebaseImgSetter.setNullImg(mIncludePlayers.get(position).avatar);
+        mPlayerIndex.set(position, -1);
+        mIncludePlayers.get(position).avatar.setOnLongClickListener(null);
     }
 
     public String getPlayerId(int position) {
-        return mPlayersId.get(position);
+        return mPlayerWithScoreList.get(mPlayerIndex.get(position)).getPlayerId();
     }
 }

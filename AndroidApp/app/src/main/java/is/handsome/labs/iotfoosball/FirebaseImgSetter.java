@@ -65,4 +65,9 @@ public class FirebaseImgSetter {
             mLinks.remove(link);
         }
     }
+
+    public void setNullImg(ImageView imageView) {
+        mPicasso.cancelRequest(imageView);
+        imageView.setImageDrawable(null);
+    }
 }

@@ -8,19 +8,23 @@ import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
-public class FirebaseImgSetter {
+public class ImgSetterService {
     private HashMap<String,Uri> mLinks;
     private StorageReference mStorageRef;
     private Picasso mPicasso;
 
-    public FirebaseImgSetter(Context context, StorageReference storageReference) {
-        this.mStorageRef = storageReference;
+    public ImgSetterService(Context context, String link) {
+        StorageReference storageRef = FirebaseStorage
+                .getInstance()
+                .getReferenceFromUrl(link);
+        this.mStorageRef = storageRef;
         mPicasso = Picasso.with(context);
         mLinks = new HashMap<>();
     }
@@ -58,12 +62,6 @@ public class FirebaseImgSetter {
 
     public void setAvatar (String nick, ImageView imageView) {
         setImg("avatars/" + nick.toLowerCase() + ".jpg", imageView);
-    }
-
-    public void delImg(String link) {
-        if (mLinks.containsKey(link)) {
-            mLinks.remove(link);
-        }
     }
 
     public void setNullImg(ImageView imageView) {

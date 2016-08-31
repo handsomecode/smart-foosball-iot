@@ -7,46 +7,38 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.List;
-import java.util.Locale;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAdapter.ViewHolder>{
 
-    private List<PlayerWithScore> mPlayerWithScores;
-    private FirebaseImgSetter mFirebaseImgSetter;
+    private Presenter presenter;
 
-    public PlayerRecyclerAdapter(List<PlayerWithScore> playerWithScores,
-            FirebaseImgSetter mirebaseImgSetter) {
-        this.mPlayerWithScores = playerWithScores;
-        this.mFirebaseImgSetter = mirebaseImgSetter;
+    public PlayerRecyclerAdapter(Presenter presenter) {
+        this.presenter = presenter;
     }
 
     @Override
     public PlayerRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.player_rv_item, parent, false);
+        View v = LayoutInflater.
+                from(parent.getContext()).
+                inflate(R.layout.player_rv_item, parent, false);
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(PlayerRecyclerAdapter.ViewHolder holder, final int position) {
-        PlayerWithScore player = mPlayerWithScores.get(position);
-        holder.nick.setText(player.getPlayer().getNick());
-        String score = String.format(Locale.US, "%d:%d",
-                player.getWins(),
-                player.getLosses());
-        holder.score.setText(score);
-        String link = "avatars/"
-                + player.getPlayer().getNick().toLowerCase()
-                + ".jpg";
-        mFirebaseImgSetter.setImg(link, holder.avatar);
+    public void onBindViewHolder(PlayerRecyclerAdapter.ViewHolder holder, int position) {
+        PlayerViewInfo playerViewInfo = presenter.getPlayerViewInfoByPosition(position);
+        holder.nick.setText(playerViewInfo.getNick());
+        holder.score.setText(playerViewInfo.getScore());
+        presenter.getImgSetterService().setImg(playerViewInfo.getAvatar(), holder.avatar);
     }
 
     @Override
     public int getItemCount() {
-        return mPlayerWithScores.size();
+        return presenter.getPlayerCount();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

@@ -4,8 +4,6 @@ class Player {
 
     private String nick; //TODO Firebase API forgiben to change name of field to mNick
     private String avatar;
-    private int mWins;
-    private int mLoses;
 
     public Player(String nick, String avatar) {
         this.nick = nick;
@@ -24,21 +22,6 @@ class Player {
         return avatar;
     }
 
-    public int getWins() {
-        return mWins;
-    }
-
-    public void setWins(int wins) {
-        this.mWins = wins;
-    }
-
-    public int getLoses() {
-        return mLoses;
-    }
-
-    public void setLoses(int loses) {
-        this.mLoses = loses;
-    }
 }
 
 class Game {

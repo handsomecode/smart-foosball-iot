@@ -20,13 +20,10 @@ public class ScorebarPagerAdapter extends PagerAdapter {
         //TODO reuse invisible views and use ViewHolder
         mPages = new ArrayList<View>();
         for (int i = 0; i < 10; i++) {
-            //Log.d("score", "crating view # " + i);
             LayoutInflater layoutInflater = LayoutInflater.from(context);
             View v = layoutInflater.inflate(R.layout.barnumber, null);
             ((TextView) v.findViewById(R.id.number)).setText(String.valueOf(i));
-            //Log.d("score", "view # " + i + " created " + v.toString());
             mPages.add(v);
-            //Log.d("score", "view # " + i + " added");
         }
     }
 

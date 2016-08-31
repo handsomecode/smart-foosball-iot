@@ -6,18 +6,18 @@ import timber.log.Timber;
 
 public class ActionPlayerListener extends ActionListener<Player> {
     private final List<PlayerWithScore> mPlayerWithScores;
-    private PlayerRecyclerAdapter mPlayerRecyclerAdapter;
+    private ActivityWithPresenter activityWithPresenter;
 
     ActionPlayerListener(List<PlayerWithScore> playerWithScores,
-            PlayerRecyclerAdapter playerRecyclerAdapter) {
+            ActivityWithPresenter activityWithPresenter) {
         this.mPlayerWithScores = playerWithScores;
-        this.mPlayerRecyclerAdapter = playerRecyclerAdapter;
+        this.activityWithPresenter = activityWithPresenter;
     }
 
     @Override
     public void addingPerformed(String key, Player data, int index) {
         addPlayer(key, data, index);
-        mPlayerRecyclerAdapter.notifyDataSetChanged();
+        activityWithPresenter.notifyDataSetRecyclerViewChanged();
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ActionPlayerListener extends ActionListener<Player> {
                 }
             }
         }
-        mPlayerRecyclerAdapter.notifyDataSetChanged();
+        activityWithPresenter.notifyDataSetRecyclerViewChanged();
     }
 
     @Override
@@ -38,7 +38,7 @@ public class ActionPlayerListener extends ActionListener<Player> {
         for (int i = 0; i < keyList.size(); i++) {
             addPlayer(keyList.get(i), dataList.get(i), i);
         }
-        mPlayerRecyclerAdapter.notifyDataSetChanged();
+        activityWithPresenter.notifyDataSetRecyclerViewChanged();
     }
 
     private boolean addPlayer(String key, Player data, int index) {

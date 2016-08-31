@@ -5,10 +5,10 @@ import android.view.View;
 
 public class DragListenerForBackground implements View.OnDragListener  {
 
-    private CurrentGame mCurrentGame;
+    private Presenter presenter;
 
-    public DragListenerForBackground(CurrentGame currentGame) {
-        this.mCurrentGame = currentGame;
+    public DragListenerForBackground(Presenter presenter) {
+        this.presenter = presenter;
     }
 
     @Override
@@ -18,7 +18,7 @@ public class DragListenerForBackground implements View.OnDragListener  {
             if (dragEvent.getClipData().getItemCount() > 1) {
                 int positionFrom = Integer.parseInt(
                         (String) dragEvent.getClipData().getItemAt(1).getText());
-                mCurrentGame.clearInclude(positionFrom);
+                presenter.notifyDragToBackground(positionFrom);
             }
         }
         return true;

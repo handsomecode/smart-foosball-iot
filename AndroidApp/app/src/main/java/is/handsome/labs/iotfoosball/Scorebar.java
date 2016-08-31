@@ -6,18 +6,16 @@ import android.support.v4.view.ViewPager;
 import java.util.ArrayList;
 
 public class Scorebar {
-    //TODO devide to model and view
     private ArrayList<ScoreViewPager> mScorebarsView;
-    private CurrentGame mCurrentGame;
 
-    public Scorebar (Context context, final ArrayList<ScoreViewPager> scorebarsView) {
+    public Scorebar (Context context, final Presenter presenter,
+            final ArrayList<ScoreViewPager> scorebarsView, @MainActivity.Teams final int team) {
         this.mScorebarsView = scorebarsView;
         scorebarsView.get(0).addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position,
                     float positionOffset,
                     int positionOffsetPixels) {
-
             }
 
             @Override
@@ -25,7 +23,7 @@ public class Scorebar {
                 if (scorebarsView.size() > 1) {
                     scorebarsView.get(1).setCurrentItem(((position - (position % 10)) / 10), true);
                 }
-                if (mCurrentGame != null) mCurrentGame.notifyListed(Scorebar.this, position);
+                presenter.notifyListed(team, position);
             }
 
             @Override
@@ -66,10 +64,6 @@ public class Scorebar {
                 });
             }
         }
-    }
-
-    public void setCurentGame(CurrentGame currentGame) {
-        this.mCurrentGame = currentGame;
     }
 
     public void setScore(int score) {

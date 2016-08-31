@@ -20,40 +20,70 @@ import timber.log.Timber;
 
 public abstract class TimerWithPause {
 
+    private static final int MSG = 1;
+    private Handler handler;
+
     /**
      * Real time while timer was paused
      */
-    private long mPausedTime;
+    private long pausedTime;
 
     /**
      * The interval in millis that the user receives callbacks
      */
-    private final long mRefreshInterval;
+    private final long refreshInterval;
 
     /**
      * The time on the timer when it was paused, if it is currently paused; 0 otherwise.
      */
-    private long mPauseTime;
+    private long pauseTime;
 
-    private boolean mIsPaused;
+    private boolean isPaused;
 
     /**
      * True if timer was started running, false if not.
      */
-    private boolean mRunAtStart;
+    private boolean runAtStart;
 
     /**
      * @param refreshInterval The interval in millis at which to execute
      *                          {@link #onTick(long timeOnTimer)} callbacks
      * @param runAtStart        True if timer should start running, false if not
      */
-    public TimerWithPause(long refreshInterval, boolean runAtStart) {
+    public TimerWithPause(final long refreshInterval, boolean runAtStart) {
         Timber.d("timer - create");
-        mRefreshInterval = refreshInterval;
-        mRunAtStart = runAtStart;
-        mPausedTime = 0;
-        mPauseTime = 0;
-        mIsPaused = true;
+        this.refreshInterval = refreshInterval;
+        this.runAtStart = runAtStart;
+        pausedTime = 0;
+        pauseTime = 0;
+        isPaused = true;
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+
+                synchronized (TimerWithPause.this) {
+                    long millisOn = timeOn();
+                    millisOn = correctTime(millisOn);
+
+                    if (millisOn < refreshInterval) {
+                        // no tick, just delay until done
+                        sendMessageDelayed(obtainMessage(MSG), millisOn);
+                    } else {
+                        long lastTickStart = SystemClock.elapsedRealtime();
+                        onTick(millisOn);
+
+                        // take into account user's onTick taking time to execute
+                        long delay = refreshInterval - (SystemClock.elapsedRealtime() - lastTickStart);
+
+                        // special case: user's onTick took more than refreshInterval to
+                        // complete, skip to next interval
+                        while (delay < 0) delay += refreshInterval;
+
+                        sendMessageDelayed(obtainMessage(MSG), delay);
+                    }
+                }
+            }
+        };
     }
 
     /**
@@ -61,7 +91,7 @@ public abstract class TimerWithPause {
      */
     public final void cancel() {
         Timber.d("timer - cancel");
-        mHandler.removeMessages(MSG);
+        handler.removeMessages(MSG);
     }
 
 
@@ -71,8 +101,8 @@ public abstract class TimerWithPause {
     public void pause() {
         Timber.d("timer - pause");
         if (isRunning()) {
-            mIsPaused = true;
-            mPauseTime = SystemClock.elapsedRealtime();
+            isPaused = true;
+            pauseTime = SystemClock.elapsedRealtime();
             cancel();
         }
     }
@@ -83,9 +113,9 @@ public abstract class TimerWithPause {
     public void resume() {
         Timber.d("timer - resume");
         if (isPaused()) {
-            mPausedTime = mPausedTime + (SystemClock.elapsedRealtime() - mPauseTime);
-            mHandler.sendMessage(mHandler.obtainMessage(MSG));
-            mIsPaused = false;
+            pausedTime = pausedTime + (SystemClock.elapsedRealtime() - pauseTime);
+            handler.sendMessage(handler.obtainMessage(MSG));
+            isPaused = false;
         }
     }
 
@@ -95,7 +125,7 @@ public abstract class TimerWithPause {
      * @return true if the timer is currently paused, false otherwise.
      */
     public boolean isPaused() {
-        return mIsPaused;
+        return isPaused;
     }
 
     /**
@@ -116,9 +146,9 @@ public abstract class TimerWithPause {
         Timber.d("timer - timeOn");
         long timeOnTimer;
         if (isPaused()) {
-            timeOnTimer = mPauseTime;
+            timeOnTimer = pauseTime;
         } else {
-            timeOnTimer = SystemClock.elapsedRealtime() - mPausedTime;
+            timeOnTimer = SystemClock.elapsedRealtime() - pausedTime;
         }
         return timeOnTimer;
     }
@@ -130,49 +160,15 @@ public abstract class TimerWithPause {
      */
     public abstract void onTick(long timeOnTimer);
 
-    private static final int MSG = 1;
-
-
-    // handles counting down
-    private Handler mHandler = new Handler() {
-
-        @Override
-        public void handleMessage(Message msg) {
-
-            synchronized (TimerWithPause.this) {
-                long millisOn = timeOn();
-                millisOn = correctTime(millisOn);
-
-                if (millisOn < mRefreshInterval) {
-                    // no tick, just delay until done
-                    sendMessageDelayed(obtainMessage(MSG), millisOn);
-                } else {
-                    long lastTickStart = SystemClock.elapsedRealtime();
-                    onTick(millisOn);
-
-                    // take into account user's onTick taking time to execute
-                    long delay = mRefreshInterval - (SystemClock.elapsedRealtime() - lastTickStart);
-
-                    // special case: user's onTick took more than mRefreshInterval to
-                    // complete, skip to next interval
-                    while (delay < 0) delay += mRefreshInterval;
-
-                    sendMessageDelayed(obtainMessage(MSG), delay);
-                }
-            }
-        }
-    };
-
-    private long correctTime(long time) {
-        long tempTime = (time / mRefreshInterval) * mRefreshInterval;
-        long mod = time - tempTime;
-        return mod < (mRefreshInterval / 2) ? tempTime : tempTime + mRefreshInterval;
-    }
-
     public void reset() {
         pause();
-        mPausedTime = 0;
-        mPauseTime = 0;
+        pausedTime = 0;
+        pauseTime = 0;
     }
 
+    private long correctTime(long time) {
+        long tempTime = (time / refreshInterval) * refreshInterval;
+        long mod = time - tempTime;
+        return mod < (refreshInterval / 2) ? tempTime : tempTime + refreshInterval;
+    }
 }

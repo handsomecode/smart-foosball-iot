@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import timber.log.Timber;
 
-public class MainActivity extends ActivityWithPresenter {
+public class MainActivity extends FeedbackFromPresenterActivity {
 
     public static final int A = 1;
     public static final int B = 2;

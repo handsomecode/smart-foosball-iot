@@ -14,7 +14,7 @@ import java.util.Locale;
 import timber.log.Timber;
 
 public class CurrentGame {
-    private ActivityWithPresenter activityWithPresenter;
+    private FeedbackFromPresenterActivity feedbackFromPresenterActivity;
     private Game game;
     private boolean isGameStarted;
     private DatabaseReference reference;
@@ -24,10 +24,10 @@ public class CurrentGame {
     private ArrayList<Integer> playerIndex;
     private List<PlayerWithScore> playerWithScoreList;
 
-    public CurrentGame(ActivityWithPresenter activityWithPresenter,
+    public CurrentGame(FeedbackFromPresenterActivity feedbackFromPresenterActivity,
             DatabaseReference databaseReference,
             List<PlayerWithScore> playerWithScoresList) {
-        this.activityWithPresenter = activityWithPresenter;
+        this.feedbackFromPresenterActivity = feedbackFromPresenterActivity;
         game = new Game();
         playerIndex = new ArrayList<>(4);
         isGameStarted = false;
@@ -85,11 +85,11 @@ public class CurrentGame {
             while ((scoreA != 0 || scoreB != 0)) {
                 if (scoreA != 0) {
                     scoreA--;
-                    activityWithPresenter.setScorebarA(scoreA);
+                    feedbackFromPresenterActivity.setScorebarA(scoreA);
                 }
                 if (scoreB != 0) {
                     scoreB--;
-                    activityWithPresenter.setScorebarB(scoreB);
+                    feedbackFromPresenterActivity.setScorebarB(scoreB);
                 }
             }
             for (int i = 0; i < 4; i++) {
@@ -103,12 +103,12 @@ public class CurrentGame {
         if (teamScored == MainActivity.A) {
             startGame();
             scoreA++;
-            activityWithPresenter.setScorebarA(scoreA);
+            feedbackFromPresenterActivity.setScorebarA(scoreA);
         }
         if (teamScored == MainActivity.B) {
             startGame();
             scoreB++;
-            activityWithPresenter.setScorebarB(scoreB);
+            feedbackFromPresenterActivity.setScorebarB(scoreB);
         }
     }
 
@@ -139,7 +139,7 @@ public class CurrentGame {
 
     public void clearInclude(int position) {
         playerIndex.set(position, -1);
-        activityWithPresenter.clearPlayerInInclude(position);
+        feedbackFromPresenterActivity.clearPlayerInInclude(position);
     }
 
     public String getPlayerId(int position) {
@@ -149,6 +149,6 @@ public class CurrentGame {
     private void setPlayer(int position, int index) {
         playerIndex.set(position, index);
         Timber.d("playerIndex = " + playerIndex.get(position));
-        activityWithPresenter.setPlayerInInclude(position, index);
+        feedbackFromPresenterActivity.setPlayerInInclude(position, index);
     }
 }

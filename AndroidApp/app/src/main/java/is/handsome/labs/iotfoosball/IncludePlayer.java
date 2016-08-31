@@ -15,14 +15,14 @@ public class IncludePlayer {
     @BindView(R.id.score)
     TextView score;
 
-    private View mInc;
+    private View inc;
 
     public IncludePlayer(View view) {
-        this.mInc = view;
+        this.inc = view;
     }
 
     public View getInc() {
-        return mInc;
+        return inc;
     }
 
     //    @BindView(R.id.medal)

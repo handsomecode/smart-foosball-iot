@@ -11,52 +11,52 @@ import java.util.List;
 import timber.log.Timber;
 
 public class FirebaseDatabaseListService<T> {
-    private Class<T> mModelClass;
-    private List<T> mDataList;
-    private List<String> mKeyList;
-    private List<ActionListener<T>> mListenersList;
+    private Class<T> modelClass;
+    private List<T> dataList;
+    private List<String> keyList;
+    private List<ActionListener<T>> listenersList;
 
     public FirebaseDatabaseListService(DatabaseReference Ref, Class<T> modelClass) {
-        this.mModelClass = modelClass;
-        mListenersList = new ArrayList<>();
-        mDataList = new ArrayList<>();
-        mKeyList = new ArrayList<>();
-        Timber.d("listenerlist = " + mListenersList.toString());
+        this.modelClass = modelClass;
+        this.listenersList = new ArrayList<>();
+        this.dataList = new ArrayList<>();
+        this.keyList = new ArrayList<>();
+        Timber.d("listenerlist = " + this.listenersList.toString());
         ChildEventListener mChildEventListener = Ref.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                T data = dataSnapshot.getValue(FirebaseDatabaseListService.this.mModelClass);
+                T data = dataSnapshot.getValue(FirebaseDatabaseListService.this.modelClass);
                 String key = dataSnapshot.getKey();
                 int index;
                 if (previousChildName == null) {
-                    mDataList.add(0, data);
-                    mKeyList.add(0, key);
-                    index = mKeyList.size() - 1;
+                    dataList.add(0, data);
+                    keyList.add(0, key);
+                    index = keyList.size() - 1;
                 } else {
-                    int previousIndex = mKeyList.indexOf(previousChildName);
+                    int previousIndex = keyList.indexOf(previousChildName);
                     int nextIndex = previousIndex + 1;
-                    if (nextIndex == mDataList.size()) {
-                        mDataList.add(data);
-                        mKeyList.add(key);
-                        index = mKeyList.size() - 1;
+                    if (nextIndex == dataList.size()) {
+                        dataList.add(data);
+                        keyList.add(key);
+                        index = keyList.size() - 1;
                     } else {
-                        mDataList.add(nextIndex, data);
-                        mKeyList.add(nextIndex, key);
+                        dataList.add(nextIndex, data);
+                        keyList.add(nextIndex, key);
                         index = nextIndex;
                     }
                 }
-                for (ActionListener<T> actionListener : mListenersList) {
+                for (ActionListener<T> actionListener : listenersList) {
                     actionListener.addingPerformed(key, data, index);
                 }
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                T data = dataSnapshot.getValue(FirebaseDatabaseListService.this.mModelClass);
+                T data = dataSnapshot.getValue(FirebaseDatabaseListService.this.modelClass);
                 String key = dataSnapshot.getKey();
-                int index = mKeyList.indexOf(key);
-                mDataList.set(index, data);
-                for (ActionListener<T> actionListener : mListenersList) {
+                int index = keyList.indexOf(key);
+                dataList.set(index, data);
+                for (ActionListener<T> actionListener : listenersList) {
                     actionListener.changingPerformed(key, data, index);
                 }
             }
@@ -64,11 +64,11 @@ public class FirebaseDatabaseListService<T> {
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 String key = dataSnapshot.getKey();
-                T data = dataSnapshot.getValue(FirebaseDatabaseListService.this.mModelClass);
-                int index = mKeyList.indexOf(key);
-                mDataList.remove(index);
-                mKeyList.remove(index);
-                for (ActionListener<T> actionListener : mListenersList) {
+                T data = dataSnapshot.getValue(FirebaseDatabaseListService.this.modelClass);
+                int index = keyList.indexOf(key);
+                dataList.remove(index);
+                keyList.remove(index);
+                for (ActionListener<T> actionListener : listenersList) {
                     actionListener.removingPerformed(key, data, index);
                 }
             }
@@ -84,12 +84,12 @@ public class FirebaseDatabaseListService<T> {
     }
 
     public void addListener(ActionListener<T> actionListener) {
-        actionListener.initialisation(mKeyList, mDataList);
-        mListenersList.add(actionListener);
+        actionListener.initialisation(keyList, dataList);
+        listenersList.add(actionListener);
     }
 
     public void removeListener(ActionListener<T> actionListener) {
         actionListener.listenerRemovingPerformed();
-        mListenersList.remove(actionListener);
+        listenersList.remove(actionListener);
     }
 }

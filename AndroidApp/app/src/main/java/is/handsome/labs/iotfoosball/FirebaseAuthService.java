@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -15,10 +14,8 @@ import com.google.firebase.auth.FirebaseUser;
 public class FirebaseAuthService {
     private FirebaseAuth fbAuth;
     private FirebaseAuth.AuthStateListener fbAuthListener;
-    private Context context;
 
     public FirebaseAuthService(Context context, String fbLogin, String fbPassword) {
-        this.context = context;
 
         fbAuth = FirebaseAuth.getInstance();
 

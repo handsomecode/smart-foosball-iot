@@ -9,7 +9,7 @@ import java.util.Locale;
 
 public class Presenter {
 
-    private ActivityWithPresenter activityWithPresenter;
+    private FeedbackFromPresenterActivity feedbackFromPresenterActivity;
     private ImgSetterService imgSetterService;
     private SoundService soundPlayer;
     private UsbService usbService;
@@ -26,18 +26,18 @@ public class Presenter {
 
 
 
-    public Presenter(ActivityWithPresenter activityWithPresenter) {
+    public Presenter(FeedbackFromPresenterActivity feedbackFromPresenterActivity) {
 
-        this.activityWithPresenter = activityWithPresenter;
+        this.feedbackFromPresenterActivity = feedbackFromPresenterActivity;
 
-        imgSetterService = new ImgSetterService(activityWithPresenter,
+        imgSetterService = new ImgSetterService(feedbackFromPresenterActivity,
                 "gs://handsomefoosball.appspot.com");
 
-        soundPlayer = new SoundService(activityWithPresenter, R.raw.countdown);
+        soundPlayer = new SoundService(feedbackFromPresenterActivity, R.raw.countdown);
 
-        dataReaderService = new DataReaderService(activityWithPresenter, R.raw.data);
+        dataReaderService = new DataReaderService(feedbackFromPresenterActivity, R.raw.data);
 
-        fbAuthService = new FirebaseAuthService(activityWithPresenter,
+        fbAuthService = new FirebaseAuthService(feedbackFromPresenterActivity,
                 dataReaderService.getFbLogin(),
                 dataReaderService.getFbPassword());
 
@@ -52,18 +52,18 @@ public class Presenter {
                 new FirebaseDatabaseListService<>(database.getRef().child("/players/"),
                         Player.class);
 
-        timerClock = new TimerForClock(activityWithPresenter, 1000, false);
+        timerClock = new TimerForClock(feedbackFromPresenterActivity, 1000, false);
 
         phraseSpotter = new PhraseSpotterForCountStart(soundPlayer);
 
-        phraseSpotter.init(activityWithPresenter.getApplicationContext(),
+        phraseSpotter.init(feedbackFromPresenterActivity.getApplicationContext(),
                 dataReaderService.getYandexApi());
 
-        currentGame = new CurrentGame(activityWithPresenter,
+        currentGame = new CurrentGame(feedbackFromPresenterActivity,
                 database.child("/games/"),
                 playerWithScoreList);
 
-        usbService = new UsbService(activityWithPresenter, currentGame);
+        usbService = new UsbService(feedbackFromPresenterActivity, currentGame);
     }
 
     public ImgSetterService getImgSetterService() {
@@ -72,10 +72,10 @@ public class Presenter {
 
     public void initListeners() {
         ActionGameListener actionGameListener =
-                new ActionGameListener(playerWithScoreList, activityWithPresenter);
+                new ActionGameListener(playerWithScoreList, feedbackFromPresenterActivity);
         fbDatabaseGamesService.addListener(actionGameListener);
         ActionPlayerListener actionPlayerListener =
-                new ActionPlayerListener(playerWithScoreList, activityWithPresenter);
+                new ActionPlayerListener(playerWithScoreList, feedbackFromPresenterActivity);
         fbDatabasePlayersService.addListener(actionPlayerListener);
 
     }
@@ -90,7 +90,7 @@ public class Presenter {
 
     public void onActivityStart() {
         fbAuthService.onStart();
-        phraseSpotter.onStart(activityWithPresenter.getApplicationContext());
+        phraseSpotter.onStart(feedbackFromPresenterActivity.getApplicationContext());
     }
 
     public void onActivityStop() {

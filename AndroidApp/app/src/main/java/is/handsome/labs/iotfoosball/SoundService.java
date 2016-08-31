@@ -5,11 +5,9 @@ import android.media.SoundPool;
 
 public class SoundService {
     private SoundPool soundPool;
-    private Context context;
     private int soundId;
 
     public SoundService (Context context, int soundRef) {
-        this.context = context;
         this.soundPool = new SoundPool.Builder().build();
         this.soundId = soundPool.load(context, soundRef, 1);
     }

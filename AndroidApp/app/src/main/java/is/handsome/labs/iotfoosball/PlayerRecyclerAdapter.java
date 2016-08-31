@@ -14,6 +14,24 @@ import butterknife.ButterKnife;
 
 public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAdapter.ViewHolder>{
 
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        public ViewHolder(View v) {
+            super(v);
+            ButterKnife.bind(this,v);
+            player.setOnLongClickListener(new OnPlayerLongClickListener(ViewHolder.this, v));
+        }
+
+        @BindView(R.id.nick)
+        TextView nick;
+        @BindView(R.id.avatar)
+        ImageView avatar;
+        @BindView(R.id.score)
+        TextView score;
+        @BindView(R.id.player)
+        View player;
+    }
+
     private Presenter presenter;
 
     public PlayerRecyclerAdapter(Presenter presenter) {
@@ -40,22 +58,4 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
     public int getItemCount() {
         return presenter.getPlayerCount();
     }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.nick)
-        TextView nick;
-        @BindView(R.id.avatar)
-        ImageView avatar;
-        @BindView(R.id.score)
-        TextView score;
-        @BindView(R.id.player)
-        View player;
-
-        public ViewHolder(View v) {
-            super(v);
-            ButterKnife.bind(this,v);
-            player.setOnLongClickListener(new OnPlayerLongClickListener(ViewHolder.this, v));
-        }
-    }
-
 }

@@ -6,11 +6,11 @@ import android.support.v4.view.ViewPager;
 import java.util.ArrayList;
 
 public class Scorebar {
-    private ArrayList<ScoreViewPager> mScorebarsView;
+    private ArrayList<ScoreViewPager> scorebarsView;
 
     public Scorebar (Context context, final Presenter presenter,
             final ArrayList<ScoreViewPager> scorebarsView, @MainActivity.Teams final int team) {
-        this.mScorebarsView = scorebarsView;
+        this.scorebarsView = scorebarsView;
         scorebarsView.get(0).addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position,
@@ -67,6 +67,6 @@ public class Scorebar {
     }
 
     public void setScore(int score) {
-        mScorebarsView.get(0).setCurrentItem(score);
+        scorebarsView.get(0).setCurrentItem(score);
     }
 }

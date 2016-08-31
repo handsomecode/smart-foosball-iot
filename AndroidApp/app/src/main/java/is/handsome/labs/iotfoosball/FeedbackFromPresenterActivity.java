@@ -2,7 +2,7 @@ package is.handsome.labs.iotfoosball;
 
 import android.app.Activity;
 
-public abstract class ActivityWithPresenter extends Activity {
+public abstract class FeedbackFromPresenterActivity extends Activity {
     abstract void notifyDataSetRecyclerViewChanged();
     abstract void setTime(String time);
     abstract void setPlayerInInclude(int position, int index);

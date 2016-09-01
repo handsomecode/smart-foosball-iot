@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.HashMap;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -32,10 +30,10 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
         View player;
     }
 
-    private Presenter presenter;
+    private Interactor interactor;
 
-    public PlayerRecyclerAdapter(Presenter presenter) {
-        this.presenter = presenter;
+    public PlayerRecyclerAdapter(Interactor interactor) {
+        this.interactor = interactor;
     }
 
     @Override
@@ -48,14 +46,14 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
 
     @Override
     public void onBindViewHolder(PlayerRecyclerAdapter.ViewHolder holder, int position) {
-        PlayerViewInfo playerViewInfo = presenter.getPlayerViewInfoByPosition(position);
+        PlayerViewInfo playerViewInfo = interactor.getPlayerViewInfoByPosition(position);
         holder.nick.setText(playerViewInfo.getNick());
         holder.score.setText(playerViewInfo.getScore());
-        presenter.getImgSetterService().setImg(playerViewInfo.getAvatar(), holder.avatar);
+        interactor.getImgSetterService().setImg(playerViewInfo.getAvatar(), holder.avatar);
     }
 
     @Override
     public int getItemCount() {
-        return presenter.getPlayerCount();
+        return interactor.getPlayerCount();
     }
 }

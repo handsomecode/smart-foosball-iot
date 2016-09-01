@@ -38,7 +38,7 @@ public class MainActivity extends FeedbackFromPresenterActivity {
     private Scorebar scorebarA;
     private Scorebar scorebarB;
 
-    private Presenter presenter;
+    private Interactor interactor;
 
     @BindView(R.id.main_layout)
     ConstraintLayout main_layout;
@@ -82,7 +82,7 @@ public class MainActivity extends FeedbackFromPresenterActivity {
 
         Log.d("myLog", "New start");
 
-        presenter = new Presenter(this);
+        interactor = new Interactor(this);
 
         includesInit();
 
@@ -92,61 +92,61 @@ public class MainActivity extends FeedbackFromPresenterActivity {
 
         RecyclerView.setAdapter(playerRecyclerAdapter);
 
-        presenter.initListeners();
+        interactor.initListeners();
 
         for (int i = 0; i < 4; i++) {
             includePlayers.get(i)
                     .getInc()
-                    .setOnDragListener(new DragListenerForIncludes(presenter, i));
+                    .setOnDragListener(new DragListenerForIncludes(interactor, i));
         }
 
-        main_layout.setOnDragListener(new DragListenerForBackground(presenter));
+        main_layout.setOnDragListener(new DragListenerForBackground(interactor));
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.onActivityResume();
+        interactor.onActivityResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        presenter.onActivityPause();
+        interactor.onActivityPause();
     }
 
 
     @Override
     public void onStart() {
         super.onStart();
-        presenter.onActivityStart();
+        interactor.onActivityStart();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        presenter.onActivityStop();
+        interactor.onActivityStop();
     }
 
     @OnClick(R.id.btnstart)
     public void onStartClick() {
-       presenter.onStartClick();
+       interactor.onStartClick();
     }
 
     @OnClick(R.id.btnend)
     public void onEndClick() {
-        presenter.onEndClick();
+        interactor.onEndClick();
     }
 
     @OnClick(R.id.btncntdwn)
     public void onCntdwnClick() {
-        presenter.onCntdwnClick();
+        interactor.onCntdwnClick();
     }
 
     @OnClick(R.id.Timer)
     public void onTimerClick() {
-        presenter.onTimerClick();
+        interactor.onTimerClick();
     }
 
     @Override
@@ -161,11 +161,11 @@ public class MainActivity extends FeedbackFromPresenterActivity {
 
     @Override
     void setPlayerInInclude(int position, int index) {
-        PlayerViewInfo playerViewInfo = presenter.getPlayerViewInfoByPosition(index);
+        PlayerViewInfo playerViewInfo = interactor.getPlayerViewInfoByPosition(index);
         includePlayers.get(position).nick.setText(playerViewInfo.getNick());
         includePlayers.get(position).score.setText(playerViewInfo.getScore());
 
-       presenter.getImgSetterService().setAvatar(
+       interactor.getImgSetterService().setAvatar(
                 playerViewInfo.getNick(),
                 includePlayers.get(position).avatar);
 
@@ -180,7 +180,7 @@ public class MainActivity extends FeedbackFromPresenterActivity {
         if (!(position >=4 || position < 0)) {
             includePlayers.get(position).nick.setText("player");
             includePlayers.get(position).score.setText("");
-            presenter.getImgSetterService().setNullImg(includePlayers.get(position).avatar);
+            interactor.getImgSetterService().setNullImg(includePlayers.get(position).avatar);
             includePlayers.get(position).avatar.setOnLongClickListener(null);
         }
     }
@@ -221,18 +221,18 @@ public class MainActivity extends FeedbackFromPresenterActivity {
         android.support.v7.widget.RecyclerView.LayoutManager layoutManager =
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView.setLayoutManager(layoutManager);
-        playerRecyclerAdapter = new PlayerRecyclerAdapter(presenter);
+        playerRecyclerAdapter = new PlayerRecyclerAdapter(interactor);
     }
 
     private void scoreBarInit() {
         ArrayList<ScoreViewPager> score1 = new ArrayList<>();
         score1.add(t1u);
         score1.add(t1d);
-        scorebarA = new Scorebar(this, presenter, score1, A);
+        scorebarA = new Scorebar(this, interactor, score1, A);
 
         ArrayList<ScoreViewPager> score2 = new ArrayList<>();
         score2.add(t2u);
         score2.add(t2d);
-        scorebarB = new Scorebar(this, presenter, score2, B);
+        scorebarB = new Scorebar(this, interactor, score2, B);
     }
 }

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Scorebar {
     private ArrayList<ScoreViewPager> scorebarsView;
 
-    public Scorebar (Context context, final Presenter presenter,
+    public Scorebar (Context context, final Interactor interactor,
             final ArrayList<ScoreViewPager> scorebarsView, @MainActivity.Teams final int team) {
         this.scorebarsView = scorebarsView;
         scorebarsView.get(0).addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -23,7 +23,7 @@ public class Scorebar {
                 if (scorebarsView.size() > 1) {
                     scorebarsView.get(1).setCurrentItem(((position - (position % 10)) / 10), true);
                 }
-                presenter.notifyListed(team, position);
+                interactor.notifyListed(team, position);
             }
 
             @Override

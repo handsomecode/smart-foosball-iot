@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class Presenter {
+public class Interactor {
 
     private FeedbackFromPresenterActivity feedbackFromPresenterActivity;
     private ImgSetterService imgSetterService;
@@ -18,15 +18,12 @@ public class Presenter {
     private TimerForClock timerClock;
     private CurrentGame currentGame;
 
-    //Model
     private List<PlayerWithScore> playerWithScoreList;
     private DataReaderService dataReaderService;
     private FirebaseDatabaseListService<Player> fbDatabasePlayersService;
     private FirebaseDatabaseListService<Game> fbDatabaseGamesService;
 
-
-
-    public Presenter(FeedbackFromPresenterActivity feedbackFromPresenterActivity) {
+    public Interactor(FeedbackFromPresenterActivity feedbackFromPresenterActivity) {
 
         this.feedbackFromPresenterActivity = feedbackFromPresenterActivity;
 

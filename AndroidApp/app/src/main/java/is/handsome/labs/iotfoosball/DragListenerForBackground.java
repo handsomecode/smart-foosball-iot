@@ -5,10 +5,10 @@ import android.view.View;
 
 public class DragListenerForBackground implements View.OnDragListener  {
 
-    private Interactor interactor;
+    private InterfacePresenterFromView interfacePresenterFromView;
 
-    public DragListenerForBackground(Interactor interactor) {
-        this.interactor = interactor;
+    public DragListenerForBackground(InterfacePresenterFromView interfacePresenterFromView) {
+        this.interfacePresenterFromView = interfacePresenterFromView;
     }
 
     @Override
@@ -18,7 +18,7 @@ public class DragListenerForBackground implements View.OnDragListener  {
             if (dragEvent.getClipData().getItemCount() > 1) {
                 int positionFrom = Integer.parseInt(
                         (String) dragEvent.getClipData().getItemAt(1).getText());
-                interactor.notifyDragToBackground(positionFrom);
+                interfacePresenterFromView.notifyDragToBackground(positionFrom);
             }
         }
         return true;

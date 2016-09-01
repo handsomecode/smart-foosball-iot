@@ -30,10 +30,10 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
         View player;
     }
 
-    private Interactor interactor;
+    private InterfacePresenterFromView InterfacePresenterFromView;
 
-    public PlayerRecyclerAdapter(Interactor interactor) {
-        this.interactor = interactor;
+    public PlayerRecyclerAdapter(InterfacePresenterFromView InterfacePresenterFromView) {
+        this.InterfacePresenterFromView = InterfacePresenterFromView;
     }
 
     @Override
@@ -46,14 +46,14 @@ public class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAd
 
     @Override
     public void onBindViewHolder(PlayerRecyclerAdapter.ViewHolder holder, int position) {
-        PlayerViewInfo playerViewInfo = interactor.getPlayerViewInfoByPosition(position);
+        PlayerViewInfo playerViewInfo = InterfacePresenterFromView.getPlayerViewInfoByPosition(position);
         holder.nick.setText(playerViewInfo.getNick());
         holder.score.setText(playerViewInfo.getScore());
-        interactor.getImgSetterService().setImg(playerViewInfo.getAvatar(), holder.avatar);
+        InterfacePresenterFromView.getImgSetterService().setImg(playerViewInfo.getAvatar(), holder.avatar);
     }
 
     @Override
     public int getItemCount() {
-        return interactor.getPlayerCount();
+        return InterfacePresenterFromView.getPlayerCount();
     }
 }

@@ -5,18 +5,18 @@ import java.util.List;
 
 public class ActionGameListener extends ActionListener<Game> {
     private final List<PlayerWithScore> playerWithScores;
-    private FeedbackFromPresenterActivity feedbackFromPresenterActivity;
+    private InterfacePresentorFromInteractor interfacePresentorFromInteractor;
 
     ActionGameListener(List<PlayerWithScore> playerWithScores,
-            FeedbackFromPresenterActivity feedbackFromPresenterActivity) {
+            InterfacePresentorFromInteractor interfacePresentorFromInteractor) {
         this.playerWithScores = playerWithScores;
-        this.feedbackFromPresenterActivity = feedbackFromPresenterActivity;
+        this.interfacePresentorFromInteractor = interfacePresentorFromInteractor;
     }
 
     @Override
     public void addingPerformed(String key, Game data, int index) {
         addScore(key, data, index);
-        feedbackFromPresenterActivity.notifyDataSetRecyclerViewChanged();
+        interfacePresentorFromInteractor.notifyDataSetRecyclerViewChanged();
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ActionGameListener extends ActionListener<Game> {
                 }
             }
         }
-        feedbackFromPresenterActivity.notifyDataSetRecyclerViewChanged();
+        interfacePresentorFromInteractor.notifyDataSetRecyclerViewChanged();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ActionGameListener extends ActionListener<Game> {
         for (int i = 0; i < keyList.size(); i++) {
             addScore(keyList.get(i), dataList.get(i), i);
         }
-        feedbackFromPresenterActivity.notifyDataSetRecyclerViewChanged();
+        interfacePresentorFromInteractor.notifyDataSetRecyclerViewChanged();
     }
 
     private void addScore(String playerId, Game data, int index) {

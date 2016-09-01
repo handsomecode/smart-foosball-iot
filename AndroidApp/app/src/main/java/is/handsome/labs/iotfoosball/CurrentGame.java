@@ -14,7 +14,7 @@ import java.util.Locale;
 import timber.log.Timber;
 
 public class CurrentGame {
-    private FeedbackFromPresenterActivity feedbackFromPresenterActivity;
+    private InterfacePresentorFromInteractor interfacePresentorFromView;
     private Game game;
     private boolean isGameStarted;
     private DatabaseReference reference;
@@ -24,10 +24,10 @@ public class CurrentGame {
     private ArrayList<Integer> playerIndex;
     private List<PlayerWithScore> playerWithScoreList;
 
-    public CurrentGame(FeedbackFromPresenterActivity feedbackFromPresenterActivity,
+    public CurrentGame(InterfacePresentorFromInteractor interfacePresentorFromView,
             DatabaseReference databaseReference,
             List<PlayerWithScore> playerWithScoresList) {
-        this.feedbackFromPresenterActivity = feedbackFromPresenterActivity;
+        this.interfacePresentorFromView = interfacePresentorFromView;
         game = new Game();
         playerIndex = new ArrayList<>(4);
         isGameStarted = false;
@@ -85,11 +85,11 @@ public class CurrentGame {
             while ((scoreA != 0 || scoreB != 0)) {
                 if (scoreA != 0) {
                     scoreA--;
-                    feedbackFromPresenterActivity.setScorebarA(scoreA);
+                    interfacePresentorFromView.setScorebarA(scoreA);
                 }
                 if (scoreB != 0) {
                     scoreB--;
-                    feedbackFromPresenterActivity.setScorebarB(scoreB);
+                    interfacePresentorFromView.setScorebarB(scoreB);
                 }
             }
             for (int i = 0; i < 4; i++) {
@@ -103,12 +103,12 @@ public class CurrentGame {
         if (teamScored == MainActivity.A) {
             startGame();
             scoreA++;
-            feedbackFromPresenterActivity.setScorebarA(scoreA);
+            interfacePresentorFromView.setScorebarA(scoreA);
         }
         if (teamScored == MainActivity.B) {
             startGame();
             scoreB++;
-            feedbackFromPresenterActivity.setScorebarB(scoreB);
+            interfacePresentorFromView.setScorebarB(scoreB);
         }
     }
 
@@ -139,7 +139,7 @@ public class CurrentGame {
 
     public void clearInclude(int position) {
         playerIndex.set(position, -1);
-        feedbackFromPresenterActivity.clearPlayerInInclude(position);
+        interfacePresentorFromView.clearPlayerInInclude(position);
     }
 
     public String getPlayerId(int position) {
@@ -149,6 +149,6 @@ public class CurrentGame {
     private void setPlayer(int position, int index) {
         playerIndex.set(position, index);
         Timber.d("playerIndex = " + playerIndex.get(position));
-        feedbackFromPresenterActivity.setPlayerInInclude(position, index);
+        interfacePresentorFromView.setPlayerInInclude(position, index);
     }
 }

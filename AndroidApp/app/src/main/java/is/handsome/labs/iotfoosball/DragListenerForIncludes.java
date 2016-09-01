@@ -7,11 +7,11 @@ import android.view.View;
 public class DragListenerForIncludes implements View.OnDragListener {
 
     private int position;
-    private Interactor interactor;
+    private InterfacePresenterFromView InterfacePresenterFromView;
 
-    public DragListenerForIncludes(Interactor interactor, int position) {
+    public DragListenerForIncludes(InterfacePresenterFromView InterfacePresenterFromView, int position) {
         this.position = position;
-        this.interactor = interactor;
+        this.InterfacePresenterFromView = InterfacePresenterFromView;
     }
 
     @Override
@@ -24,7 +24,7 @@ public class DragListenerForIncludes implements View.OnDragListener {
                     event.getClipData().getItemCount() > 1 ?
                             Integer.parseInt((String) event.getClipData().getItemAt(1).getText())
                             : -1;
-            interactor.notifyDraged(position, index, positionFrom);
+            InterfacePresenterFromView.notifyDraged(position, index, positionFrom);
         }
         return true;
     }

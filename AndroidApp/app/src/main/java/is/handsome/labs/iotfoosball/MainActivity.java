@@ -1,5 +1,6 @@
 package is.handsome.labs.iotfoosball;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.constraint.ConstraintLayout;
@@ -18,7 +19,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import timber.log.Timber;
 
-public class MainActivity extends FeedbackFromPresenterActivity {
+public class MainActivity extends Activity implements InterfaceViewFromPresenter {
 
     public static final int A = 1;
     public static final int B = 2;
@@ -38,7 +39,7 @@ public class MainActivity extends FeedbackFromPresenterActivity {
     private Scorebar scorebarA;
     private Scorebar scorebarB;
 
-    private Interactor interactor;
+    private InterfacePresenterFromView interfacePresenterFromView;
 
     @BindView(R.id.main_layout)
     ConstraintLayout main_layout;
@@ -82,7 +83,7 @@ public class MainActivity extends FeedbackFromPresenterActivity {
 
         Log.d("myLog", "New start");
 
-        interactor = new Interactor(this);
+        interfacePresenterFromView = new Presenter (getApplicationContext(), this);
 
         includesInit();
 
@@ -92,61 +93,61 @@ public class MainActivity extends FeedbackFromPresenterActivity {
 
         RecyclerView.setAdapter(playerRecyclerAdapter);
 
-        interactor.initListeners();
+        interfacePresenterFromView.initListeners();
 
         for (int i = 0; i < 4; i++) {
             includePlayers.get(i)
                     .getInc()
-                    .setOnDragListener(new DragListenerForIncludes(interactor, i));
+                    .setOnDragListener(new DragListenerForIncludes(interfacePresenterFromView, i));
         }
 
-        main_layout.setOnDragListener(new DragListenerForBackground(interactor));
+        main_layout.setOnDragListener(new DragListenerForBackground(interfacePresenterFromView));
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        interactor.onActivityResume();
+        interfacePresenterFromView.onActivityResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        interactor.onActivityPause();
+        interfacePresenterFromView.onActivityPause();
     }
 
 
     @Override
     public void onStart() {
         super.onStart();
-        interactor.onActivityStart();
+        interfacePresenterFromView.onActivityStart();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        interactor.onActivityStop();
+        interfacePresenterFromView.onActivityStop();
     }
 
     @OnClick(R.id.btnstart)
     public void onStartClick() {
-       interactor.onStartClick();
+       interfacePresenterFromView.onStartClick();
     }
 
     @OnClick(R.id.btnend)
     public void onEndClick() {
-        interactor.onEndClick();
+        interfacePresenterFromView.onEndClick();
     }
 
     @OnClick(R.id.btncntdwn)
     public void onCntdwnClick() {
-        interactor.onCntdwnClick();
+        interfacePresenterFromView.onCntdwnClick();
     }
 
     @OnClick(R.id.Timer)
     public void onTimerClick() {
-        interactor.onTimerClick();
+        interfacePresenterFromView.onTimerClick();
     }
 
     @Override
@@ -155,17 +156,17 @@ public class MainActivity extends FeedbackFromPresenterActivity {
     }
 
     @Override
-    void setTime(String time) {
+    public void setTime(String time) {
         btntimer.setText(time);
     }
 
     @Override
-    void setPlayerInInclude(int position, int index) {
-        PlayerViewInfo playerViewInfo = interactor.getPlayerViewInfoByPosition(index);
+    public void setPlayerInInclude(int position, int index) {
+        PlayerViewInfo playerViewInfo = interfacePresenterFromView.getPlayerViewInfoByPosition(index);
         includePlayers.get(position).nick.setText(playerViewInfo.getNick());
         includePlayers.get(position).score.setText(playerViewInfo.getScore());
 
-       interactor.getImgSetterService().setAvatar(
+       interfacePresenterFromView.getImgSetterService().setAvatar(
                 playerViewInfo.getNick(),
                 includePlayers.get(position).avatar);
 
@@ -176,22 +177,22 @@ public class MainActivity extends FeedbackFromPresenterActivity {
     }
 
     @Override
-    void clearPlayerInInclude(int position) {
+    public void clearPlayerInInclude(int position) {
         if (!(position >=4 || position < 0)) {
             includePlayers.get(position).nick.setText("player");
             includePlayers.get(position).score.setText("");
-            interactor.getImgSetterService().setNullImg(includePlayers.get(position).avatar);
+            interfacePresenterFromView.getImgSetterService().setNullImg(includePlayers.get(position).avatar);
             includePlayers.get(position).avatar.setOnLongClickListener(null);
         }
     }
 
     @Override
-    void setScorebarA(int ScoreA) {
+    public void setScorebarA(int ScoreA) {
         scorebarA.setScore(ScoreA);
     }
 
     @Override
-    void setScorebarB(int ScoreB) {
+    public void setScorebarB(int ScoreB) {
         scorebarB.setScore(ScoreB);
     }
 
@@ -221,18 +222,18 @@ public class MainActivity extends FeedbackFromPresenterActivity {
         android.support.v7.widget.RecyclerView.LayoutManager layoutManager =
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView.setLayoutManager(layoutManager);
-        playerRecyclerAdapter = new PlayerRecyclerAdapter(interactor);
+        playerRecyclerAdapter = new PlayerRecyclerAdapter(interfacePresenterFromView);
     }
 
     private void scoreBarInit() {
         ArrayList<ScoreViewPager> score1 = new ArrayList<>();
         score1.add(t1u);
         score1.add(t1d);
-        scorebarA = new Scorebar(this, interactor, score1, A);
+        scorebarA = new Scorebar(this, interfacePresenterFromView, score1, A);
 
         ArrayList<ScoreViewPager> score2 = new ArrayList<>();
         score2.add(t2u);
         score2.add(t2d);
-        scorebarB = new Scorebar(this, interactor, score2, B);
+        scorebarB = new Scorebar(this, interfacePresenterFromView, score2, B);
     }
 }

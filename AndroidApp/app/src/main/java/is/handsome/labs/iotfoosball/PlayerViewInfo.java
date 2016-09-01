@@ -2,7 +2,8 @@ package is.handsome.labs.iotfoosball;
 
 
 //TODO AutoValue
-public class PlayerViewInfo {
+
+class PlayerViewInfo {
 
     private String nick;
     private String avatar;

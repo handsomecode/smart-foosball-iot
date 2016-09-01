@@ -6,18 +6,18 @@ import timber.log.Timber;
 
 public class ActionPlayerListener extends ActionListener<Player> {
     private final List<PlayerWithScore> playerWithScores;
-    private FeedbackFromPresenterActivity feedbackFromPresenterActivity;
+    private InterfacePresentorFromInteractor interfacePresentorFromInteractor;
 
     ActionPlayerListener(List<PlayerWithScore> playerWithScores,
-            FeedbackFromPresenterActivity feedbackFromPresenterActivity) {
+            InterfacePresentorFromInteractor interfacePresentorFromInteractor) {
         this.playerWithScores = playerWithScores;
-        this.feedbackFromPresenterActivity = feedbackFromPresenterActivity;
+        this.interfacePresentorFromInteractor = interfacePresentorFromInteractor;
     }
 
     @Override
     public void addingPerformed(String key, Player data, int index) {
         addPlayer(key, data, index);
-        feedbackFromPresenterActivity.notifyDataSetRecyclerViewChanged();
+        interfacePresentorFromInteractor.notifyDataSetRecyclerViewChanged();
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ActionPlayerListener extends ActionListener<Player> {
                 }
             }
         }
-        feedbackFromPresenterActivity.notifyDataSetRecyclerViewChanged();
+        interfacePresentorFromInteractor.notifyDataSetRecyclerViewChanged();
     }
 
     @Override
@@ -38,7 +38,7 @@ public class ActionPlayerListener extends ActionListener<Player> {
         for (int i = 0; i < keyList.size(); i++) {
             addPlayer(keyList.get(i), dataList.get(i), i);
         }
-        feedbackFromPresenterActivity.notifyDataSetRecyclerViewChanged();
+        interfacePresentorFromInteractor.notifyDataSetRecyclerViewChanged();
     }
 
     private boolean addPlayer(String key, Player data, int index) {

@@ -3,16 +3,16 @@ package is.handsome.labs.iotfoosball.interactor;
 import java.util.Collections;
 import java.util.List;
 
-import is.handsome.labs.iotfoosball.models.ActionListener;
+import is.handsome.labs.iotfoosball.models.FirebaseActionListener;
 import is.handsome.labs.iotfoosball.models.Game;
 import is.handsome.labs.iotfoosball.presenter.InterfacePresentorFromInteractor;
 import is.handsome.labs.iotfoosball.models.PlayerWithScore;
 
-class ActionGameListener extends ActionListener<Game> {
+class FirebaseActionGameListener extends FirebaseActionListener<Game> {
     private final List<PlayerWithScore> playerWithScores;
     private InterfacePresentorFromInteractor interfacePresentorFromInteractor;
 
-    ActionGameListener(List<PlayerWithScore> playerWithScores,
+    FirebaseActionGameListener(List<PlayerWithScore> playerWithScores,
             InterfacePresentorFromInteractor interfacePresentorFromInteractor) {
         this.playerWithScores = playerWithScores;
         this.interfacePresentorFromInteractor = interfacePresentorFromInteractor;

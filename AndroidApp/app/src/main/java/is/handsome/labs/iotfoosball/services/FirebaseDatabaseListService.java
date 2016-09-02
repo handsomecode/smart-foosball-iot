@@ -8,14 +8,14 @@ import com.google.firebase.database.DatabaseReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import is.handsome.labs.iotfoosball.models.ActionListener;
+import is.handsome.labs.iotfoosball.models.FirebaseActionListener;
 import timber.log.Timber;
 
 public class FirebaseDatabaseListService<T> {
     private Class<T> modelClass;
     private List<T> dataList;
     private List<String> keyList;
-    private List<ActionListener<T>> listenersList;
+    private List<FirebaseActionListener<T>> listenersList;
 
     public FirebaseDatabaseListService(DatabaseReference Ref, Class<T> modelClass) {
         this.modelClass = modelClass;
@@ -46,7 +46,7 @@ public class FirebaseDatabaseListService<T> {
                         index = nextIndex;
                     }
                 }
-                for (ActionListener<T> actionListener : listenersList) {
+                for (FirebaseActionListener<T> actionListener : listenersList) {
                     actionListener.addingPerformed(key, data, index);
                 }
             }
@@ -57,7 +57,7 @@ public class FirebaseDatabaseListService<T> {
                 String key = dataSnapshot.getKey();
                 int index = keyList.indexOf(key);
                 dataList.set(index, data);
-                for (ActionListener<T> actionListener : listenersList) {
+                for (FirebaseActionListener<T> actionListener : listenersList) {
                     actionListener.changingPerformed(key, data, index);
                 }
             }
@@ -69,7 +69,7 @@ public class FirebaseDatabaseListService<T> {
                 int index = keyList.indexOf(key);
                 dataList.remove(index);
                 keyList.remove(index);
-                for (ActionListener<T> actionListener : listenersList) {
+                for (FirebaseActionListener<T> actionListener : listenersList) {
                     actionListener.removingPerformed(key, data, index);
                 }
             }
@@ -84,13 +84,13 @@ public class FirebaseDatabaseListService<T> {
         });
     }
 
-    public void addListener(ActionListener<T> actionListener) {
-        actionListener.initialisation(keyList, dataList);
-        listenersList.add(actionListener);
+    public void addListener(FirebaseActionListener<T> firebaseActionListener) {
+        firebaseActionListener.initialisation(keyList, dataList);
+        listenersList.add(firebaseActionListener);
     }
 
-    public void removeListener(ActionListener<T> actionListener) {
-        actionListener.listenerRemovingPerformed();
-        listenersList.remove(actionListener);
+    public void removeListener(FirebaseActionListener<T> firebaseActionListener) {
+        firebaseActionListener.listenerRemovingPerformed();
+        listenersList.remove(firebaseActionListener);
     }
 }

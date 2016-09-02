@@ -17,10 +17,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import is.handsome.labs.iotfoosball.interactor.DragListenerForBackground;
-import is.handsome.labs.iotfoosball.interactor.DragListenerForIncludes;
 import is.handsome.labs.iotfoosball.presenter.InterfacePresenterFromView;
-import is.handsome.labs.iotfoosball.interactor.PlayerRecyclerAdapter;
 import is.handsome.labs.iotfoosball.models.PlayerViewInfo;
 import is.handsome.labs.iotfoosball.R;
 import is.handsome.labs.iotfoosball.presenter.Presenter;
@@ -42,7 +39,7 @@ public class MainActivity extends Activity implements InterfaceViewFromPresenter
 
     //View
     private ArrayList<IncludePlayer> includePlayers;
-    private android.support.v7.widget.RecyclerView.Adapter playerRecyclerAdapter;
+
     private Scorebar scorebarA;
     private Scorebar scorebarB;
 
@@ -90,7 +87,7 @@ public class MainActivity extends Activity implements InterfaceViewFromPresenter
 
         Log.d("myLog", "New start");
 
-        interfacePresenterFromView = new Presenter(getApplicationContext(), this);
+        interfacePresenterFromView = new Presenter(this);
 
         includesInit();
 
@@ -98,17 +95,17 @@ public class MainActivity extends Activity implements InterfaceViewFromPresenter
 
         scoreBarInit();
 
-        RecyclerView.setAdapter(playerRecyclerAdapter);
+        RecyclerView.setAdapter(interfacePresenterFromView.getPlayerRecyclerAdapter());
 
         interfacePresenterFromView.initListeners();
 
         for (int i = 0; i < 4; i++) {
             includePlayers.get(i)
                     .getInc()
-                    .setOnDragListener(new DragListenerForIncludes(interfacePresenterFromView, i));
+                    .setOnDragListener(interfacePresenterFromView.getDragListenerForIncludes(i));
         }
 
-        main_layout.setOnDragListener(new DragListenerForBackground(interfacePresenterFromView));
+        main_layout.setOnDragListener(interfacePresenterFromView.getDragListenerForBackground());
 
     }
 
@@ -148,18 +145,13 @@ public class MainActivity extends Activity implements InterfaceViewFromPresenter
     }
 
     @OnClick(R.id.btncntdwn)
-    public void onCntdwnClick() {
+    public void onCountdownClick() {
         interfacePresenterFromView.onCntdwnClick();
     }
 
     @OnClick(R.id.Timer)
     public void onTimerClick() {
         interfacePresenterFromView.onTimerClick();
-    }
-
-    @Override
-    public void notifyDataSetRecyclerViewChanged() {
-        playerRecyclerAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -178,7 +170,7 @@ public class MainActivity extends Activity implements InterfaceViewFromPresenter
                 includePlayers.get(position).avatar);
 
         includePlayers.get(position).avatar.setOnLongClickListener(
-                new OnPlayerLongClickListener(index,
+                interfacePresenterFromView.getOnPlayerLongClickListener(index,
                         position,
                         includePlayers.get(position).getInc()));
     }
@@ -229,7 +221,6 @@ public class MainActivity extends Activity implements InterfaceViewFromPresenter
         android.support.v7.widget.RecyclerView.LayoutManager layoutManager =
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView.setLayoutManager(layoutManager);
-        playerRecyclerAdapter = new PlayerRecyclerAdapter(interfacePresenterFromView);
     }
 
     private void scoreBarInit() {

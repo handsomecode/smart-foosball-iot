@@ -1,4 +1,4 @@
-package is.handsome.labs.iotfoosball.interactor;
+package is.handsome.labs.iotfoosball.presenter;
 
 import android.util.Log;
 import android.view.DragEvent;

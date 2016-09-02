@@ -1,5 +1,6 @@
 package is.handsome.labs.iotfoosball.interactor;
 
+import android.app.Activity;
 import android.content.Context;
 
 import com.google.firebase.database.DatabaseReference;
@@ -33,28 +34,28 @@ public class Interactor implements InterfaceInteractorFromPresenter {
     private PhraseSpotterForCountStart phraseSpotter;
     private TimerForClock timerClock;
     private CurrentGame currentGame;
-    private Context context;
+    private Activity activity;
 
     private List<PlayerWithScore> playerWithScoreList;
     private DataReaderService dataReaderService;
     private FirebaseDatabaseListService<Player> fbDatabasePlayersService;
     private FirebaseDatabaseListService<Game> fbDatabaseGamesService;
 
-    public Interactor(Context context,
+    public Interactor(Activity activity,
             InterfacePresentorFromInteractor interfacePresentorFromInteractor) {
 
-        this.context = context;
+        this.activity = activity;
                 
         this.interfacePresentorFromInteractor = interfacePresentorFromInteractor;
 
-        imgSetterService = new ImgSetterService(context,
+        imgSetterService = new ImgSetterService(activity.getApplicationContext(),
                 "gs://handsomefoosball.appspot.com");
 
-        soundPlayer = new SoundService(context, R.raw.countdown);
+        soundPlayer = new SoundService(activity.getApplicationContext(), R.raw.countdown);
 
-        dataReaderService = new DataReaderService(context, R.raw.data);
+        dataReaderService = new DataReaderService(activity.getApplicationContext(), R.raw.data);
 
-        fbAuthService = new FirebaseAuthService(context,
+        fbAuthService = new FirebaseAuthService(activity,
                 dataReaderService.getFbLogin(),
                 dataReaderService.getFbPassword());
 
@@ -73,7 +74,7 @@ public class Interactor implements InterfaceInteractorFromPresenter {
 
         phraseSpotter = new PhraseSpotterForCountStart(soundPlayer);
 
-        phraseSpotter.init(context,
+        phraseSpotter.init(activity.getApplicationContext(),
                 dataReaderService.getYandexApi());
 
         currentGame = new CurrentGame(interfacePresentorFromInteractor,
@@ -82,7 +83,8 @@ public class Interactor implements InterfaceInteractorFromPresenter {
 
         SerialHandler serialHandler = SerialHandler.getInstance(currentGame);
 
-        usbService = new UsbService(context, serialHandler);
+        usbService = new UsbService(activity.getApplicationContext().getApplicationContext(),
+                serialHandler);
     }
 
     @Override
@@ -92,11 +94,13 @@ public class Interactor implements InterfaceInteractorFromPresenter {
 
     @Override
     public void initListeners() {
-        ActionGameListener actionGameListener =
-                new ActionGameListener(playerWithScoreList, interfacePresentorFromInteractor);
+        FirebaseActionGameListener actionGameListener =
+                new FirebaseActionGameListener(playerWithScoreList,
+                        interfacePresentorFromInteractor);
         fbDatabaseGamesService.addListener(actionGameListener);
-        ActionPlayerListener actionPlayerListener =
-                new ActionPlayerListener(playerWithScoreList, interfacePresentorFromInteractor);
+        FirebaseActionPlayerListener actionPlayerListener =
+                new FirebaseActionPlayerListener(playerWithScoreList,
+                        interfacePresentorFromInteractor);
         fbDatabasePlayersService.addListener(actionPlayerListener);
 
     }
@@ -116,7 +120,7 @@ public class Interactor implements InterfaceInteractorFromPresenter {
     @Override
     public void onActivityStart() {
         fbAuthService.onStart();
-        phraseSpotter.onStart(context);
+        phraseSpotter.onStart(activity.getApplicationContext());
     }
 
     @Override

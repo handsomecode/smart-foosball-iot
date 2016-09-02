@@ -1,4 +1,4 @@
-package is.handsome.labs.iotfoosball.interactor;
+package is.handsome.labs.iotfoosball.presenter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,8 +9,6 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import is.handsome.labs.iotfoosball.presenter.InterfacePresenterFromView;
-import is.handsome.labs.iotfoosball.view.OnPlayerLongClickListener;
 import is.handsome.labs.iotfoosball.models.PlayerViewInfo;
 import is.handsome.labs.iotfoosball.R;
 

@@ -1,6 +1,9 @@
 package is.handsome.labs.iotfoosball.presenter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import is.handsome.labs.iotfoosball.services.ImgSetterService;
 import is.handsome.labs.iotfoosball.interactor.InterfaceInteractorFromPresenter;
@@ -13,17 +16,40 @@ public class Presenter implements InterfacePresentorFromInteractor, InterfacePre
 
     private InterfaceInteractorFromPresenter interfaceInteractorFromPresenter;
     private InterfaceViewFromPresenter interfaceViewFromPresenter;
-    private Context context;
+    private Activity activity;
+    private android.support.v7.widget.RecyclerView.Adapter playerRecyclerAdapter;
 
-    public Presenter (Context context, InterfaceViewFromPresenter interfaceViewFromPresenter) {
-        this.context = context;
-        this.interfaceViewFromPresenter = interfaceViewFromPresenter;
-        interfaceInteractorFromPresenter = new Interactor(context, this);
+    public Presenter (Activity activity) {
+        this.activity = activity;
+        this.interfaceViewFromPresenter = (InterfaceViewFromPresenter) activity;
+        interfaceInteractorFromPresenter = new Interactor(activity, this);
+        playerRecyclerAdapter = new PlayerRecyclerAdapter(this);
+    }
+
+
+    @Override
+    public View.OnDragListener getDragListenerForIncludes(int i) {
+        return new DragListenerForIncludes(this, i);
+    }
+
+    @Override
+    public View.OnDragListener getDragListenerForBackground() {
+        return new DragListenerForBackground(this);
+    }
+
+    @Override
+    public OnPlayerLongClickListener getOnPlayerLongClickListener(int index, int position, View view) {
+        return new OnPlayerLongClickListener(index, position, view);
+    }
+
+    @Override
+    public RecyclerView.Adapter getPlayerRecyclerAdapter() {
+        return playerRecyclerAdapter;
     }
 
     @Override
     public void notifyDataSetRecyclerViewChanged() {
-        interfaceViewFromPresenter.notifyDataSetRecyclerViewChanged();
+        playerRecyclerAdapter.notifyDataSetChanged();
     }
 
     @Override

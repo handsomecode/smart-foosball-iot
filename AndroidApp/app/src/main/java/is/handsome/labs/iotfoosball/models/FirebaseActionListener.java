@@ -2,7 +2,7 @@ package is.handsome.labs.iotfoosball.models;
 
 import java.util.List;
 
-public class ActionListener <T> {
+public class FirebaseActionListener<T> {
 
     public void addingPerformed(String key, T data, int index) {
 

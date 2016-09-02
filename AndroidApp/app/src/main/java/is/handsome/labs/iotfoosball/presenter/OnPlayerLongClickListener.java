@@ -1,11 +1,10 @@
-package is.handsome.labs.iotfoosball.view;
+package is.handsome.labs.iotfoosball.presenter;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.util.Log;
 import android.view.View;
 
-import is.handsome.labs.iotfoosball.interactor.PlayerRecyclerAdapter;
 import timber.log.Timber;
 
 class OnPlayerLongClickListener implements View.OnLongClickListener {

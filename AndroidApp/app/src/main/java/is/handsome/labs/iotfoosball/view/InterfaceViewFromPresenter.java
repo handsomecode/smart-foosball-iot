@@ -1,7 +1,6 @@
 package is.handsome.labs.iotfoosball.view;
 
 public interface InterfaceViewFromPresenter {
-    void notifyDataSetRecyclerViewChanged();
 
     void setTime(String time);
 

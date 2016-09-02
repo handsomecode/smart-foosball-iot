@@ -1,5 +1,8 @@
 package is.handsome.labs.iotfoosball.presenter;
 
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+
 import is.handsome.labs.iotfoosball.models.PlayerViewInfo;
 import is.handsome.labs.iotfoosball.services.ImgSetterService;
 import is.handsome.labs.iotfoosball.view.MainActivity;
@@ -35,4 +38,13 @@ public interface InterfacePresenterFromView {
     int getPlayerCount();
 
     void notifyDraged(int position, int index, int positionFrom);
+
+    android.view.View.OnDragListener getDragListenerForIncludes(int i);
+
+    android.view.View.OnDragListener getDragListenerForBackground();
+
+    OnPlayerLongClickListener getOnPlayerLongClickListener(int index, int position, View view);
+
+    RecyclerView.Adapter getPlayerRecyclerAdapter();
+
 }

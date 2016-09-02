@@ -5,7 +5,7 @@
                                              android:layout_width="match_parent"
                                              android:layout_height="match_parent"
                                              android:background="@drawable/ic_background"
-                                             tools:context="is.handsome.labs.iotfoosball.MainActivity"
+                                             tools:context="is.handsome.labs.iotfoosball.view.MainActivity"
                                              android:id="@+id/main_layout">
 
     <include
@@ -121,7 +121,7 @@
         widget:layout_constraintTop_toTopOf="parent"
         widget:layout_constraintVertical_bias="0.65">
 
-        <is.handsome.labs.iotfoosball.ScoreViewPager
+        <is.handsome.labs.iotfoosball.view.ScoreViewPager
             android:id="@+id/t1d"
             android:layout_width="100dp"
             android:layout_height="200dp"
@@ -130,7 +130,7 @@
             tools:layout_editor_absoluteY="112dp"
             />
 
-        <is.handsome.labs.iotfoosball.ScoreViewPager
+        <is.handsome.labs.iotfoosball.view.ScoreViewPager
             android:id="@+id/t1u"
             android:layout_width="100dp"
             android:layout_height="200dp"
@@ -150,7 +150,7 @@
         widget:layout_constraintRight_toLeftOf="@+id/inc2"
         widget:layout_constraintTop_toTopOf="@+id/ScoreA">
 
-        <is.handsome.labs.iotfoosball.ScoreViewPager
+        <is.handsome.labs.iotfoosball.view.ScoreViewPager
             android:id="@+id/t2d"
             android:layout_width="100dp"
             android:layout_height="200dp"
@@ -159,7 +159,7 @@
             tools:layout_editor_absoluteY="100dp"
             />
 
-        <is.handsome.labs.iotfoosball.ScoreViewPager
+        <is.handsome.labs.iotfoosball.view.ScoreViewPager
             android:id="@+id/t2u"
             android:layout_width="100dp"
             android:layout_height="200dp"

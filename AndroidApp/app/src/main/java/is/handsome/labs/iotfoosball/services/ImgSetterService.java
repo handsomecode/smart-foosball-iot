@@ -1,4 +1,4 @@
-package is.handsome.labs.iotfoosball;
+package is.handsome.labs.iotfoosball.services;
 
 import android.content.Context;
 import android.net.Uri;
@@ -8,38 +8,44 @@ import android.widget.ImageView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
-public class FirebaseImgSetter {
-    private HashMap<String,Uri> mLinks;
-    private StorageReference mStorageRef;
-    private Picasso mPicasso;
+import is.handsome.labs.iotfoosball.R;
 
-    public FirebaseImgSetter(Context context, StorageReference storageReference) {
-        this.mStorageRef = storageReference;
-        mPicasso = Picasso.with(context);
-        mLinks = new HashMap<>();
+public class ImgSetterService {
+    private HashMap<String,Uri> links;
+    private StorageReference storageRef;
+    private Picasso picasso;
+
+    public ImgSetterService(Context context, String link) {
+        StorageReference storageRef = FirebaseStorage
+                .getInstance()
+                .getReferenceFromUrl(link);
+        this.storageRef = storageRef;
+        this.picasso = Picasso.with(context);
+        this.links = new HashMap<>();
     }
 
     public void setImg(final String link, ImageView imageView) {
         final WeakReference<ImageView> ImageViewWeakRef = new WeakReference<ImageView>(imageView);
         imageView.setTag(link); //protection from reusing unactual img
         imageView.setImageResource(0);
-        if (!mLinks.containsKey(link)) {
-            StorageReference pathRef = mStorageRef.child(link);
+        if (!links.containsKey(link)) {
+            StorageReference pathRef = storageRef.child(link);
             pathRef.getDownloadUrl()
                     .addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
                             ImageView imageView = ImageViewWeakRef.get();
                             Log.d("myLog", "save Uri link to " + link + " is " + uri.toString());
-                            mLinks.put(link, uri);
+                            links.put(link, uri);
                             if ((imageView != null) && (imageView.getTag() == link))
-                                mPicasso.load(uri).into(imageView);
+                                picasso.load(uri).into(imageView);
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -48,11 +54,11 @@ public class FirebaseImgSetter {
                             ImageView imageView = ImageViewWeakRef.get();
                             Log.d("exception", e.toString());
                             if ((imageView != null) && (imageView.getTag() == link))
-                                mPicasso.load(R.mipmap.opengamer).into(imageView);
+                                picasso.load(R.mipmap.opengamer).into(imageView);
                         }
                     });
         } else {
-            mPicasso.load(mLinks.get(link)).into(imageView);
+            picasso.load(links.get(link)).into(imageView);
         }
     }
 
@@ -60,14 +66,8 @@ public class FirebaseImgSetter {
         setImg("avatars/" + nick.toLowerCase() + ".jpg", imageView);
     }
 
-    public void delImg(String link) {
-        if (mLinks.containsKey(link)) {
-            mLinks.remove(link);
-        }
-    }
-
     public void setNullImg(ImageView imageView) {
-        mPicasso.cancelRequest(imageView);
+        picasso.cancelRequest(imageView);
         imageView.setImageDrawable(null);
     }
 }

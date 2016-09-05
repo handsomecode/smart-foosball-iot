@@ -1,11 +1,8 @@
-package is.handsome.labs.iotfoosball;
+package is.handsome.labs.iotfoosball.interactor;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import ru.yandex.speechkit.Error;
 import ru.yandex.speechkit.PhraseSpotterListener;
@@ -13,31 +10,13 @@ import ru.yandex.speechkit.PhraseSpotterModel;
 import ru.yandex.speechkit.SpeechKit;
 import timber.log.Timber;
 
-public abstract class PhraseSpotter implements PhraseSpotterListener {
+abstract class PhraseSpotter implements PhraseSpotterListener {
 
-    //TODO create new Thead for voice recognition
-
-    private Context mContext;
-
-    private void handleError(Error error) {
-        if (error.getCode() != Error.ERROR_OK) {
-            Timber.d("Error occurred: " + error.getString());
-        }
-    }
-
-    private void startPhraseSpotter(Context context) {
-        if (ActivityCompat.checkSelfPermission(context,
-                android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            Timber.d("Permission to record audio wasn't granted");
-            return;
-        }
-        Error startResult = ru.yandex.speechkit.PhraseSpotter.start();
-        handleError(startResult);
-    }
+    private Context context;
 
     @Override
     public void onPhraseSpotterStarted() {
-        startPhraseSpotter(mContext);
+        startPhraseSpotter(context);
         Timber.d("PhraseSpotter started");
     }
 
@@ -54,12 +33,12 @@ public abstract class PhraseSpotter implements PhraseSpotterListener {
     }
 
     public void init(Context context, String yandexApi) {
-        mContext = context;
+        this.context = context;
         SpeechKit.getInstance().configure(context, yandexApi);
         PhraseSpotterModel model = new PhraseSpotterModel("phrase-spotter/commands");
         Error loadResult = model.load();
         if (loadResult.getCode() != Error.ERROR_OK) {
-            Timber.d("Error occurred during model loading: " + loadResult.getString());
+            Timber.d("Error occurred during model loading: %s", loadResult.getString());
         } else {
             // Set the listener.
             ru.yandex.speechkit.PhraseSpotter.setListener(this);
@@ -80,4 +59,19 @@ public abstract class PhraseSpotter implements PhraseSpotterListener {
         handleError(stopResult);
     }
 
+    private void handleError(Error error) {
+        if (error.getCode() != Error.ERROR_OK) {
+            Timber.d("Error occurred: %s", error.getString());
+        }
+    }
+
+    private void startPhraseSpotter(Context context) {
+        if (ActivityCompat.checkSelfPermission(context,
+                android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            Timber.d("Permission to record audio wasn't granted");
+            return;
+        }
+        Error startResult = ru.yandex.speechkit.PhraseSpotter.start();
+        handleError(startResult);
+    }
 }

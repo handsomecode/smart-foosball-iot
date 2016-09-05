@@ -1,75 +1,75 @@
-package is.handsome.labs.iotfoosball;
+package is.handsome.labs.iotfoosball.models;
 
 public class PlayerWithScore {
     static private Player playerDummy = new Player("","");
-    private String mPlayerId;
-    private Player mPlayer;
-    private int mWins;
-    private int mLosses;
+    private String playerId;
+    private Player player;
+    private int wins;
+    private int losses;
 
     public PlayerWithScore(String playerId) {
-        this.mPlayerId = playerId;
-        this.mPlayer = playerDummy;
-        this.mWins = 0;
-        this.mLosses = 0;
+        this.playerId = playerId;
+        this.player = playerDummy;
+        this.wins = 0;
+        this.losses = 0;
     }
 
     public PlayerWithScore(String playerId, Player player) {
-        this.mPlayerId = playerId;
-        this.mPlayer = player;
-        this.mWins = 0;
-        this.mLosses = 0;
+        this.playerId = playerId;
+        this.player = player;
+        this.wins = 0;
+        this.losses = 0;
     }
 
     public Player getPlayer() {
-        return mPlayer;
+        return player;
     }
 
     public void setPlayer(Player player) {
-        this.mPlayer = player;
+        this.player = player;
     }
 
     public int getWins() {
-        return mWins;
+        return wins;
     }
 
     public void setWins(int wins) {
-        this.mWins = wins;
+        this.wins = wins;
     }
 
     public int getLosses() {
-        return mLosses;
+        return losses;
     }
 
     public void setLosses(int losses) {
-        this.mLosses = losses;
+        this.losses = losses;
     }
 
     public String getPlayerId() {
-        return mPlayerId;
+        return playerId;
     }
 
     public void increaseWins() {
-        this.mWins++;
+        this.wins++;
     }
 
     public void increseLosses() {
-        this.mLosses++;
+        this.losses++;
     }
 
     public void increaseGame(boolean isWinner) {
         if (isWinner) {
-            this.mWins++;
+            this.wins++;
         } else {
-            this.mLosses++;
+            this.losses++;
         }
     }
 
     public void decreaseGame(boolean isWinner) {
         if (isWinner) {
-            this.mWins++;
+            this.wins++;
         } else {
-            this.mLosses++;
+            this.losses++;
         }
     }
 }

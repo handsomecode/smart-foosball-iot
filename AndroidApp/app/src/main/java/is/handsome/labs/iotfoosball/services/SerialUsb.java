@@ -1,4 +1,4 @@
-package is.handsome.labs.iotfoosball;
+package is.handsome.labs.iotfoosball.services;
 
 import android.content.Context;
 import android.hardware.usb.UsbDeviceConnection;
@@ -21,114 +21,6 @@ import timber.log.Timber;
 
 public class SerialUsb {
 
-    private WorkerThreadFactory threadFactory = new WorkerThreadFactory("myThread");
-
-    private static final int BAUD_RATE = 115200;
-
-    private Handler mHandler;
-    private UsbSerialPort mUsbSerialPort;
-    private SerialInputOutputManager mSerialIOManager;
-    private ExecutorService mExecutor = Executors.newSingleThreadExecutor(threadFactory);
-    private SerialInputOutputManager.Listener mSerialInputListener =
-            new SerialInputOutputManager.Listener() {
-    //TODO check this place for fitting guidelines
-        private
-            String serialMessage = "";
-
-        @Override
-        public void onRunError(Exception e) {
-            Timber.d("Runner stopped");
-        }
-
-        @Override
-        public void onNewData(byte[] data) {
-            for (byte aData : data) {
-                if ((int)aData != 13 && (int)aData != 10) {
-                    serialMessage += Character.toString((char) aData);
-                    mHandler.sendEmptyMessage((int)aData);
-                }
-                if ((int)aData == 10) {
-                    Timber.d("Serial port message = " + serialMessage);
-                    serialMessage = "";
-                }
-            }
-        }
-    };
-
-    public SerialUsb(Handler handler) {
-        mHandler = handler;
-    }
-
-    public void init(Context context) {
-        UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
-        List<UsbSerialDriver> availableDrivers =
-                UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
-        if (availableDrivers.isEmpty()) {
-            Toast.makeText(context, "ÜSB devices Not found", Toast.LENGTH_LONG).show();
-        } else {
-            UsbSerialDriver driver = availableDrivers.get(0);
-            mUsbSerialPort = driver.getPorts().get(0);
-
-            UsbDeviceConnection connection =
-                    usbManager.openDevice(mUsbSerialPort.getDriver().getDevice());
-            if (connection == null) {
-                return;
-            }
-
-            try {
-                mUsbSerialPort.open(connection);
-                mUsbSerialPort.setParameters(BAUD_RATE,
-                        UsbSerialPort.DATABITS_8,
-                        UsbSerialPort.STOPBITS_1,
-                        UsbSerialPort.PARITY_NONE);
-                Toast.makeText(context, "ÜSB device have been found", Toast.LENGTH_LONG).show();
-            } catch (IOException e) {
-                Timber.d(e, "Error setting up device");
-                try {
-                    mUsbSerialPort.close();
-                } catch (IOException e2) {
-                    Timber.d(e2, "Close serial port");
-                }
-                mUsbSerialPort = null;
-                return;
-            }
-            onDeviceStateChange();
-        }
-    }
-
-    public void close() {
-        stopIoManager();
-        if (mUsbSerialPort != null) {
-            try {
-                mUsbSerialPort.close();
-            } catch (IOException e) {
-                Timber.d(e, "Close serial port");
-            }
-            mUsbSerialPort = null;
-        }
-    }
-
-    private void stopIoManager() {
-        if (mSerialIOManager != null) {
-            Timber.d("Stopping io manager ..");
-            mSerialIOManager.stop();
-            mSerialIOManager = null;
-        }
-    }
-
-    private void startIoManager() {
-        if (mUsbSerialPort != null) {
-            Timber.d("Starting io manager ..");
-            mSerialIOManager = new SerialInputOutputManager(mUsbSerialPort, mSerialInputListener);
-            mExecutor.submit(mSerialIOManager);
-        }
-    }
-
-    private void onDeviceStateChange() {
-        stopIoManager();
-        startIoManager();
-    }
-
     private class WorkerThreadFactory implements ThreadFactory {
         private int counter = 0;
         private String prefix = "";
@@ -140,5 +32,111 @@ public class SerialUsb {
         public Thread newThread(Runnable r) {
             return new Thread(r, prefix + "-" + counter++);
         }
+    }
+
+    private static final int BAUD_RATE = 115200;
+
+    private UsbSerialPort usbSerialPort;
+    private SerialInputOutputManager serialIOManager;
+    private ExecutorService executor;
+    private SerialInputOutputManager.Listener serialInputListener;
+
+    public SerialUsb(final Handler handler) {
+        WorkerThreadFactory threadFactory = new WorkerThreadFactory("myThread");
+        executor = Executors.newSingleThreadExecutor(threadFactory);
+        serialInputListener = new SerialInputOutputManager.Listener() {
+            //TODO check this place for fitting guidelines
+            private
+            String serialMessage = "";
+
+            @Override
+            public void onRunError(Exception e) {
+                Timber.d("Runner stopped");
+            }
+
+            @Override
+            public void onNewData(byte[] data) {
+                for (byte aData : data) {
+                    if ((int)aData != 13 && (int)aData != 10) {
+                        serialMessage += Character.toString((char) aData);
+                        handler.sendEmptyMessage((int)aData);
+                    }
+                    if ((int)aData == 10) {
+                        Timber.d("Serial port message = " + serialMessage);
+                        serialMessage = "";
+                    }
+                }
+            }
+        };
+    }
+
+    public void init(Context context) {
+        UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+        List<UsbSerialDriver> availableDrivers =
+                UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
+        if (availableDrivers.isEmpty()) {
+            Toast.makeText(context, "ÜSB devices Not found", Toast.LENGTH_LONG).show();
+        } else {
+            UsbSerialDriver driver = availableDrivers.get(0);
+            usbSerialPort = driver.getPorts().get(0);
+
+            UsbDeviceConnection connection =
+                    usbManager.openDevice(usbSerialPort.getDriver().getDevice());
+            if (connection == null) {
+                return;
+            }
+
+            try {
+                usbSerialPort.open(connection);
+                usbSerialPort.setParameters(BAUD_RATE,
+                        UsbSerialPort.DATABITS_8,
+                        UsbSerialPort.STOPBITS_1,
+                        UsbSerialPort.PARITY_NONE);
+                Toast.makeText(context, "ÜSB device have been found", Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                Timber.d(e, "Error setting up device");
+                try {
+                    usbSerialPort.close();
+                } catch (IOException e2) {
+                    Timber.d(e2, "Close serial port");
+                }
+                usbSerialPort = null;
+                return;
+            }
+            onDeviceStateChange();
+        }
+    }
+
+    public void close() {
+        stopIoManager();
+        if (usbSerialPort != null) {
+            try {
+                usbSerialPort.close();
+            } catch (IOException e) {
+                Timber.d(e, "Close serial port");
+            }
+            usbSerialPort = null;
+        }
+    }
+
+    private void stopIoManager() {
+        if (serialIOManager != null) {
+            Timber.d("Stopping io manager ..");
+            serialIOManager.stop();
+            serialIOManager = null;
+        }
+    }
+
+    private void startIoManager() {
+        if (usbSerialPort != null) {
+            Timber.d("Starting io manager ..");
+            serialIOManager = new SerialInputOutputManager(usbSerialPort, serialInputListener);
+            executor.submit(serialIOManager);
+        }
+    }
+
+    private void onDeviceStateChange() {
+        stopIoManager();
+        startIoManager();
     }
 }

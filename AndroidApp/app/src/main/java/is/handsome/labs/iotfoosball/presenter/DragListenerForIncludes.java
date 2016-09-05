@@ -1,19 +1,19 @@
-package is.handsome.labs.iotfoosball;
+package is.handsome.labs.iotfoosball.presenter;
 
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 
-import timber.log.Timber;
+import is.handsome.labs.iotfoosball.presenter.InterfacePresenterFromView;
 
-public class DragListenerForIncludes implements View.OnDragListener {
+class DragListenerForIncludes implements View.OnDragListener {
 
-    private int mPosition;
-    private CurrentGame mCurrentGame;
+    private int position;
+    private is.handsome.labs.iotfoosball.presenter.InterfacePresenterFromView InterfacePresenterFromView;
 
-    public DragListenerForIncludes(int position, CurrentGame currentGame) {
-        this.mPosition = position;
-        this.mCurrentGame = currentGame;
+    public DragListenerForIncludes(InterfacePresenterFromView InterfacePresenterFromView, int position) {
+        this.position = position;
+        this.InterfacePresenterFromView = InterfacePresenterFromView;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class DragListenerForIncludes implements View.OnDragListener {
                     event.getClipData().getItemCount() > 1 ?
                             Integer.parseInt((String) event.getClipData().getItemAt(1).getText())
                             : -1;
-            mCurrentGame.notifyDraged(mPosition, index, positionFrom);
+            InterfacePresenterFromView.notifyDraged(position, index, positionFrom);
         }
         return true;
     }

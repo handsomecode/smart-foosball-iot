@@ -1,47 +1,6 @@
-package is.handsome.labs.iotfoosball;
+package is.handsome.labs.iotfoosball.models;
 
-class Player {
-
-    private String nick; //TODO Firebase API forgiben to change name of field to mNick
-    private String avatar;
-    private int mWins;
-    private int mLoses;
-
-    public Player(String nick, String avatar) {
-        this.nick = nick;
-        this.avatar = avatar;
-    }
-
-    private Player() { //Constructor required by Firebase API
-
-    }
-
-    public String getNick() {
-        return nick;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public int getWins() {
-        return mWins;
-    }
-
-    public void setWins(int wins) {
-        this.mWins = wins;
-    }
-
-    public int getLoses() {
-        return mLoses;
-    }
-
-    public void setLoses(int loses) {
-        this.mLoses = loses;
-    }
-}
-
-class Game {
+public class Game {
     private String dateStart;
     private String dateEnd;
     private String idPlayerA1;

@@ -1,23 +1,23 @@
-package is.handsome.labs.iotfoosball;
+package is.handsome.labs.iotfoosball.view;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 
 import java.util.ArrayList;
 
-public class Scorebar {
-    //TODO devide to model and view
-    private ArrayList<ScoreViewPager> mScorebarsView;
-    private CurrentGame mCurrentGame;
+import is.handsome.labs.iotfoosball.presenter.InterfacePresenterFromView;
 
-    public Scorebar (Context context, final ArrayList<ScoreViewPager> scorebarsView) {
-        this.mScorebarsView = scorebarsView;
+class Scorebar {
+    private ArrayList<ScoreViewPager> scorebarsView;
+
+    public Scorebar (Context context, final InterfacePresenterFromView interfacePresenterFromView,
+            final ArrayList<ScoreViewPager> scorebarsView, @MainActivity.Teams final int team) {
+        this.scorebarsView = scorebarsView;
         scorebarsView.get(0).addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position,
                     float positionOffset,
                     int positionOffsetPixels) {
-
             }
 
             @Override
@@ -25,7 +25,7 @@ public class Scorebar {
                 if (scorebarsView.size() > 1) {
                     scorebarsView.get(1).setCurrentItem(((position - (position % 10)) / 10), true);
                 }
-                if (mCurrentGame != null) mCurrentGame.notifyListed(Scorebar.this, position);
+                interfacePresenterFromView.notifyListed(team, position);
             }
 
             @Override
@@ -68,11 +68,7 @@ public class Scorebar {
         }
     }
 
-    public void setCurentGame(CurrentGame currentGame) {
-        this.mCurrentGame = currentGame;
-    }
-
     public void setScore(int score) {
-        mScorebarsView.get(0).setCurrentItem(score);
+        scorebarsView.get(0).setCurrentItem(score);
     }
 }

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -23,7 +25,7 @@ import is.handsome.labs.iotfoosball.R;
 import is.handsome.labs.iotfoosball.presenter.Presenter;
 import timber.log.Timber;
 
-public class MainActivity extends Activity implements InterfaceViewFromPresenter {
+public class MainActivity extends AppCompatActivity implements InterfaceViewFromPresenter {
 
     public static final int A = 1;
     public static final int B = 2;

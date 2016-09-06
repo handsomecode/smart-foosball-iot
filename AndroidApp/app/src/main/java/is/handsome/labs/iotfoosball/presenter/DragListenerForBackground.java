@@ -3,8 +3,6 @@ package is.handsome.labs.iotfoosball.presenter;
 import android.view.DragEvent;
 import android.view.View;
 
-import is.handsome.labs.iotfoosball.presenter.InterfacePresenterFromView;
-
 class DragListenerForBackground implements View.OnDragListener  {
 
     private InterfacePresenterFromView interfacePresenterFromView;

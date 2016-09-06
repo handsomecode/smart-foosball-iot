@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import is.handsome.labs.iotfoosball.models.PlayerViewInfo;
-import is.handsome.labs.iotfoosball.services.ImgSetterService;
+import is.handsome.labs.iotfoosball.services.FirebaseStorageLinkService;
 import is.handsome.labs.iotfoosball.view.MainActivity;
 
 public interface InterfacePresenterFromView {
@@ -29,8 +29,6 @@ public interface InterfacePresenterFromView {
 
     PlayerViewInfo getPlayerViewInfoByPosition(int position);
 
-    ImgSetterService getImgSetterService();
-
     void notifyListed(@MainActivity.Teams int team, int position);
 
     void notifyDragToBackground(int positionFrom);
@@ -42,8 +40,6 @@ public interface InterfacePresenterFromView {
     android.view.View.OnDragListener getDragListenerForIncludes(int i);
 
     android.view.View.OnDragListener getDragListenerForBackground();
-
-    OnPlayerLongClickListener getOnPlayerLongClickListener(int index, int position, View view);
 
     RecyclerView.Adapter getPlayerRecyclerAdapter();
 

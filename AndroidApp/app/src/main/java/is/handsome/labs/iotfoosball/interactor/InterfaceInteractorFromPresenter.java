@@ -1,12 +1,9 @@
 package is.handsome.labs.iotfoosball.interactor;
 
 import is.handsome.labs.iotfoosball.models.PlayerViewInfo;
-import is.handsome.labs.iotfoosball.services.ImgSetterService;
 import is.handsome.labs.iotfoosball.view.MainActivity;
 
 public interface InterfaceInteractorFromPresenter {
-
-    ImgSetterService getImgSetterService();
 
     void initListeners();
 
@@ -35,4 +32,6 @@ public interface InterfaceInteractorFromPresenter {
     void notifyListed(@MainActivity.Teams int team, int position);
 
     void notifyDragToBackground(int positionFrom);
+
+    void requestLink(String link);
 }

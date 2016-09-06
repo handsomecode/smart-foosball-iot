@@ -9,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,7 +20,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import is.handsome.labs.iotfoosball.presenter.InterfacePresenterFromView;
-import is.handsome.labs.iotfoosball.models.PlayerViewInfo;
 import is.handsome.labs.iotfoosball.R;
 import is.handsome.labs.iotfoosball.presenter.Presenter;
 import timber.log.Timber;
@@ -160,32 +161,6 @@ public class MainActivity extends Activity implements InterfaceViewFromPresenter
     }
 
     @Override
-    public void setPlayerInInclude(int position, int index) {
-        PlayerViewInfo playerViewInfo = interfacePresenterFromView.getPlayerViewInfoByPosition(index);
-        includePlayers.get(position).nick.setText(playerViewInfo.getNick());
-        includePlayers.get(position).score.setText(playerViewInfo.getScore());
-
-       interfacePresenterFromView.getImgSetterService().setAvatar(
-                playerViewInfo.getNick(),
-                includePlayers.get(position).avatar);
-
-        includePlayers.get(position).avatar.setOnLongClickListener(
-                interfacePresenterFromView.getOnPlayerLongClickListener(index,
-                        position,
-                        includePlayers.get(position).getInc()));
-    }
-
-    @Override
-    public void clearPlayerInInclude(int position) {
-        if (!(position >=4 || position < 0)) {
-            includePlayers.get(position).nick.setText("player");
-            includePlayers.get(position).score.setText("");
-            interfacePresenterFromView.getImgSetterService().setNullImg(includePlayers.get(position).avatar);
-            includePlayers.get(position).avatar.setOnLongClickListener(null);
-        }
-    }
-
-    @Override
     public void setScorebarA(int ScoreA) {
         scorebarA.setScore(ScoreA);
     }
@@ -193,6 +168,21 @@ public class MainActivity extends Activity implements InterfaceViewFromPresenter
     @Override
     public void setScorebarB(int ScoreB) {
         scorebarB.setScore(ScoreB);
+    }
+
+    @Override
+    public TextView getIncludeNick(int position) {
+        return includePlayers.get(position).nick;
+    }
+
+    @Override
+    public TextView getIncludeScore(int position) {
+        return includePlayers.get(position).score;
+    }
+
+    @Override
+    public ImageView getIncludeAvatar(int position) {
+        return includePlayers.get(position).avatar;
     }
 
     private void includesInit() {
@@ -210,7 +200,7 @@ public class MainActivity extends Activity implements InterfaceViewFromPresenter
         for (int i = 0; i < 4; i++) {
             includePlayers.add(new IncludePlayer(includes.get(i)));
             ButterKnife.bind(includePlayers.get(i), includes.get(i));
-            includePlayers.get(i).nick.setText("player");
+            includePlayers.get(i).nick.setText("player"); //TODO move this to presentor
             includePlayers.get(i).score.setText("");
         }
         Timber.d("components added");

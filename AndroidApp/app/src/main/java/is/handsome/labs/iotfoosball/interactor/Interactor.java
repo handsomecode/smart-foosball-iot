@@ -1,7 +1,7 @@
 package is.handsome.labs.iotfoosball.interactor;
 
 import android.app.Activity;
-import android.content.Context;
+import android.net.Uri;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -16,18 +16,19 @@ import is.handsome.labs.iotfoosball.presenter.InterfacePresentorFromInteractor;
 import is.handsome.labs.iotfoosball.models.Player;
 import is.handsome.labs.iotfoosball.models.PlayerViewInfo;
 import is.handsome.labs.iotfoosball.models.PlayerWithScore;
-import is.handsome.labs.iotfoosball.services.DataReaderService;
+import is.handsome.labs.iotfoosball.services.AuthDataReaderService;
 import is.handsome.labs.iotfoosball.services.FirebaseAuthService;
 import is.handsome.labs.iotfoosball.services.FirebaseDatabaseListService;
-import is.handsome.labs.iotfoosball.services.ImgSetterService;
+import is.handsome.labs.iotfoosball.services.FirebaseStorageLinkService;
+import is.handsome.labs.iotfoosball.services.InterfaceFirebaseStorageLinkReciver;
 import is.handsome.labs.iotfoosball.services.SoundService;
 import is.handsome.labs.iotfoosball.services.UsbService;
 import is.handsome.labs.iotfoosball.view.MainActivity;
 
-public class Interactor implements InterfaceInteractorFromPresenter {
+public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFirebaseStorageLinkReciver {
 
     private InterfacePresentorFromInteractor interfacePresentorFromInteractor;
-    private ImgSetterService imgSetterService;
+    private FirebaseStorageLinkService firebaseStorageLinkService;
     private SoundService soundPlayer;
     private UsbService usbService;
     private FirebaseAuthService fbAuthService;
@@ -37,7 +38,7 @@ public class Interactor implements InterfaceInteractorFromPresenter {
     private Activity activity;
 
     private List<PlayerWithScore> playerWithScoreList;
-    private DataReaderService dataReaderService;
+    private AuthDataReaderService authDataReaderService;
     private FirebaseDatabaseListService<Player> fbDatabasePlayersService;
     private FirebaseDatabaseListService<Game> fbDatabaseGamesService;
 
@@ -48,16 +49,16 @@ public class Interactor implements InterfaceInteractorFromPresenter {
                 
         this.interfacePresentorFromInteractor = interfacePresentorFromInteractor;
 
-        imgSetterService = new ImgSetterService(activity.getApplicationContext(),
-                "gs://handsomefoosball.appspot.com");
+        firebaseStorageLinkService = new FirebaseStorageLinkService(activity.getApplicationContext(),
+                "gs://handsomefoosball.appspot.com", this);
 
         soundPlayer = new SoundService(activity.getApplicationContext(), R.raw.countdown);
 
-        dataReaderService = new DataReaderService(activity.getApplicationContext(), R.raw.data);
+        authDataReaderService = new AuthDataReaderService(activity.getApplicationContext(), R.raw.data);
 
         fbAuthService = new FirebaseAuthService(activity,
-                dataReaderService.getFbLogin(),
-                dataReaderService.getFbPassword());
+                authDataReaderService.getFbLogin(),
+                authDataReaderService.getFbPassword());
 
         playerWithScoreList = new ArrayList<>();
 
@@ -75,7 +76,7 @@ public class Interactor implements InterfaceInteractorFromPresenter {
         phraseSpotter = new PhraseSpotterForCountStart(soundPlayer);
 
         phraseSpotter.init(activity.getApplicationContext(),
-                dataReaderService.getYandexApi());
+                authDataReaderService.getYandexApi());
 
         currentGame = new CurrentGame(interfacePresentorFromInteractor,
                 database.child("/games/"),
@@ -85,11 +86,6 @@ public class Interactor implements InterfaceInteractorFromPresenter {
 
         usbService = new UsbService(activity.getApplicationContext().getApplicationContext(),
                 serialHandler);
-    }
-
-    @Override
-    public ImgSetterService getImgSetterService() {
-        return imgSetterService;
     }
 
     @Override
@@ -161,8 +157,8 @@ public class Interactor implements InterfaceInteractorFromPresenter {
         playerViewInfo.setScore(String.format(Locale.US, "%d:%d",
                 playerWithScoreList.get(position).getWins(),
                 playerWithScoreList.get(position).getLosses()));
-        playerViewInfo.setAvatar("avatars/" +
-                playerWithScoreList.get(position).getPlayer().getNick().toLowerCase() + ".jpg");
+        playerViewInfo.setAvatar(
+                playerWithScoreList.get(position).getPlayer().getNick().toLowerCase());
         return playerViewInfo;
     }
 
@@ -184,5 +180,15 @@ public class Interactor implements InterfaceInteractorFromPresenter {
     @Override
     public void notifyDragToBackground(int positionFrom) {
         currentGame.clearInclude(positionFrom);
+    }
+
+    @Override
+    public void requestLink(String avatar) {
+        firebaseStorageLinkService.requestAvatar(avatar);
+    }
+
+    @Override
+    public void reciveLink(String request, Uri uri) {
+        interfacePresentorFromInteractor.reciveImgLink(request, uri);
     }
 }

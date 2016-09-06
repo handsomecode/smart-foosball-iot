@@ -9,12 +9,12 @@ import java.io.InputStreamReader;
 
 import timber.log.Timber;
 
-public class DataReaderService {
+public class AuthDataReaderService {
     private String fbLogin;
     private String fbPassword;
     private String yandexApi;
 
-    public DataReaderService(Context context, int dataId) {
+    public AuthDataReaderService(Context context, int dataId) {
         InputStream data = context.getResources().openRawResource(dataId);
         BufferedReader bData = new BufferedReader(new InputStreamReader(data));
         fbLogin = "login";

@@ -32,10 +32,10 @@ class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAdapter.V
         View player;
     }
 
-    private is.handsome.labs.iotfoosball.presenter.InterfacePresenterFromView InterfacePresenterFromView;
+    private Presenter presenter;
 
-    public PlayerRecyclerAdapter(InterfacePresenterFromView InterfacePresenterFromView) {
-        this.InterfacePresenterFromView = InterfacePresenterFromView;
+    public PlayerRecyclerAdapter(Presenter presenter) {
+        this.presenter = presenter;
     }
 
     @Override
@@ -48,14 +48,15 @@ class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAdapter.V
 
     @Override
     public void onBindViewHolder(PlayerRecyclerAdapter.ViewHolder holder, int position) {
-        PlayerViewInfo playerViewInfo = InterfacePresenterFromView.getPlayerViewInfoByPosition(position);
+        holder.avatar.setImageBitmap(null);
+        PlayerViewInfo playerViewInfo = presenter.getPlayerViewInfoByPosition(position);
         holder.nick.setText(playerViewInfo.getNick());
         holder.score.setText(playerViewInfo.getScore());
-        InterfacePresenterFromView.getImgSetterService().setImg(playerViewInfo.getAvatar(), holder.avatar);
+        presenter.setAvatar(holder.avatar, playerViewInfo.getAvatar());
     }
 
     @Override
     public int getItemCount() {
-        return InterfacePresenterFromView.getPlayerCount();
+        return presenter.getPlayerCount();
     }
 }

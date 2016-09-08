@@ -7,8 +7,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import is.handsome.labs.iotfoosball.R;
 
-class IncludePlayer {
-    //TODO devide model and view
+class PlayerViewGroup {
     @BindView(R.id.nick)
     TextView nick;
     @BindView(R.id.avatar)
@@ -18,14 +17,11 @@ class IncludePlayer {
 
     private View inc;
 
-    public IncludePlayer(View view) {
+    public PlayerViewGroup(View view) {
         this.inc = view;
     }
 
     public View getInc() {
         return inc;
     }
-
-    //    @BindView(R.id.medal)
-//    ImageView medal;
 }

@@ -6,10 +6,10 @@
                                              android:layout_height="match_parent"
                                              android:background="@drawable/ic_background"
                                              tools:context="is.handsome.labs.iotfoosball.view.MainActivity"
-                                             android:id="@+id/main_layout">
+                                             android:id="@+id/main_constrainlayout">
 
     <include
-        android:id="@+id/inc0"
+        android:id="@+id/inc0_cv"
         layout="@layout/player"
         android:layout_width="196dp"
         android:layout_height="196dp"
@@ -21,35 +21,35 @@
         />
 
     <include
-        android:id="@+id/inc1"
+        android:id="@+id/inc1_cv"
         layout="@layout/player"
         android:layout_width="196dp"
         android:layout_height="196dp"
         android:layout_gravity="bottom"
         widget:layout_constraintBottom_toTopOf="@+id/playersRecyclerView"
-        widget:layout_constraintRight_toRightOf="@+id/inc0"
+        widget:layout_constraintRight_toRightOf="@+id/inc0_cv"
         widget:layout_constraintTop_toBottomOf="@+id/center2"
         />
 
     <include
-        android:id="@+id/inc2"
+        android:id="@+id/inc2_cv"
         layout="@layout/player"
         android:layout_width="196dp"
         android:layout_height="196dp"
         android:layout_gravity="top"
         android:layout_marginEnd="32dp"
-        widget:layout_constraintBottom_toBottomOf="@+id/inc0"
+        widget:layout_constraintBottom_toBottomOf="@+id/inc0_cv"
         widget:layout_constraintRight_toRightOf="parent"
         />
 
     <include
-        android:id="@+id/inc3"
+        android:id="@+id/inc3_cv"
         layout="@layout/player"
         android:layout_width="196dp"
         android:layout_height="196dp"
         android:layout_gravity="bottom"
-        widget:layout_constraintBottom_toBottomOf="@+id/inc1"
-        widget:layout_constraintRight_toRightOf="@+id/inc2"
+        widget:layout_constraintBottom_toBottomOf="@+id/inc1_cv"
+        widget:layout_constraintRight_toRightOf="@+id/inc2_cv"
         />
 
     <Button
@@ -59,8 +59,8 @@
         android:layout_marginStart="24dp"
         android:text="Countdown"
         android:textSize="20sp"
-        widget:layout_constraintBottom_toBottomOf="@+id/inc1"
-        widget:layout_constraintLeft_toRightOf="@+id/inc1"
+        widget:layout_constraintBottom_toBottomOf="@+id/inc1_cv"
+        widget:layout_constraintLeft_toRightOf="@+id/inc1_cv"
         />
 
     <Button
@@ -71,7 +71,7 @@
         android:text="0:00"
         android:textSize="30sp"
         widget:layout_constraintBottom_toBottomOf="@+id/btncntdwn"
-        widget:layout_constraintRight_toLeftOf="@+id/inc3"
+        widget:layout_constraintRight_toLeftOf="@+id/inc3_cv"
         />
 
     <Button
@@ -116,7 +116,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         widget:layout_constraintBottom_toTopOf="@+id/btncntdwn"
-        widget:layout_constraintLeft_toRightOf="@+id/inc0"
+        widget:layout_constraintLeft_toRightOf="@+id/inc0_cv"
         widget:layout_constraintRight_toLeftOf="@+id/center"
         widget:layout_constraintTop_toTopOf="parent"
         widget:layout_constraintVertical_bias="0.65">
@@ -147,7 +147,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         widget:layout_constraintLeft_toLeftOf="@+id/center"
-        widget:layout_constraintRight_toLeftOf="@+id/inc2"
+        widget:layout_constraintRight_toLeftOf="@+id/inc2_cv"
         widget:layout_constraintTop_toTopOf="@+id/ScoreA">
 
         <is.handsome.labs.iotfoosball.view.ScoreViewPager

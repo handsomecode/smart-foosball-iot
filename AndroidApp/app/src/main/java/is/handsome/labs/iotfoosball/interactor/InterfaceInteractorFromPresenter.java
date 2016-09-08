@@ -7,19 +7,19 @@ public interface InterfaceInteractorFromPresenter {
 
     void initListeners();
 
-    void onActivityResume();
+    void resumeServices();
 
-    void onActivityPause();
+    void pauseServices();
 
-    void onActivityStart();
+    void startServices();
 
-    void onActivityStop();
+    void stopServices();
 
     void onStartClick();
 
     void onEndClick();
 
-    void onCntdwnClick();
+    void onCountdownClick();
 
     void onTimerClick();
 

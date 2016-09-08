@@ -16,6 +16,7 @@ import is.handsome.labs.iotfoosball.presenter.InterfacePresentorFromInteractor;
 import is.handsome.labs.iotfoosball.models.Player;
 import is.handsome.labs.iotfoosball.models.PlayerViewInfo;
 import is.handsome.labs.iotfoosball.models.PlayerWithScore;
+import is.handsome.labs.iotfoosball.services.ActivityProvider;
 import is.handsome.labs.iotfoosball.services.AuthDataReaderService;
 import is.handsome.labs.iotfoosball.services.FirebaseAuthService;
 import is.handsome.labs.iotfoosball.services.FirebaseDatabaseListService;
@@ -35,28 +36,35 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
     private PhraseSpotterForCountStart phraseSpotter;
     private TimerForClock timerClock;
     private CurrentGame currentGame;
-    private Activity activity;
+    private ActivityProvider activityProvider;
 
     private List<PlayerWithScore> playerWithScoreList;
     private AuthDataReaderService authDataReaderService;
     private FirebaseDatabaseListService<Player> fbDatabasePlayersService;
     private FirebaseDatabaseListService<Game> fbDatabaseGamesService;
 
-    public Interactor(Activity activity,
+    public Interactor(ActivityProvider activityProvider,
             InterfacePresentorFromInteractor interfacePresentorFromInteractor) {
 
-        this.activity = activity;
+        this.activityProvider = activityProvider;
                 
         this.interfacePresentorFromInteractor = interfacePresentorFromInteractor;
 
-        firebaseStorageLinkService = new FirebaseStorageLinkService(activity.getApplicationContext(),
+        firebaseStorageLinkService =
+                new FirebaseStorageLinkService(activityProvider
+                        .getActivity()
+                        .getApplicationContext(),
                 "gs://handsomefoosball.appspot.com", this);
 
-        soundPlayer = new SoundService(activity.getApplicationContext(), R.raw.countdown);
+        soundPlayer =
+                new SoundService(activityProvider.getActivity().getApplicationContext(),
+                        R.raw.countdown);
 
-        authDataReaderService = new AuthDataReaderService(activity.getApplicationContext(), R.raw.data);
+        authDataReaderService =
+                new AuthDataReaderService(activityProvider.getActivity().getApplicationContext(),
+                        R.raw.data);
 
-        fbAuthService = new FirebaseAuthService(activity,
+        fbAuthService = new FirebaseAuthService(activityProvider.getActivity(),
                 authDataReaderService.getFbLogin(),
                 authDataReaderService.getFbPassword());
 
@@ -75,7 +83,7 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
 
         phraseSpotter = new PhraseSpotterForCountStart(soundPlayer);
 
-        phraseSpotter.init(activity.getApplicationContext(),
+        phraseSpotter.init(activityProvider.getActivity().getApplicationContext(),
                 authDataReaderService.getYandexApi());
 
         currentGame = new CurrentGame(interfacePresentorFromInteractor,
@@ -84,7 +92,11 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
 
         SerialHandler serialHandler = SerialHandler.getInstance(currentGame);
 
-        usbService = new UsbService(activity.getApplicationContext().getApplicationContext(),
+        usbService =
+                new UsbService(activityProvider
+                        .getActivity()
+                        .getApplicationContext()
+                        .getApplicationContext(),
                 serialHandler);
     }
 
@@ -104,23 +116,25 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
     //TODO Activity to just resume
     //TODO
     @Override
-    public void onActivityResume() {
+    public void resumeServices() {
         usbService.onResume();
     }
 
     @Override
-    public void onActivityPause() {
+    public void pauseServices() {
         usbService.onPause();
+        timerClock.cancel();
+        timerClock.reset();
     }
 
     @Override
-    public void onActivityStart() {
+    public void startServices() {
         fbAuthService.onStart();
-        phraseSpotter.onStart(activity.getApplicationContext());
+        phraseSpotter.onStart(activityProvider.getActivity().getApplicationContext());
     }
 
     @Override
-    public void onActivityStop() {
+    public void stopServices() {
         phraseSpotter.onStop();
         fbAuthService.onStop();
     }
@@ -137,7 +151,7 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
     }
 
     @Override
-    public void onCntdwnClick() {
+    public void onCountdownClick() {
         soundPlayer.soundPlay();
     }
 

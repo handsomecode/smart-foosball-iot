@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import is.handsome.labs.iotfoosball.R;
-import is.handsome.labs.iotfoosball.services.FirebaseStorageLinkService;
 import is.handsome.labs.iotfoosball.interactor.InterfaceInteractorFromPresenter;
+import is.handsome.labs.iotfoosball.services.ActivityProvider;
 import is.handsome.labs.iotfoosball.view.InterfaceViewFromPresenter;
 import is.handsome.labs.iotfoosball.view.MainActivity;
 import is.handsome.labs.iotfoosball.models.PlayerViewInfo;
@@ -23,17 +23,15 @@ public class Presenter implements InterfacePresentorFromInteractor, InterfacePre
 
     private InterfaceInteractorFromPresenter interfaceInteractorFromPresenter;
     private InterfaceViewFromPresenter interfaceViewFromPresenter;
-    private Activity activity;
     private android.support.v7.widget.RecyclerView.Adapter playerRecyclerAdapter;
     private Picasso picasso;
     private HashMap<ImageView, String> viewAvatar;
     private HashMap<ImageView, Boolean> isLinkReqested;
 
     public Presenter (Activity activity) {
-        this.activity = activity;
         this.picasso = Picasso.with(activity);
         this.interfaceViewFromPresenter = (InterfaceViewFromPresenter) activity;
-        interfaceInteractorFromPresenter = new Interactor(activity, this);
+        interfaceInteractorFromPresenter = new Interactor(new ActivityProvider(activity), this);
         playerRecyclerAdapter = new PlayerRecyclerAdapter(this);
         viewAvatar = new HashMap<>();
         isLinkReqested = new HashMap<>();
@@ -124,22 +122,22 @@ public class Presenter implements InterfacePresentorFromInteractor, InterfacePre
 
     @Override
     public void onActivityResume() {
-        interfaceInteractorFromPresenter.onActivityResume();
+        interfaceInteractorFromPresenter.resumeServices();
     }
 
     @Override
     public void onActivityPause() {
-        interfaceInteractorFromPresenter.onActivityPause();
+        interfaceInteractorFromPresenter.pauseServices();
     }
 
     @Override
     public void onActivityStart() {
-        interfaceInteractorFromPresenter.onActivityStart();
+        interfaceInteractorFromPresenter.startServices();
     }
 
     @Override
     public void onActivityStop() {
-        interfaceInteractorFromPresenter.onActivityStop();
+        interfaceInteractorFromPresenter.stopServices();
     }
 
     @Override
@@ -154,7 +152,7 @@ public class Presenter implements InterfacePresentorFromInteractor, InterfacePre
 
     @Override
     public void onCntdwnClick() {
-        interfaceInteractorFromPresenter.onCntdwnClick();
+        interfaceInteractorFromPresenter.onCountdownClick();
     }
 
     @Override

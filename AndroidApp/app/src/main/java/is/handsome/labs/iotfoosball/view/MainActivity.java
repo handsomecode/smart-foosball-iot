@@ -1,13 +1,12 @@
 package is.handsome.labs.iotfoosball.view;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,8 +20,8 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import is.handsome.labs.iotfoosball.presenter.InterfacePresenterFromView;
 import is.handsome.labs.iotfoosball.R;
+import is.handsome.labs.iotfoosball.presenter.InterfacePresenterFromView;
 import is.handsome.labs.iotfoosball.presenter.Presenter;
 import timber.log.Timber;
 
@@ -41,24 +40,24 @@ public class MainActivity extends AppCompatActivity implements InterfaceViewFrom
     //TODO creat enum for modeselect
 
     //View
-    private ArrayList<IncludePlayer> includePlayers;
+    private ArrayList<PlayerViewGroup> playerViewGroups;
 
     private Scorebar scorebarA;
     private Scorebar scorebarB;
 
     private InterfacePresenterFromView interfacePresenterFromView;
 
-    @BindView(R.id.main_layout)
-    ConstraintLayout main_layout;
+    @BindView(R.id.main_constrainlayout)
+    ConstraintLayout constraintLayout;
 
-    @BindView(R.id.inc0)
-    CardView inc0;
-    @BindView(R.id.inc1)
-    CardView inc1;
-    @BindView(R.id.inc2)
-    CardView inc2;
-    @BindView(R.id.inc3)
-    CardView inc3;
+    @BindView(R.id.inc0_cv)
+    CardView incCv0;
+    @BindView(R.id.inc1_cv)
+    CardView incCv1;
+    @BindView(R.id.inc2_cv)
+    CardView incCv2;
+    @BindView(R.id.inc3_cv)
+    CardView incCv3;
 
     @BindView(R.id.btnstart)
     Button btnstart;
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements InterfaceViewFrom
     @BindView(R.id.btncntdwn)
     Button btncntdwn;
     @BindView(R.id.playersRecyclerView)
-    android.support.v7.widget.RecyclerView RecyclerView;
+    RecyclerView RecyclerView;
     @BindView(R.id.Timer)
     Button btntimer;
 
@@ -103,12 +102,12 @@ public class MainActivity extends AppCompatActivity implements InterfaceViewFrom
         interfacePresenterFromView.initListeners();
 
         for (int i = 0; i < 4; i++) {
-            includePlayers.get(i)
+            playerViewGroups.get(i)
                     .getInc()
                     .setOnDragListener(interfacePresenterFromView.getDragListenerForIncludes(i));
         }
 
-        main_layout.setOnDragListener(interfacePresenterFromView.getDragListenerForBackground());
+        constraintLayout.setOnDragListener(interfacePresenterFromView.getDragListenerForBackground());
 
     }
 
@@ -123,7 +122,6 @@ public class MainActivity extends AppCompatActivity implements InterfaceViewFrom
         super.onPause();
         interfacePresenterFromView.onActivityPause();
     }
-
 
     @Override
     public void onStart() {
@@ -174,36 +172,36 @@ public class MainActivity extends AppCompatActivity implements InterfaceViewFrom
 
     @Override
     public TextView getIncludeNick(int position) {
-        return includePlayers.get(position).nick;
+        return playerViewGroups.get(position).nick;
     }
 
     @Override
     public TextView getIncludeScore(int position) {
-        return includePlayers.get(position).score;
+        return playerViewGroups.get(position).score;
     }
 
     @Override
     public ImageView getIncludeAvatar(int position) {
-        return includePlayers.get(position).avatar;
+        return playerViewGroups.get(position).avatar;
     }
 
     private void includesInit() {
-        includePlayers = new ArrayList<>(4);
+        playerViewGroups = new ArrayList<>(4);
         ArrayList<View> includes = new ArrayList<>(4);
 
         //adding butterknife for player's include
-        includes.add(inc0);
-        includes.add(inc1);
-        includes.add(inc2);
-        includes.add(inc3);
+        includes.add(incCv0);
+        includes.add(incCv1);
+        includes.add(incCv2);
+        includes.add(incCv3);
 
         Timber.d("inc added");
 
         for (int i = 0; i < 4; i++) {
-            includePlayers.add(new IncludePlayer(includes.get(i)));
-            ButterKnife.bind(includePlayers.get(i), includes.get(i));
-            includePlayers.get(i).nick.setText("player"); //TODO move this to presentor
-            includePlayers.get(i).score.setText("");
+            playerViewGroups.add(new PlayerViewGroup(includes.get(i)));
+            ButterKnife.bind(playerViewGroups.get(i), includes.get(i));
+            playerViewGroups.get(i).nick.setText("player"); //TODO move this to presentor
+            playerViewGroups.get(i).score.setText("");
         }
         Timber.d("components added");
     }
@@ -216,12 +214,12 @@ public class MainActivity extends AppCompatActivity implements InterfaceViewFrom
     }
 
     private void scoreBarInit() {
-        ArrayList<ScoreViewPager> score1 = new ArrayList<>();
+        ArrayList<ScoreViewPager> score1 = new ArrayList<>(2);
         score1.add(t1u);
         score1.add(t1d);
         scorebarA = new Scorebar(this, interfacePresenterFromView, score1, A);
 
-        ArrayList<ScoreViewPager> score2 = new ArrayList<>();
+        ArrayList<ScoreViewPager> score2 = new ArrayList<>(2);
         score2.add(t2u);
         score2.add(t2d);
         scorebarB = new Scorebar(this, interfacePresenterFromView, score2, B);

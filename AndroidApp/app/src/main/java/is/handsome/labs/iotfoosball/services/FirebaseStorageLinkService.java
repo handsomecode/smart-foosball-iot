@@ -22,7 +22,6 @@ import timber.log.Timber;
 public class FirebaseStorageLinkService {
     private HashMap<String,Uri> links;
     private StorageReference storageRef;
-    private Picasso picasso;
     private InterfaceFirebaseStorageLinkReciver interfaceFirebaseStorageLinkReciver;
 
     public FirebaseStorageLinkService(Context context, String link,

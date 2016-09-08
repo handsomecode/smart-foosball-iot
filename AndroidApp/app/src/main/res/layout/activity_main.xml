@@ -4,7 +4,7 @@
                                              xmlns:widget="http://schemas.android.com/apk/res-auto"
                                              android:layout_width="match_parent"
                                              android:layout_height="match_parent"
-                                             android:background="@drawable/ic_background"
+                                             android:background="@drawable/background"
                                              tools:context="is.handsome.labs.iotfoosball.view.MainActivity"
                                              android:id="@+id/main_constrainlayout">
 
@@ -97,7 +97,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/playersRecyclerView"
-        android:layout_width="1116dp"
+        android:layout_width="1152dp"
         android:layout_height="124dp"
         android:layout_marginBottom="24dp"
         android:scrollbars="horizontal"

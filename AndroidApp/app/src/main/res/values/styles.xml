@@ -1,7 +1,11 @@
 <resources>
 
     <style name="FoosballApp" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorButtonNormal">#BB272727</item>
+        <item name="android:buttonStyle">@style/FoosballButtonStyle</item>
+    </style>
+
+    <style name="FoosballButtonStyle" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:background">@drawable/btn_background</item>
     </style>
 
 </resources>

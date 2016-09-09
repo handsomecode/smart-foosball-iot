@@ -1,7 +1,7 @@
 <resources>
 
     <style name="FoosballApp" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorButtonNormal">#272727</item>
+        <item name="colorButtonNormal">#BB272727</item>
     </style>
 
 </resources>

@@ -8,7 +8,7 @@
     android:id="@+id/player"
     android:layout_gravity="center"
     card_view:cardCornerRadius="10dp"
-    card_view:cardBackgroundColor="#272727">
+    card_view:cardBackgroundColor="#BB272727">
 
 <TextView
     android:layout_width="match_parent"

@@ -187,4 +187,16 @@
         widget:layout_constraintTop_toTopOf="parent">
     </Space>
 
+    <ImageView
+        android:layout_width="192dp"
+        android:layout_height="142dp"
+        widget:srcCompat="@drawable/handsome_logo"
+        android:id="@+id/imageView"
+        android:layout_marginStart="8dp"
+        widget:layout_constraintLeft_toRightOf="@+id/inc0_cv"
+        widget:layout_constraintRight_toLeftOf="@+id/inc2_cv"
+        android:layout_marginEnd="8dp"
+        widget:layout_constraintBottom_toBottomOf="@+id/ScoreA"
+        android:layout_marginBottom="72dp"/>
+
 </android.support.constraint.ConstraintLayout>

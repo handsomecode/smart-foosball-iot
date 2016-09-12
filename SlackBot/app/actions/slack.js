@@ -13,6 +13,8 @@ var firebase = require(__app + 'services/firebase');
 
 var appHttps = require(__app + 'services/https').getApp();
 
+var moment = require('moment');
+
 // just a simple way to make sure we don't
 // connect to the RTM twice for the same team
 var _bots = {};
@@ -356,5 +358,29 @@ module.exports = {
 
                 firebase.getNewGamesListener(self.gameResult);
             });
+
+        firebase.getTodaysGames().then(function (response) {
+            console.log("today");
+            console.log(moment().startOf('day').format('YYYY-MM-DD HH:mm:ss'));
+            console.log(JSON.stringify(response, "", 4));
+        });
+
+        firebase.getThisWeekGames().then(function (response) {
+            console.log("Week");
+            console.log(moment().startOf('isoWeek').format('YYYY-MM-DD HH:mm:ss'));
+            console.log(JSON.stringify(response, "", 4));
+        });
+
+        firebase.getThisMonthGames().then(function (response) {
+            console.log("Month");
+            console.log(moment().startOf('month').format('YYYY-MM-DD HH:mm:ss'));
+            console.log(JSON.stringify(response, "", 4));
+        });
+
+        firebase.getThisYearGames().then(function (response) {
+            console.log("Year")
+            console.log(moment().startOf('year').format('YYYY-MM-DD HH:mm:ss'));
+            console.log(JSON.stringify(response, "", 4));
+        });
     }
 };

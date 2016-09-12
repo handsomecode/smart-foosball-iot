@@ -69,6 +69,7 @@ public class Presenter implements InterfacePresentorFromInteractor, InterfacePre
                 interfaceInteractorFromPresenter.getPlayerViewInfoByPosition(index);
         interfaceViewFromPresenter.getIncludeNick(position).setText(playerViewInfo.getNick());
         interfaceViewFromPresenter.getIncludeScore(position).setText(playerViewInfo.getScore());
+        interfaceViewFromPresenter.getIncludeScore(position).setPadding(4,4,4,4);
 
         setAvatar(interfaceViewFromPresenter.getIncludeAvatar(position), playerViewInfo.getAvatar());
 
@@ -82,6 +83,7 @@ public class Presenter implements InterfacePresentorFromInteractor, InterfacePre
     public void clearPlayerInInclude(int position) {
         interfaceViewFromPresenter.getIncludeNick(position).setText("player");
         interfaceViewFromPresenter.getIncludeScore(position).setText("");
+        interfaceViewFromPresenter.getIncludeScore(position).setPadding(0,0,0,0);
 
         interfaceViewFromPresenter.getIncludeAvatar(position).setImageBitmap(null);
 

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    card_view:cardBackgroundColor="#939393"
+    card_view:cardBackgroundColor="#BB272727"
     card_view:cardCornerRadius="10dp"
     card_view:cardElevation="0dp">
 
@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|left|center_horizontal"
-        android:background="#B45a595b"
+        android:background="#BB272727"
         android:padding="4dp"
         android:text=""
         android:textAppearance="?android:attr/textAppearanceLarge"
@@ -32,8 +32,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|bottom"
-        android:background="#B45a595b"
-        android:padding="4dp"
+        android:background="#B4272727"
+        android:padding="2dp"
         android:text=""
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textStyle="bold"/>

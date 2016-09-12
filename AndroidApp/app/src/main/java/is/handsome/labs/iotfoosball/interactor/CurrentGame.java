@@ -59,7 +59,7 @@ class CurrentGame {
 
     public void startGame() {
         if (!isGameStarted) {
-            DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.ROOT);
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
             String datestart = dateFormat.format(Calendar.getInstance().getTime());
             Log.d("gamesave", "set datestart to " + datestart);
             game.setDateStart(datestart);
@@ -70,7 +70,7 @@ class CurrentGame {
     public void endGame() {
         if (isGameStarted) {
             isGameStarted = false;
-            DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.ROOT);
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
             String dateend = dateFormat.format(Calendar.getInstance().getTime());
             Log.d("gamesave", "set dateend to " + dateend);
             game.setDateEnd(dateend);

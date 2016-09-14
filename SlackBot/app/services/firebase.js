@@ -2,8 +2,6 @@
 
 var Firebase = require('firebase');
 
-var dateFormate = require('dateformat');
-
 var moment = require('moment');
 
 var firebaseConfig = require(__app + 'config')('firebase');

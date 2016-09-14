@@ -60,6 +60,26 @@ var getUserDataFunction = function (userId) {
             resolve(response);
         });
     });
+};
+
+function statsReply(stats, playerList, period, bot, message) {
+    var replyMessage = "Statistic for this " + period + ":\n" +
+        "    " + stats.games + " games have been played. \n" +
+        "    " + stats.goals + " goals have been scored. \n";
+    if (stats.top.one.id !== undefined) {
+        replyMessage += "    " + "1st place with " + stats.top.one.wins +
+            " wins - " + "<@" + playerList[stats.top.one.id].slackID + ">. \n";
+    }
+    if (stats.top.two.id !== undefined) {
+        replyMessage += "    " + "2st place with " + stats.top.two.wins +
+            " wins - " + "<@" + playerList[stats.top.two.id].slackID + ">. \n";
+    }
+    if (stats.top.three.id !== undefined) {
+        replyMessage += "    " + "3st place with " + stats.top.three.wins +
+            " wins - " + "<@" + playerList[stats.top.three.id].slackID + ">. \n";
+    }
+    bot.reply(message, replyMessage);
+    console.log("stats reported");
 }
 
 module.exports = {
@@ -138,16 +158,6 @@ module.exports = {
             }
         });
 
-        // slackBot
-        //     .spawn({
-        //         token: 'xoxb-68389405730-3to2vTFhezVHYokL4uZXB7hl'
-        //     })
-        //     .startRTM(function (err) {
-        //         if (err) {
-        //             throw new Error(err);
-        //         }
-        //     });
-
         function trackBot(bot) {
             _bots[bot.config.token] = bot;
         }
@@ -173,7 +183,6 @@ module.exports = {
                             convo.say('You must now /invite me to a channel so that I can be of use!');
                         }
                     });
-
                 });
             }
 
@@ -183,11 +192,38 @@ module.exports = {
             bot.reply(message, defaultmessage);
         });
 
+        slackBot.hears(['stats week'], ['direct_mention'], function (bot, message) {
+            firebase.getThisWeekGames().then(function (statistic) {
+                var stats = utils.getGamesStatistic(statistic);
+                firebase.getPlayers().then(function (playerList) {
+                    statsReply(stats, playerList, "week", bot, message);
+                });
+            });
+        });
+
+        slackBot.hears(['stats month'], ['direct_mention'], function (bot, message) {
+            firebase.getThisMonthGames().then(function (statistic) {
+                var stats = utils.getGamesStatistic(statistic);
+                firebase.getPlayers().then(function (playerList) {
+                    statsReply(stats, playerList, "month", bot, message);
+                });
+            });
+        });
+
+        slackBot.hears(['stats year', 'stats'], ['direct_mention'], function (bot, message) {
+            firebase.getThisYearGames().then(function (statistic) {
+                var stats = utils.getGamesStatistic(statistic);
+                firebase.getPlayers().then(function (playerList) {
+                    statsReply(stats, playerList, "year", bot, message);
+                });
+            });
+        });
+
         // receive an interactive message, and reply with a message that will replace the original
         slackBot.on('interactive_message_callback', function (bot, message) {
                 console.log("request info about " + message.user);
                 // if (utils.isInFirebasePlayerList(message.user, self.playersList)) {
-                //TODO mb it will be effective to create function to calculate team inex and player index
+                //TODO mb it will be more effective to create function to calculate team index and player index
                 if (message.original_message.text !== defaultmessage.text) {
                     bot.replyInteractive(message, self.constructEphemeralMessage("This game has already started"));
                     return;
@@ -269,21 +305,6 @@ module.exports = {
         var messageNotification = "Foosball Breaking News: ";
         console.log("game Result = " + JSON.stringify(newGame, "", 4));
         console.log(playerListFromFirebase);
-        // var teamA = "<@" + playerListFromFirebase[newGame.idPlayerA1].slackID + ">" + " and "
-        //         + "<@" + playerListFromFirebase[newGame.idPlayerA2].slackID + ">";
-        // var teamB = "<@" + playerListFromFirebase[newGame.idPlayerB1].slackID + ">" + " and "
-        //     + "<@" + playerListFromFirebase[newGame.idPlayerB2].slackID + ">";
-        // if (newGame.scoreA > newGame.scoreB) {
-        //     messageNotification = teamA + " WIN " + teamB;
-        // } else if (newGame.scoreB > newGame.scoreA) {
-        //     messageNotification = teamB + " WIN " + teamA;
-        // } else {
-        //     messageNotification = teamA + " and " + teamB + "played in a draw";
-        // }
-        // _bots[slackConfig.token].say({
-        //     text: messageNotification,
-        //     channel: 'G21AT0509'
-        // });
         var playerA1;
         var playerA2;
         var playerB1;
@@ -358,29 +379,5 @@ module.exports = {
 
                 firebase.getNewGamesListener(self.gameResult);
             });
-
-        firebase.getTodaysGames().then(function (response) {
-            console.log("today");
-            console.log(moment().startOf('day').format('YYYY-MM-DD HH:mm:ss'));
-            console.log(JSON.stringify(response, "", 4));
-        });
-
-        firebase.getThisWeekGames().then(function (response) {
-            console.log("Week");
-            console.log(moment().startOf('isoWeek').format('YYYY-MM-DD HH:mm:ss'));
-            console.log(JSON.stringify(response, "", 4));
-        });
-
-        firebase.getThisMonthGames().then(function (response) {
-            console.log("Month");
-            console.log(moment().startOf('month').format('YYYY-MM-DD HH:mm:ss'));
-            console.log(JSON.stringify(response, "", 4));
-        });
-
-        firebase.getThisYearGames().then(function (response) {
-            console.log("Year")
-            console.log(moment().startOf('year').format('YYYY-MM-DD HH:mm:ss'));
-            console.log(JSON.stringify(response, "", 4));
-        });
     }
 };

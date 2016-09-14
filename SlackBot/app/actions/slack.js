@@ -15,6 +15,8 @@ var appHttps = require(__app + 'services/https').getApp();
 
 var moment = require('moment');
 
+var statisticInfo = {};
+
 // just a simple way to make sure we don't
 // connect to the RTM twice for the same team
 var _bots = {};
@@ -188,11 +190,13 @@ module.exports = {
 
         });
 
-        slackBot.hears(['game', 'play'], ['direct_mention'], function (bot, message) {
+        slackBot.hears(['game', 'play'], ['direct_message', 'direct_mention'], function (bot, message) {
             bot.reply(message, defaultmessage);
+            statisticInfo.bot = bot;
+            statisticInfo.message = message;
         });
 
-        slackBot.hears(['stats week'], ['direct_mention'], function (bot, message) {
+        slackBot.hears(['stats week'], ['direct_message', 'direct_mention'], function (bot, message) {
             firebase.getThisWeekGames().then(function (statistic) {
                 var stats = utils.getGamesStatistic(statistic);
                 firebase.getPlayers().then(function (playerList) {
@@ -201,7 +205,7 @@ module.exports = {
             });
         });
 
-        slackBot.hears(['stats month'], ['direct_mention'], function (bot, message) {
+        slackBot.hears(['stats month'], ['direct_message', 'direct_mention'], function (bot, message) {
             firebase.getThisMonthGames().then(function (statistic) {
                 var stats = utils.getGamesStatistic(statistic);
                 firebase.getPlayers().then(function (playerList) {
@@ -210,7 +214,7 @@ module.exports = {
             });
         });
 
-        slackBot.hears(['stats year', 'stats'], ['direct_mention'], function (bot, message) {
+        slackBot.hears(['stats year', 'stats'], ['direct_message', 'direct_mention'], function (bot, message) {
             firebase.getThisYearGames().then(function (statistic) {
                 var stats = utils.getGamesStatistic(statistic);
                 firebase.getPlayers().then(function (playerList) {
@@ -364,6 +368,15 @@ module.exports = {
             }
         }
         return undefined;
+    },
+
+    weeklyStats : function () {
+        firebase.getThisWeekGames().then(function (statistic) {
+            var stats = utils.getGamesStatistic(statistic);
+            firebase.getPlayers().then(function (playerList) {
+                statsReply(stats, playerList, "week", statisticInfo.bot, statisticInfo.message);
+            });
+        });
     },
 
     init: function () {

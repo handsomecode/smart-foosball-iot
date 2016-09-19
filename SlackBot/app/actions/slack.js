@@ -370,7 +370,7 @@ module.exports = {
         return undefined;
     },
 
-    weeklyStats : function () {
+    weeklyStatsReport : function () {
         firebase.getThisWeekGames().then(function (statistic) {
             var stats = utils.getGamesStatistic(statistic);
             firebase.getPlayers().then(function (playerList) {

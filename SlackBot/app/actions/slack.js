@@ -281,6 +281,7 @@ module.exports = {
                                 new_message.attachments[team].actions[player].style = "primary";
                                 console.log(new_message.attachments[team].actions[player]);
                                 bot.replyInteractive(message, self.constructEphemeralMessage("The slot has been taken"));
+                                //TODO save playercount in games
                                 var playercount = 0;
                                 for (var j = 0; j < 2; j++) {
                                     for (var i = 0; i < 2; i++) {
@@ -290,7 +291,7 @@ module.exports = {
                                         }
                                     }
                                 }
-                                if (playercount >= 4) {
+                                if (playercount >= 3) {
                                     bot.reply(message, 'Hey guys '
                                         + utils.generatePlayersStringFromActionMessage(message.user,
                                             games[message.original_message.ts].message)

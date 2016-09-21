@@ -281,6 +281,8 @@ module.exports = {
                                 new_message.attachments[team].actions[player].style = "primary";
                                 console.log(new_message.attachments[team].actions[player]);
                                 bot.replyInteractive(message, self.constructEphemeralMessage("The slot has been taken"));
+                                bot.replyInteractive(message, new_message);
+                                games[message.original_message.ts].message = new_message;
                                 //TODO save playercount in games
                                 var playercount = 0;
                                 for (var j = 0; j < 2; j++) {
@@ -291,7 +293,7 @@ module.exports = {
                                         }
                                     }
                                 }
-                                if (playercount >= 3) {
+                                if (playercount >= 4) {
                                     bot.reply(message, 'Hey guys '
                                         + utils.generatePlayersStringFromActionMessage(message.user,
                                             games[message.original_message.ts].message)
@@ -300,8 +302,6 @@ module.exports = {
                                     new_message.text = "Game is started";
                                     games[message.original_message.ts].isGameStarted = true;
                                 }
-                                bot.replyInteractive(message, new_message);
-                                games[message.original_message.ts].message = new_message;
                             })
                             .catch(function (err) {
                                 console.log("error\n" + JSON.stringify(err, null, 4));

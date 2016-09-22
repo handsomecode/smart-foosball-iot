@@ -2,6 +2,7 @@
 
 var Botkit = require('botkit');
 var Slack = require('slack-node');
+var Clone = require('clone');
 
 var appConfig = require(__app + 'config');
 var slackConfig = appConfig('slack');
@@ -20,6 +21,8 @@ var statisticInfo = {};
 // just a simple way to make sure we don't
 // connect to the RTM twice for the same team
 var _bots = {};
+
+var games = {};
 
 var slackBot = Botkit.slackbot({
     interactive_replies: true,
@@ -191,7 +194,13 @@ module.exports = {
         });
 
         slackBot.hears(['game', 'play'], ['direct_message', 'direct_mention'], function (bot, message) {
-            bot.reply(message, defaultmessage);
+            bot.reply(message, defaultmessage, function (src, resp, cd) {
+                games[resp.ts] = {
+                    message: Clone(defaultmessage),
+                    lastUse: message.ts,
+                    isGameStarted: false
+                };
+            });
             statisticInfo.bot = bot;
             statisticInfo.message = message;
         });
@@ -225,11 +234,14 @@ module.exports = {
 
         // receive an interactive message, and reply with a message that will replace the original
         slackBot.on('interactive_message_callback', function (bot, message) {
-                console.log("request info about " + message.user);
-                // if (utils.isInFirebasePlayerList(message.user, self.playersList)) {
-                //TODO mb it will be more effective to create function to calculate team index and player index
-                if (message.original_message.text !== defaultmessage.text) {
-                    bot.replyInteractive(message, self.constructEphemeralMessage("This game has already started"));
+                if (games[message.original_message.ts] === undefined) {
+                    bot.replyInteractive(message,
+                        self.constructEphemeralMessage("This is old game, I have forgot about it"));
+                    return;
+                }
+                if (games[message.original_message.ts].isGameStarted) {
+                    bot.replyInteractive(message,
+                        self.constructEphemeralMessage("This game has already started"));
                     return;
                 }
                 var team;
@@ -244,53 +256,67 @@ module.exports = {
                 } else {
                     player = 1;
                 }
-                if (!utils.isInCurrentPlayerActionList(message.user, message.original_message)) {
-                    if (message.actions[0].value === "") {
-                        getUserDataFunction(message.user).then(function (response) {
-                            console.log("success\n" + JSON.stringify(response, null, 4));
-                            var user_info = response;
-                            var new_message = message.original_message;
-                            console.log("++++");
-                            console.log(message);
-                            console.log("----");
-                            // self.playerListInCurrentGame[team * 2 + player] = {};
-                            // self.playerListInCurrentGame[team * 2 + player].playerSlackId = message.user;
-                            new_message.attachments[team].actions[player].text =
-                                user_info.user.profile.real_name_normalized;
-                            new_message.attachments[team].actions[player].value = message.user;
-                            new_message.attachments[team].actions[player].style = "primary";
-                            console.log(new_message.attachments[team].actions[player]);
-                            bot.replyInteractive(message, self.constructEphemeralMessage("The slot has been taken"));
-                            var playercount = 0;
-                            for (var j = 0; j < 2; j++) {
-                                for (var i = 0; i < 2; i++) {
-                                    if (message.original_message.attachments[j].actions[i].value !== "") {
-                                        playercount++;
+                var new_message = Clone(games[message.original_message.ts].message);
+                if (!utils.isInCurrentPlayerActionList(message.user, games[message.original_message.ts].message)) {
+                    if (games[message.original_message.ts].message.attachments[team].actions[player].value === "") {
+                        getUserDataFunction(message.user)
+                            .then(function (response) {
+                                if (games[message.original_message.ts]
+                                        .message.attachments[team].actions[player].value !== "") {
+                                    bot.replyInteractive(message,
+                                        self.constructEphemeralMessage("Sorry, this slot has already been taken"));
+                                    return;
+                                }
+                                console.log("success\n" + JSON.stringify(response, null, 4));
+                                var user_info = response;
+                                console.log("++++");
+                                console.log(message);
+                                console.log("----");
+                                // self.playerListInCurrentGame[team * 2 + player] = {};
+                                // self.playerListInCurrentGame[team * 2 + player].playerSlackId = message.user;
+
+                                new_message.attachments[team].actions[player].text =
+                                    user_info.user.profile.real_name_normalized;
+                                new_message.attachments[team].actions[player].value = message.user;
+                                new_message.attachments[team].actions[player].style = "primary";
+                                console.log(new_message.attachments[team].actions[player]);
+                                bot.replyInteractive(message, self.constructEphemeralMessage("The slot has been taken"));
+                                bot.replyInteractive(message, new_message);
+                                games[message.original_message.ts].message = new_message;
+                                //TODO save playercount in games
+                                var playercount = 0;
+                                for (var j = 0; j < 2; j++) {
+                                    for (var i = 0; i < 2; i++) {
+                                        if (games[message.original_message.ts]
+                                                .message.attachments[j].actions[i].value !== "") {
+                                            playercount++;
+                                        }
                                     }
                                 }
-                            }
-                            if (playercount >= 4) {
-                                bot.reply(message, 'Hey guys '
-                                    + utils.generatePlayersStringFromActionMessage(message.user,
-                                        message.original_message)
-                                    + '. You are next.');
-                                self.playerListInCurrentGame = [];
-                                new_message.text = "Game is started";
-                            }
-                            bot.replyInteractive(message, new_message);
-                        }).catch(function (err) {
-                            console.log("error\n" + JSON.stringify(err, null, 4));
-                        });
+                                if (playercount >= 4) {
+                                    bot.reply(message, 'Hey guys '
+                                        + utils.generatePlayersStringFromActionMessage(message.user,
+                                            games[message.original_message.ts].message)
+                                        + '. You are next.');
+                                    self.playerListInCurrentGame = [];
+                                    new_message.text = "Game is started";
+                                    games[message.original_message.ts].isGameStarted = true;
+                                }
+                            })
+                            .catch(function (err) {
+                                console.log("error\n" + JSON.stringify(err, null, 4));
+                            });
                     } else {
                         bot.replyInteractive(message,
                             self.constructEphemeralMessage("Sorry, this slot has already been taken"));
                     }
                 } else {
-                    if (message.actions[0].value === message.user) {
-                        var new_message = message.original_message;
+                    if (games[message.original_message.ts]
+                            .message.attachments[team].actions[player].value === message.user) {
                         new_message.attachments[team].actions[player] =
                             defaultmessage.attachments[team].actions[player];
                         bot.replyInteractive(message, new_message);
+                        games[message.original_message.ts].message = new_message;
                         bot.replyInteractive(message,
                             self.constructEphemeralMessage("The slot has been released"));
                     } else {
@@ -331,18 +357,18 @@ module.exports = {
                                         console.log("player B2 = " + playerB2.user.profile.real_name_normalized);
 
                                         var teamA = playerA1.user.profile.real_name_normalized + " and "
-                                                + playerA2.user.profile.real_name_normalized;
+                                            + playerA2.user.profile.real_name_normalized;
                                         var teamB = playerB1.user.profile.real_name_normalized + " and "
                                             + playerB2.user.profile.real_name_normalized;
                                         if (newGame.scoreA > newGame.scoreB) {
                                             messageNotification += teamA + " WIN " + teamB
-                                                    + " (" + newGame.scoreA + " : " + newGame.scoreB + ")";
+                                                + " (" + newGame.scoreA + " : " + newGame.scoreB + ")";
                                         } else if (newGame.scoreB > newGame.scoreA) {
                                             messageNotification += teamB + " WIN " + teamA
-                                                    + " (" + newGame.scoreB + " : " + newGame.scoreA + ")";
+                                                + " (" + newGame.scoreB + " : " + newGame.scoreA + ")";
                                         } else {
                                             messageNotification += teamA + " and " + teamB + "played in a draw"
-                                                    + " (" + newGame.scoreA + " : " + newGame.scoreB + ")";
+                                                + " (" + newGame.scoreA + " : " + newGame.scoreB + ")";
                                         }
 
                                         _bots[slackConfig.token].say({
@@ -370,7 +396,7 @@ module.exports = {
         return undefined;
     },
 
-    weeklyStats : function () {
+    weeklyStatsReport: function () {
         firebase.getThisWeekGames().then(function (statistic) {
             var stats = utils.getGamesStatistic(statistic);
             firebase.getPlayers().then(function (playerList) {

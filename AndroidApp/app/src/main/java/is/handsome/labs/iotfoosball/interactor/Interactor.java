@@ -54,7 +54,7 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
                 new FirebaseStorageLinkService(activityProvider
                         .getActivity()
                         .getApplicationContext(),
-                "gs://handsomefoosball.appspot.com", this);
+                "gs://testdb-51c26.appspot.com", this);
 
         soundPlayer =
                 new SoundService(activityProvider.getActivity().getApplicationContext(),

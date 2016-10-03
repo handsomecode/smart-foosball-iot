@@ -76,11 +76,11 @@ function statsReply(stats, playerList, period, bot, message) {
             " wins - " + "<@" + playerList[stats.top.one.id].slackID + ">. \n";
     }
     if (stats.top.two.id !== undefined) {
-        replyMessage += "    " + "2st place with " + stats.top.two.wins +
+        replyMessage += "    " + "2nd place with " + stats.top.two.wins +
             " wins - " + "<@" + playerList[stats.top.two.id].slackID + ">. \n";
     }
     if (stats.top.three.id !== undefined) {
-        replyMessage += "    " + "3st place with " + stats.top.three.wins +
+        replyMessage += "    " + "3rd place with " + stats.top.three.wins +
             " wins - " + "<@" + playerList[stats.top.three.id].slackID + ">. \n";
     }
     bot.reply(message, replyMessage);

@@ -67,6 +67,20 @@ var getUserDataFunction = function (userId) {
     });
 };
 
+var getUserDataFunctionWithCheks = function (newGame, playerPlace) {
+    return new Promise(function (resolve, reject) {
+        if (newGame[playerPlace] === "") {
+            resolve(undefined);
+        } else {
+            getUserDataFunction(playerListFromFirebase[newGame[playerPlace]].slackID).then(
+                function (response) {
+                    resolve(response);
+                }
+            )
+        }
+    });
+};
+
 function statsReply(stats, playerList, period, bot, message) {
     var replyMessage = "Statistic for this " + period + ":\n" +
         "    " + stats.games + " games have been played. \n" +
@@ -339,33 +353,56 @@ module.exports = {
         var playerA2;
         var playerB1;
         var playerB2;
-        getUserDataFunction(playerListFromFirebase[newGame.idPlayerA1].slackID).then(
+        getUserDataFunctionWithCheks(newGame, "idPlayerA1").then(
             function (response) {
                 playerA1 = response;
-                console.log("player A1 = " + playerA1.user.profile.real_name_normalized);
-                getUserDataFunction(playerListFromFirebase[newGame.idPlayerA2].slackID).then(
+                //console.log("player A1 = " + playerA1.user.profile.real_name_normalized);
+                getUserDataFunctionWithCheks(newGame, "idPlayerA2").then(
                     function (response) {
                         playerA2 = response;
-                        console.log("player A2 = " + playerA2.user.profile.real_name_normalized);
-                        getUserDataFunction(playerListFromFirebase[newGame.idPlayerB1].slackID).then(
+                        //console.log("player A2 = " + playerA2.user.profile.real_name_normalized);
+                        getUserDataFunctionWithCheks(newGame, "idPlayerB1").then(
                             function (response) {
                                 playerB1 = response;
-                                console.log("player B1 = " + playerB1.user.profile.real_name_normalized);
-                                getUserDataFunction(playerListFromFirebase[newGame.idPlayerB2].slackID).then(
+                                //console.log("player B1 = " + playerB1.user.profile.real_name_normalized);
+                                getUserDataFunctionWithCheks(newGame, "idPlayerB2").then(
                                     function (response) {
                                         playerB2 = response;
-                                        console.log("player B2 = " + playerB2.user.profile.real_name_normalized);
-
-                                        var teamA = playerA1.user.profile.real_name_normalized + " and "
-                                            + playerA2.user.profile.real_name_normalized;
-                                        var teamB = playerB1.user.profile.real_name_normalized + " and "
-                                            + playerB2.user.profile.real_name_normalized;
+                                        //console.log("player B2 = " + playerB2.user.profile.real_name_normalized);
+                                        var teamA = "";
+                                        if (playerA1 !== undefined) {
+                                            teamA += playerA1.user.profile.real_name_normalized;
+                                            if (playerA2 !== undefined) teamA += " and ";
+                                        }
+                                        if (playerA2 !== undefined) {
+                                            teamA += playerA2.user.profile.real_name_normalized;
+                                        }
+                                        var teamB = "";
+                                        if (playerB1 !== undefined) {
+                                            teamB += playerB1.user.profile.real_name_normalized;
+                                            if (playerB2 !== undefined) teamB += " and ";
+                                        }
+                                        if (playerB2 !== undefined) {
+                                            teamB += playerB2.user.profile.real_name_normalized;
+                                        }
                                         if (newGame.scoreA > newGame.scoreB) {
-                                            messageNotification += teamA + " WIN " + teamB
-                                                + " (" + newGame.scoreA + " : " + newGame.scoreB + ")";
+                                            messageNotification += teamA;
+                                            if (playerA1 === undefined || playerA2 === undefined) {
+                                                messageNotification += " WINS ";
+                                            } else {
+                                                messageNotification += " WIN ";
+                                            }
+                                            messageNotification += teamB;
+                                            messageNotification += " (" + newGame.scoreA + " : " + newGame.scoreB + ")";
                                         } else if (newGame.scoreB > newGame.scoreA) {
-                                            messageNotification += teamB + " WIN " + teamA
-                                                + " (" + newGame.scoreB + " : " + newGame.scoreA + ")";
+                                            messageNotification += teamB;
+                                            if (playerB1 === undefined || playerB2 === undefined) {
+                                                messageNotification += " WINS ";
+                                            } else {
+                                                messageNotification += " WIN ";
+                                            }
+                                            messageNotification += teamA;
+                                            messageNotification += " (" + newGame.scoreB + " : " + newGame.scoreA + ")";
                                         } else {
                                             messageNotification += teamA + " and " + teamB + "played in a draw"
                                                 + " (" + newGame.scoreA + " : " + newGame.scoreB + ")";
@@ -373,7 +410,7 @@ module.exports = {
 
                                         _bots[slackConfig.token].say({
                                             text: messageNotification,
-                                            channel: 'C03U0BRS0' //TODO redirect to channel where game was started
+                                            channel: 'C03U0BRS0' //C2B0GFZPA - foosballtest TODO redirect to channel where game was started
                                         })
                                     }
                                 );

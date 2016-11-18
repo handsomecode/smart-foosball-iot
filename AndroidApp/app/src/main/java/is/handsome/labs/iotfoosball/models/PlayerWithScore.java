@@ -1,7 +1,7 @@
 package is.handsome.labs.iotfoosball.models;
 
 public class PlayerWithScore {
-    static private Player playerDummy = new Player("","");
+    static private Player playerDummy = new Player("","","","");
     private String playerId;
     private Player player;
     private int wins;

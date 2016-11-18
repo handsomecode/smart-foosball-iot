@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements InterfaceViewFrom
 
     @Override
     public TextView getIncludeScore(int position) {
-        return playerViewGroups.get(position).score;
+        return playerViewGroups.get(position).nick;
     }
 
     @Override
@@ -201,8 +201,8 @@ public class MainActivity extends AppCompatActivity implements InterfaceViewFrom
             playerViewGroups.add(new PlayerViewGroup(includes.get(i)));
             ButterKnife.bind(playerViewGroups.get(i), includes.get(i));
             playerViewGroups.get(i).nick.setText("player"); //TODO move this to presentor
-            playerViewGroups.get(i).score.setText("");
-            playerViewGroups.get(i).score.setPadding(0,0,0,0);
+//            playerViewGroups.get(i).score.setText("");
+//            playerViewGroups.get(i).score.setPadding(0,0,0,0);
         }
         Timber.d("components added");
     }

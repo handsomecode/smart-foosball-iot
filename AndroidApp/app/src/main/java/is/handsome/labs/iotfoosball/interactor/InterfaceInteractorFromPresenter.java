@@ -1,6 +1,7 @@
 package is.handsome.labs.iotfoosball.interactor;
 
 import is.handsome.labs.iotfoosball.models.PlayerViewInfo;
+import is.handsome.labs.iotfoosball.models.TeamViewInfo;
 import is.handsome.labs.iotfoosball.view.MainActivity;
 
 public interface InterfaceInteractorFromPresenter {
@@ -25,9 +26,15 @@ public interface InterfaceInteractorFromPresenter {
 
     PlayerViewInfo getPlayerViewInfoByPosition(int position);
 
+    TeamViewInfo getTeamViewInfo(int position);
+
     int getPlayerCount();
 
-    void notifyDraged(int position, int index, int positionFrom);
+    int getTeamCount();
+
+    void notifyPlayerDraged(int position, int index, int positionFrom);
+
+    void notifyTeamDraged(int position, int teamIndex);
 
     void notifyListed(@MainActivity.Teams int team, int position);
 

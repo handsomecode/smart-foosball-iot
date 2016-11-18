@@ -21,7 +21,7 @@ class FirebaseActionPlayerListener extends FirebaseActionListener<Player> {
     @Override
     public void addingPerformed(String key, Player data, int index) {
         addPlayer(key, data, index);
-        interfacePresentorFromInteractor.notifyDataSetRecyclerViewChanged();
+        interfacePresentorFromInteractor.notifyDataPlayerSetRecyclerViewChanged();
     }
 
     @Override
@@ -34,7 +34,7 @@ class FirebaseActionPlayerListener extends FirebaseActionListener<Player> {
                 }
             }
         }
-        interfacePresentorFromInteractor.notifyDataSetRecyclerViewChanged();
+        interfacePresentorFromInteractor.notifyDataPlayerSetRecyclerViewChanged();
     }
 
     @Override
@@ -42,7 +42,7 @@ class FirebaseActionPlayerListener extends FirebaseActionListener<Player> {
         for (int i = 0; i < keyList.size(); i++) {
             addPlayer(keyList.get(i), dataList.get(i), i);
         }
-        interfacePresentorFromInteractor.notifyDataSetRecyclerViewChanged();
+        interfacePresentorFromInteractor.notifyDataPlayerSetRecyclerViewChanged();
     }
 
     private boolean addPlayer(String key, Player data, int index) {

@@ -26,8 +26,8 @@ class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAdapter.V
         TextView nick;
         @BindView(R.id.avatar)
         ImageView avatar;
-        @BindView(R.id.score)
-        TextView score;
+//        @BindView(R.id.score)
+//        TextView score;
         @BindView(R.id.player)
         View player;
     }
@@ -51,8 +51,7 @@ class PlayerRecyclerAdapter extends RecyclerView.Adapter<PlayerRecyclerAdapter.V
         holder.avatar.setImageBitmap(null);
         PlayerViewInfo playerViewInfo = presenter.getPlayerViewInfoByPosition(position);
         holder.nick.setText(playerViewInfo.getNick());
-        holder.score.setText(playerViewInfo.getScore());
-        presenter.setAvatar(holder.avatar, playerViewInfo.getAvatar());
+        presenter.setAvatar(holder.avatar, playerViewInfo.getAvatarUrl());
     }
 
     @Override

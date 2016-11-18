@@ -35,7 +35,9 @@ public interface InterfacePresenterFromView {
 
     int getPlayerCount();
 
-    void notifyDraged(int position, int index, int positionFrom);
+    void notifyPlayerDraged(int position, int index, int positionFrom);
+
+    void notifyTeamDraged(int position, int teamIndex);
 
     android.view.View.OnDragListener getDragListenerForIncludes(int i);
 

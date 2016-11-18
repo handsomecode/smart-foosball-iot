@@ -13,6 +13,7 @@ import java.util.Map;
 
 import is.handsome.labs.iotfoosball.R;
 import is.handsome.labs.iotfoosball.interactor.InterfaceInteractorFromPresenter;
+import is.handsome.labs.iotfoosball.models.TeamViewInfo;
 import is.handsome.labs.iotfoosball.services.ActivityProvider;
 import is.handsome.labs.iotfoosball.view.InterfaceViewFromPresenter;
 import is.handsome.labs.iotfoosball.view.MainActivity;
@@ -24,6 +25,7 @@ public class Presenter implements InterfacePresentorFromInteractor, InterfacePre
     private InterfaceInteractorFromPresenter interfaceInteractorFromPresenter;
     private InterfaceViewFromPresenter interfaceViewFromPresenter;
     private android.support.v7.widget.RecyclerView.Adapter playerRecyclerAdapter;
+    private android.support.v7.widget.RecyclerView.Adapter teamRecyclerAdapter;
     private Picasso picasso;
     private HashMap<ImageView, String> viewAvatar;
     private HashMap<ImageView, Boolean> isLinkReqested;
@@ -33,6 +35,7 @@ public class Presenter implements InterfacePresentorFromInteractor, InterfacePre
         this.interfaceViewFromPresenter = (InterfaceViewFromPresenter) activity;
         interfaceInteractorFromPresenter = new Interactor(new ActivityProvider(activity), this);
         playerRecyclerAdapter = new PlayerRecyclerAdapter(this);
+        teamRecyclerAdapter = new TeamsRecyclerAdapter(this);
         viewAvatar = new HashMap<>();
         isLinkReqested = new HashMap<>();
     }
@@ -54,8 +57,14 @@ public class Presenter implements InterfacePresentorFromInteractor, InterfacePre
     }
 
     @Override
-    public void notifyDataSetRecyclerViewChanged() {
+    public void notifyDataPlayerSetRecyclerViewChanged() {
         playerRecyclerAdapter.notifyDataSetChanged();
+        teamRecyclerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void notifyDataTeamsSetRecyclerViewChanged() {
+        teamRecyclerAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -68,10 +77,10 @@ public class Presenter implements InterfacePresentorFromInteractor, InterfacePre
         PlayerViewInfo playerViewInfo =
                 interfaceInteractorFromPresenter.getPlayerViewInfoByPosition(index);
         interfaceViewFromPresenter.getIncludeNick(position).setText(playerViewInfo.getNick());
-        interfaceViewFromPresenter.getIncludeScore(position).setText(playerViewInfo.getScore());
+        //interfaceViewFromPresenter.getIncludeScore(position).setText(playerViewInfo.getScore());
         interfaceViewFromPresenter.getIncludeScore(position).setPadding(4,4,4,4);
 
-        setAvatar(interfaceViewFromPresenter.getIncludeAvatar(position), playerViewInfo.getAvatar());
+        setAvatar(interfaceViewFromPresenter.getIncludeAvatar(position), playerViewInfo.getAvatarUrl());
 
         interfaceViewFromPresenter.getIncludeAvatar(position).setOnLongClickListener(
                 new OnPlayerLongClickListener(index,
@@ -182,22 +191,29 @@ public class Presenter implements InterfacePresentorFromInteractor, InterfacePre
         return interfaceInteractorFromPresenter.getPlayerCount();
     }
 
-    @Override
-    public void notifyDraged(int position, int index, int positionFrom) {
-        interfaceInteractorFromPresenter.notifyDraged(position, index, positionFrom);
+    public TeamViewInfo getTeamViewInfo (int position) {
+        return interfaceInteractorFromPresenter.getTeamViewInfo(position);
+    };
+
+    public int getTeamCount() {
+        return interfaceInteractorFromPresenter.getTeamCount();
     }
 
-    public void setAvatar(ImageView imageView, String avatar) {
-        synchronized (viewAvatar.getClass()) {
-            viewAvatar.put(imageView, avatar);
-            if (avatar != null) {
-                isLinkReqested.put(imageView, true);
-                interfaceInteractorFromPresenter.requestLink(avatar);
-            } else {
-                isLinkReqested.put(imageView, false);
-                picasso.load(R.mipmap.opengamer).into(imageView);
-            }
-        }
+    @Override
+    public void notifyPlayerDraged(int position, int index, int positionFrom) {
+        interfaceInteractorFromPresenter.notifyPlayerDraged(position, index, positionFrom);
+    }
 
+    @Override
+    public void notifyTeamDraged(int position, int teamIndex) {
+        interfaceInteractorFromPresenter.notifyTeamDraged(position, teamIndex);
+    }
+
+    public void setAvatar(ImageView imageView, String avatarUrl) {
+        if (!avatarUrl.equals("")) {
+            picasso.load(avatarUrl).into(imageView);
+        } else {
+            picasso.load(R.mipmap.opengamer).into(imageView);
+        }
     }
 }

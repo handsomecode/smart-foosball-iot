@@ -21,7 +21,7 @@ class FirebaseActionGameListener extends FirebaseActionListener<Game> {
     @Override
     public void addingPerformed(String key, Game data, int index) {
         addScore(key, data, index);
-        interfacePresentorFromInteractor.notifyDataSetRecyclerViewChanged();
+        interfacePresentorFromInteractor.notifyDataPlayerSetRecyclerViewChanged();
     }
 
     @Override
@@ -40,7 +40,7 @@ class FirebaseActionGameListener extends FirebaseActionListener<Game> {
                 }
             }
         }
-        interfacePresentorFromInteractor.notifyDataSetRecyclerViewChanged();
+        interfacePresentorFromInteractor.notifyDataPlayerSetRecyclerViewChanged();
     }
 
     @Override
@@ -48,7 +48,7 @@ class FirebaseActionGameListener extends FirebaseActionListener<Game> {
         for (int i = 0; i < keyList.size(); i++) {
             addScore(keyList.get(i), dataList.get(i), i);
         }
-        interfacePresentorFromInteractor.notifyDataSetRecyclerViewChanged();
+        interfacePresentorFromInteractor.notifyDataPlayerSetRecyclerViewChanged();
     }
 
     private void addScore(String playerId, Game data, int index) {

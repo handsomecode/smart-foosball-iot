@@ -4,7 +4,9 @@ import android.net.Uri;
 
 public interface InterfacePresentorFromInteractor {
 
-    void notifyDataSetRecyclerViewChanged();
+    void notifyDataPlayerSetRecyclerViewChanged();
+
+    void notifyDataTeamsSetRecyclerViewChanged();
 
     void setTime(String time);
 

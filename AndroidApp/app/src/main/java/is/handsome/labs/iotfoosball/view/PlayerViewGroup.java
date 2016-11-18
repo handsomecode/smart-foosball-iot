@@ -12,8 +12,8 @@ class PlayerViewGroup {
     TextView nick;
     @BindView(R.id.avatar)
     ImageView avatar;
-    @BindView(R.id.score)
-    TextView score;
+//    @BindView(R.id.score)
+//    TextView score;
 
     private View inc;
 

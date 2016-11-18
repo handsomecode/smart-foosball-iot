@@ -5,20 +5,23 @@ package is.handsome.labs.iotfoosball.models;
 public class PlayerViewInfo {
 
     private String nick;
-    private String avatar;
-    private String score;
+    private String avatarUrl;
+//    private String score;
 
     public void setNick(String nick) {
-        this.nick = nick;
+        String shortNick = nick.substring(0,nick.indexOf(' '));
+        String firstLetterOfSurname = nick.substring(nick.indexOf(' ')+1, nick.indexOf(' ')+2);
+        shortNick += firstLetterOfSurname;
+        this.nick = shortNick;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
-    public void setScore(String score) {
-        this.score = score;
-    }
+//    public void setScore(String score) {
+//        this.score = score;
+//    }
 
     public PlayerViewInfo(){
 
@@ -28,11 +31,11 @@ public class PlayerViewInfo {
         return nick;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public String getAvatarUrl() {
+        return avatarUrl;
     }
 
-    public String getScore() {
-        return score;
-    }
+//    public String getScore() {
+//        return score;
+//    }
 }

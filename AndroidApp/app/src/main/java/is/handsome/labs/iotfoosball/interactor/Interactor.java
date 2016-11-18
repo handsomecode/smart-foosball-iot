@@ -1,6 +1,5 @@
 package is.handsome.labs.iotfoosball.interactor;
 
-import android.app.Activity;
 import android.net.Uri;
 
 import com.google.firebase.database.DatabaseReference;
@@ -8,10 +7,12 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import is.handsome.labs.iotfoosball.R;
 import is.handsome.labs.iotfoosball.models.Game;
+import is.handsome.labs.iotfoosball.models.Slot;
+import is.handsome.labs.iotfoosball.models.Team;
+import is.handsome.labs.iotfoosball.models.TeamViewInfo;
 import is.handsome.labs.iotfoosball.presenter.InterfacePresentorFromInteractor;
 import is.handsome.labs.iotfoosball.models.Player;
 import is.handsome.labs.iotfoosball.models.PlayerViewInfo;
@@ -33,22 +34,37 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
     private SoundService soundPlayer;
     private UsbService usbService;
     private FirebaseAuthService fbAuthService;
-    private PhraseSpotterForCountStart phraseSpotter;
+//    private PhraseSpotterForCountStart phraseSpotter;
     private TimerForClock timerClock;
     private CurrentGame currentGame;
     private ActivityProvider activityProvider;
 
     private List<PlayerWithScore> playerWithScoreList;
+    private List<Team> teamList;
+    private List<Slot> slotsList;
     private AuthDataReaderService authDataReaderService;
     private FirebaseDatabaseListService<Player> fbDatabasePlayersService;
     private FirebaseDatabaseListService<Game> fbDatabaseGamesService;
+    private FirebaseDatabaseListService<Team> fbDatabaseTeamsService;
+//    private FirebaseDatabaseListService<Slot> fbDatabaseSlotsService;
+
+//    private Timer timerToNextGame;
+//    private String currentGameSlotKey;
+//    private boolean isScheduledMode;
+
+//    FirebaseActionSlotListener actionSlotListener =
+//            new FirebaseActionSlotListener(slotsList, this);
 
     public Interactor(ActivityProvider activityProvider,
             InterfacePresentorFromInteractor interfacePresentorFromInteractor) {
 
+//        this.isScheduledMode = false;
+
         this.activityProvider = activityProvider;
-                
+
         this.interfacePresentorFromInteractor = interfacePresentorFromInteractor;
+
+//        this.timerToNextGame = new Timer();
 
         firebaseStorageLinkService =
                 new FirebaseStorageLinkService(activityProvider
@@ -70,6 +86,10 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
 
         playerWithScoreList = new ArrayList<>();
 
+        teamList = new ArrayList<>();
+
+        slotsList = new ArrayList<>();
+
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
         fbDatabaseGamesService =
@@ -79,16 +99,26 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
                 new FirebaseDatabaseListService<>(database.getRef().child("/players/"),
                         Player.class);
 
+        fbDatabaseTeamsService =
+                new FirebaseDatabaseListService<>(database.getRef().child("/teams/"),
+                        Team.class);
+//
+//        fbDatabaseSlotsService =
+//                new FirebaseDatabaseListService<>(database.getRef().child("/slots/"),
+//                    Slot.class);
+
         timerClock = new TimerForClock(interfacePresentorFromInteractor, 1000, false);
 
-        phraseSpotter = new PhraseSpotterForCountStart(soundPlayer);
-
-        phraseSpotter.init(activityProvider.getActivity().getApplicationContext(),
-                authDataReaderService.getYandexApi());
+//        phraseSpotter = new PhraseSpotterForCountStart(soundPlayer);
+//
+//        phraseSpotter.init(activityProvider.getActivity().getApplicationContext(),
+//                authDataReaderService.getYandexApi());
 
         currentGame = new CurrentGame(interfacePresentorFromInteractor,
                 database.child("/games/"),
-                playerWithScoreList);
+                database.child("/currentGame/"),
+                playerWithScoreList,
+                teamList);
 
         SerialHandler serialHandler = SerialHandler.getInstance(currentGame);
 
@@ -102,15 +132,21 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
 
     @Override
     public void initListeners() {
-        FirebaseActionGameListener actionGameListener =
-                new FirebaseActionGameListener(playerWithScoreList,
-                        interfacePresentorFromInteractor);
-        fbDatabaseGamesService.addListener(actionGameListener);
+//        FirebaseActionGameListener actionGameListener =
+//                new FirebaseActionGameListener(playerWithScoreList,
+//                        interfacePresentorFromInteractor);
+//        fbDatabaseGamesService.addListener(actionGameListener);
         FirebaseActionPlayerListener actionPlayerListener =
                 new FirebaseActionPlayerListener(playerWithScoreList,
                         interfacePresentorFromInteractor);
         fbDatabasePlayersService.addListener(actionPlayerListener);
+        FirebaseActionTeamListener actionTeamListener =
+                new FirebaseActionTeamListener(teamList, interfacePresentorFromInteractor);
+        fbDatabaseTeamsService.addListener(actionTeamListener);
 
+
+
+//        fbDatabaseSlotsService.addListener(actionSlotListener);
     }
 
     //TODO Activity to just resume
@@ -130,12 +166,12 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
     @Override
     public void startServices() {
         fbAuthService.onStart();
-        phraseSpotter.onStart(activityProvider.getActivity().getApplicationContext());
+        //phraseSpotter.onStart(activityProvider.getActivity().getApplicationContext());
     }
 
     @Override
     public void stopServices() {
-        phraseSpotter.onStop();
+        //phraseSpotter.onStop();
         fbAuthService.onStop();
     }
 
@@ -147,7 +183,6 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
     @Override
     public void onEndClick() {
         currentGame.endGame();
-        timerClock.reset();
     }
 
     @Override
@@ -168,12 +203,31 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
     public PlayerViewInfo getPlayerViewInfoByPosition(int position) {
         PlayerViewInfo playerViewInfo = new PlayerViewInfo();
         playerViewInfo.setNick(playerWithScoreList.get(position).getPlayer().getNick());
-        playerViewInfo.setScore(String.format(Locale.US, "%d:%d",
-                playerWithScoreList.get(position).getWins(),
-                playerWithScoreList.get(position).getLosses()));
-        playerViewInfo.setAvatar(
-                playerWithScoreList.get(position).getPlayer().getNick().toLowerCase());
+        playerViewInfo.setAvatarUrl(
+                playerWithScoreList.get(position).getPlayer().getAvatarGoogleUrl());
         return playerViewInfo;
+    }
+
+    @Override
+    public TeamViewInfo getTeamViewInfo(int position) {
+        TeamViewInfo teamViewInfo = new TeamViewInfo();
+        teamViewInfo.setName(teamList.get(position).getName());
+        for (int i = 0, k = 0; i < playerWithScoreList.size(); i++) {
+            if (playerWithScoreList.get(i).getPlayerId()
+                    .equals(teamList.get(position).getPlayer1id())) {
+                teamViewInfo.setAvatar1Url(playerWithScoreList.get(i).getPlayer().getAvatarGoogleUrl());
+                k++;
+            }
+            if (playerWithScoreList.get(i).getPlayerId()
+                    .equals(teamList.get(position).getPlayer2id())) {
+                teamViewInfo.setAvatar2Url(playerWithScoreList.get(i).getPlayer().getAvatarGoogleUrl());
+                k++;
+            }
+            if (k ==2) {
+                break;
+            }
+        }
+        return teamViewInfo;
     }
 
     @Override
@@ -182,8 +236,18 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
     }
 
     @Override
-    public void notifyDraged(int position, int index, int positionFrom) {
-        currentGame.notifyDraged(position, index, positionFrom);
+    public int getTeamCount() {
+        return teamList.size();
+    }
+
+    @Override
+    public void notifyPlayerDraged(int position, int index, int positionFrom) {
+        currentGame.notifyPlayerDraged(position, index, positionFrom);
+    }
+
+    @Override
+    public void notifyTeamDraged(int position, int teamIndex) {
+        currentGame.notifyTeamDraged(position, teamIndex);
     }
 
     @Override
@@ -205,4 +269,5 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
     public void reciveLink(String request, Uri uri) {
         interfacePresentorFromInteractor.reciveImgLink(request, uri);
     }
+
 }

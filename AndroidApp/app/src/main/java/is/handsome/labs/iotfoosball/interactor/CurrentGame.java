@@ -12,26 +12,34 @@ import java.util.List;
 import java.util.Locale;
 
 import is.handsome.labs.iotfoosball.models.Game;
+import is.handsome.labs.iotfoosball.models.Team;
 import is.handsome.labs.iotfoosball.presenter.InterfacePresentorFromInteractor;
 import is.handsome.labs.iotfoosball.models.PlayerWithScore;
 import is.handsome.labs.iotfoosball.view.MainActivity;
 import timber.log.Timber;
 
 class CurrentGame {
-    private InterfacePresentorFromInteractor interfacePresentorFromView;
+    private InterfacePresentorFromInteractor interfacePresentorFromInteractor;
     private Game game;
     private boolean isGameStarted;
     private DatabaseReference reference;
+    private DatabaseReference currentGameRef;
     private int threshold;
     private int scoreA;
     private int scoreB;
     private ArrayList<Integer> playerIndex;
     private List<PlayerWithScore> playerWithScoreList;
+    private DateFormat dateFormat;
+    private List<String> playerStringFbNames;
+    private List<Team> teamArrayList;
 
-    public CurrentGame(InterfacePresentorFromInteractor interfacePresentorFromView,
+    public CurrentGame(InterfacePresentorFromInteractor interfacePresentorFromInteractor,
             DatabaseReference databaseReference,
-            List<PlayerWithScore> playerWithScoresList) {
-        this.interfacePresentorFromView = interfacePresentorFromView;
+            DatabaseReference currentGameRef,
+            List<PlayerWithScore> playerWithScoresList,
+            List<Team> teamArrayList) {
+        this.interfacePresentorFromInteractor = interfacePresentorFromInteractor;
+        this.teamArrayList = teamArrayList;
         game = new Game();
         playerIndex = new ArrayList<>(4);
         isGameStarted = false;
@@ -39,9 +47,19 @@ class CurrentGame {
         scoreB = 0;
         this.playerWithScoreList = playerWithScoresList;
         this.reference = databaseReference;
+        this.currentGameRef = currentGameRef;
         threshold = 50;
         for (int i = 0; i < 4; i++) {
             playerIndex.add(i, -1);
+        }
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
+        playerStringFbNames = new ArrayList<>();
+        playerStringFbNames.add(0, "idPlayerA1");
+        playerStringFbNames.add(1, "idPlayerA2");
+        playerStringFbNames.add(2, "idPlayerB1");
+        playerStringFbNames.add(3, "idPlayerB2");
+        for (int i = 0; i < 4; i++) {
+            currentGameRef.child(playerStringFbNames.get(i)).setValue("");
         }
     }
 
@@ -70,7 +88,7 @@ class CurrentGame {
     public void endGame() {
         if (isGameStarted) {
             isGameStarted = false;
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
+
             String dateend = dateFormat.format(Calendar.getInstance().getTime());
             Log.d("gamesave", "set dateend to " + dateend);
             game.setDateEnd(dateend);
@@ -89,16 +107,19 @@ class CurrentGame {
             while ((scoreA != 0 || scoreB != 0)) {
                 if (scoreA != 0) {
                     scoreA--;
-                    interfacePresentorFromView.setScorebarA(scoreA);
+                    interfacePresentorFromInteractor.setScorebarA(scoreA);
                 }
                 if (scoreB != 0) {
                     scoreB--;
-                    interfacePresentorFromView.setScorebarB(scoreB);
+                    interfacePresentorFromInteractor.setScorebarB(scoreB);
                 }
             }
             for (int i = 0; i < 4; i++) {
                 clearInclude(i);
             }
+        }
+        for (int i = 0; i < 4; i++) {
+            currentGameRef.child(playerStringFbNames.get(i)).setValue("");
         }
     }
 
@@ -107,26 +128,30 @@ class CurrentGame {
         if (teamScored == MainActivity.A) {
             startGame();
             scoreA++;
-            interfacePresentorFromView.setScorebarA(scoreA);
+            currentGameRef.child("scoreA").setValue(scoreA);
+            interfacePresentorFromInteractor.setScorebarA(scoreA);
         }
         if (teamScored == MainActivity.B) {
             startGame();
             scoreB++;
-            interfacePresentorFromView.setScorebarB(scoreB);
+            currentGameRef.child("scoreB").setValue(scoreB);
+            interfacePresentorFromInteractor.setScorebarB(scoreB);
         }
     }
 
     public void notifyListed(@MainActivity.Teams int team, int position) {
         if (team == MainActivity.A) {
             scoreA = position;
+            currentGameRef.child("scoreA").setValue(scoreA);
         }
         if (team == MainActivity.B) {
             scoreB = position;
+            currentGameRef.child("scoreB").setValue(scoreB);
         }
     }
 
-    public void notifyDraged(int position, int index, int positionFrom) {
-        Timber.d("Dragged to " + position + " with index = " + index);
+    public void notifyPlayerDraged(int position, int index, int positionFrom) {
+        Timber.d("Dragged player to " + position + " with index = " + index);
         if ((index < 0) || (index >= playerWithScoreList.size())) {
             return;
         }
@@ -141,18 +166,171 @@ class CurrentGame {
         setPlayer(position, index);
     }
 
+    public void notifyTeamDraged(int position, int teamIndex) {
+        Timber.d("Dragged player to " + position + " with index = " + teamIndex);
+        if ((teamIndex < 0) || (teamIndex >= teamArrayList.size())) {
+            return;
+        }
+        String player1id = teamArrayList.get(teamIndex).getPlayer1id();
+        int player1index = -1;
+        if (player1id != null) {
+            if (!player1id.equals("")) {
+                for (int i = 0; i < playerWithScoreList.size(); i++) {
+                    if (playerWithScoreList.get(i).getPlayerId().equals(player1id)) {
+                        player1index = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        String player2id = teamArrayList.get(teamIndex).getPlayer2id();
+        int player2index = -1;
+        if (player2id != null) {
+            if (!player2id.equals("")) {
+                for (int i = 0; i < playerWithScoreList.size(); i++) {
+                    if (playerWithScoreList.get(i).getPlayerId().equals(player2id)) {
+                        player2index = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < 4; i++) {
+            if (player1index == playerIndex.get(i) ||
+                    player2index == playerIndex.get(i)) {
+                clearInclude(i);
+            }
+        }
+
+        if (position<2) {
+            if (player1index != -1) {
+                setPlayer(0, player1index);
+            } else {
+                clearInclude(0);
+            }
+            if (player2index != -1) {
+                setPlayer(1, player2index);
+            } else {
+                clearInclude(1);
+            }
+        } else {
+            if (player1index != -1) {
+                setPlayer(2, player1index);
+            } else {
+                clearInclude(2);
+            }
+            if (player2index != -1) {
+                setPlayer(3, player2index);
+            } else {
+                clearInclude(3);
+            }
+        }
+    }
+
     public void clearInclude(int position) {
         playerIndex.set(position, -1);
-        interfacePresentorFromView.clearPlayerInInclude(position);
+        interfacePresentorFromInteractor.clearPlayerInInclude(position);
+        currentGameRef.child(playerStringFbNames.get(position)).setValue("");
+        recalcTeams();
     }
 
     public String getPlayerId(int position) {
-        return playerWithScoreList.get(playerIndex.get(position)).getPlayerId();
+        if (playerIndex.get(position) < playerWithScoreList.size() && playerIndex.get(position) > 0) {
+            return playerWithScoreList.get(playerIndex.get(position)).getPlayerId();
+        }
+        return "-321";
+    }
+
+    public int findPlayerIndexFromId(String id) {
+        int i = 0;
+        for (; i < playerWithScoreList.size(); i++) {
+            if (playerWithScoreList.get(i).getPlayerId().equals(id)) {
+                break;
+            }
+        }
+        return playerIndex.get(i);
+    }
+
+    private void recalcTeams() {
+        recalcTeamA();
+        recalcTeamB();
+    }
+
+    private void recalcTeamA() {
+        //check teamA1
+        for (int i = 0; i < teamArrayList.size(); i++) {
+            if (teamArrayList.get(i).getPlayer1id() != null) {
+                if (teamArrayList.get(i).getPlayer1id().equals(getPlayerId(0))) {
+                    for (int j = 0; j < teamArrayList.size(); j++) {
+                        if (teamArrayList.get(i).getPlayer2id() != null) {
+                            if (teamArrayList.get(i).getPlayer2id().equals(getPlayerId(1))) {
+                                currentGameRef.child("teamAid").setValue(teamArrayList.get(j).getId());
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //check teamA2
+        for (int i = 0; i < teamArrayList.size(); i++) {
+            if (teamArrayList.get(i).getPlayer1id() != null) {
+                if (teamArrayList.get(i).getPlayer1id().equals(getPlayerId(1))) {
+                    for (int j = 0; j < teamArrayList.size(); j++) {
+                        if (teamArrayList.get(i).getPlayer2id() != null) {
+                            if (teamArrayList.get(i).getPlayer2id().equals(getPlayerId(0))) {
+                                currentGameRef.child("teamAid").setValue(teamArrayList.get(j).getId());
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        currentGameRef.child("teamAid").setValue("");
+    }
+
+    private void recalcTeamB() {
+        //check teamB1
+        for (int i = 0; i < teamArrayList.size(); i++) {
+            if (teamArrayList.get(i).getPlayer1id() != null) {
+                if (teamArrayList.get(i).getPlayer1id().equals(getPlayerId(2))) {
+                    for (int j = 0; j < teamArrayList.size(); j++) {
+                        if (teamArrayList.get(i).getPlayer2id() != null) {
+                            if (teamArrayList.get(i).getPlayer2id().equals(getPlayerId(3))) {
+                                currentGameRef.child("teamBid").setValue(teamArrayList.get(j).getId());
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //check teamB2
+        for (int i = 0; i < teamArrayList.size(); i++) {
+            if (teamArrayList.get(i).getPlayer1id() != null) {
+                if (teamArrayList.get(i).getPlayer1id().equals(getPlayerId(3))) {
+                    for (int j = 0; j < teamArrayList.size(); j++) {
+                        if (teamArrayList.get(i).getPlayer2id() != null) {
+                            if (teamArrayList.get(i).getPlayer2id().equals(getPlayerId(2))) {
+                                currentGameRef.child("teamBid").setValue(teamArrayList.get(j).getId());
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        currentGameRef.child("teamBid").setValue("");
     }
 
     private void setPlayer(int position, int index) {
         playerIndex.set(position, index);
+        currentGameRef.child(playerStringFbNames.get(position)).setValue(getPlayerId(position));
         Timber.d("playerIndex = " + playerIndex.get(position));
-        interfacePresentorFromView.setPlayerInInclude(position, index);
+        interfacePresentorFromInteractor.setPlayerInInclude(position, index);
+        recalcTeams();
     }
 }

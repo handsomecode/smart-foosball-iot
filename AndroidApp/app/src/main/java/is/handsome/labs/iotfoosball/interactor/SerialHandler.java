@@ -2,6 +2,7 @@ package is.handsome.labs.iotfoosball.interactor;
 
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import timber.log.Timber;
 
@@ -33,11 +34,12 @@ class SerialHandler extends Handler {
 
     @Override
     public void handleMessage(Message msg) {
-        if (msg.what == 'a') {
+        Log.d("SERIAL HANDL", "serial msg" + msg.what);
+        if (msg.what == 97) {
             currentGame.notifyScored(A);
             Timber.d("Serial port message = GOAL in A");
         }
-        if (msg.what == 'b') {
+        if (msg.what == 98) {
             currentGame.notifyScored(B);
             Timber.d("Serial port message = GOAL in B");
         }

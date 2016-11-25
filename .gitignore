@@ -7,6 +7,7 @@ AndroidApp/local.properties
 build/
 /captures
 AndroidApp/app/src/main/res/raw/data
+AndroidApp/app/google-services.json
 
 #Platform IO
 .pioenvs

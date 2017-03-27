@@ -26,7 +26,8 @@ var games = {};
 
 var slackBot = Botkit.slackbot({
     interactive_replies: true,
-    debug: false
+    debug: false,
+    retry: 10
 }).configureSlackApp(
     {
         clientId: slackConfig.clientId,

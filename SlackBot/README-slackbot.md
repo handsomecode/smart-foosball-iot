@@ -90,3 +90,7 @@ After that you have to create file named **config.json** in SlackBot/app/config/
 ```
 
 Then you will be able to start application and turn on Slack Interacvite Messages, invite bot to general channel and start using.
+
+Bot have two main mention commands:
+@foosbot play - for looking for players with help of interactive messages with buttons
+@foosbot stats - for showing this week statistic

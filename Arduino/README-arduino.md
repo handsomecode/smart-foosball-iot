@@ -14,6 +14,7 @@ Hardware part of Smart foosball fixes Goal events and send it over serial port. 
 * Electrical resistence of resistors should be calculated based on choosen photoresistor. It must be approximately equal to resistence of photoresisor in lighted room.
 
 Scheme of connection:
+
 ![scheme](scheme.png)
 
 Photoresistors must be placed in gates, lasers must be placed near and point to them. When ball get in gate, it have to break line between laser and photoresistor. Photoresistor will change thier resistence and Arduino board will be able to fix this and recognize a Goal event.

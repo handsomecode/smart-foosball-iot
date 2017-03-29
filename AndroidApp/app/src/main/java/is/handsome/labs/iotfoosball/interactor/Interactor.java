@@ -1,6 +1,5 @@
 package is.handsome.labs.iotfoosball.interactor;
 
-import android.app.Activity;
 import android.net.Uri;
 
 import com.google.firebase.database.DatabaseReference;
@@ -56,10 +55,6 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
                         .getApplicationContext(),
                 "gs://handsomefoosball.appspot.com", this);
 
-        soundPlayer =
-                new SoundService(activityProvider.getActivity().getApplicationContext(),
-                        R.raw.countdown);
-
         authDataReaderService =
                 new AuthDataReaderService(activityProvider.getActivity().getApplicationContext(),
                         R.raw.data);
@@ -81,10 +76,16 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
 
         timerClock = new TimerForClock(interfacePresentorFromInteractor, 1000, false);
 
-        phraseSpotter = new PhraseSpotterForCountStart(soundPlayer);
+        if (authDataReaderService.getYandexApi() != null) {
+            soundPlayer =
+                    new SoundService(activityProvider.getActivity().getApplicationContext(),
+                            R.raw.countdown);
 
-        phraseSpotter.init(activityProvider.getActivity().getApplicationContext(),
-                authDataReaderService.getYandexApi());
+            phraseSpotter = new PhraseSpotterForCountStart(soundPlayer);
+
+            phraseSpotter.init(activityProvider.getActivity().getApplicationContext(),
+                    authDataReaderService.getYandexApi());
+        }
 
         currentGame = new CurrentGame(interfacePresentorFromInteractor,
                 database.child("/games/"),
@@ -130,12 +131,16 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
     @Override
     public void startServices() {
         fbAuthService.onStart();
-        phraseSpotter.onStart(activityProvider.getActivity().getApplicationContext());
+        if (phraseSpotter != null) {
+            phraseSpotter.onStart(activityProvider.getActivity().getApplicationContext());
+        }
     }
 
     @Override
     public void stopServices() {
-        phraseSpotter.onStop();
+        if (phraseSpotter != null) {
+            phraseSpotter.onStop();
+        }
         fbAuthService.onStop();
     }
 

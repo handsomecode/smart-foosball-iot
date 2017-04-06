@@ -1,11 +1,11 @@
 # Firebase for Smart Foosball IoT
 
-For this project Firebase database and storage are used. Firebase project could be created in [firebase console](https://console.firebase.google.com).
+Firebase database and storage are used in this project. Firebase project could be created in [firebase console](https://console.firebase.google.com).
 
 You have to add node with all players to database manualy.
 
 Data scheme:
-```json
+<pre><code>json
 "players" : {
     "player1UniqID" : {
       "nick" : "Player1",
@@ -18,14 +18,14 @@ Data scheme:
 
     ...
 
-} ```
+}</code></pre>
 
-Players avatars should be stored in Firebase storage directory avatars/ and named nickname in lowercase with jpg extention. (nick Player1 - avatar avatars/player1.jpg).
+Players avatars should be stored in Firebase storage directory *avatars/* and named in lowercase with jpg extention. (e.g. nick Player1 - avatar avatars/player1.jpg).
 
-Games will be saved in node named games by android application.
+Games will be saved in node named *games* by android application.
 
 Data scheme:
-```json
+<pre><code>json
 "games" : {
     "-KRSZAE9wjacS4BUTw0M" : {
       "dateEnd" : "2016-09-16 07:24:14",
@@ -52,4 +52,4 @@ Data scheme:
 
     ...
 
-}```
+}</code></pre>

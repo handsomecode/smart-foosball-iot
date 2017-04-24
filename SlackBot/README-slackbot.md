@@ -5,18 +5,7 @@ Slackbot is aimed to help you to find players for matches. It works with help of
 
 ## Firebase 
 
-You have to create new Firebase application [here](https://console.firebase.google.com). And set access to read to all by setting ".read" to true:
-
-```json
-{
-  "rules": {
-    ".read": true,
-    ".write": "auth != null"
-  }
-}
-```
-
-After that you should go to the project setup and click **Add Firebase to your web application**.
+You should go to the project setup in [firebase console](https://console.firebase.google.com) and click **Add Firebase to your web application**.
 You should get information like this:
 
 ```javascript
@@ -40,7 +29,7 @@ Please, save this config information, it'll be needed later.
 
 First of all, you need to [create slack application](https://api.slack.com/apps) and:
 
-1. Give our application the following permisson in **Features -> OAuth & Permissions**:
+1. Give our application the following permission in **Features -> OAuth & Permissions**:
 * Confirm user’s identity.
 * Access user’s profile and team profile fields.
 * View email addresses of people on this team.
@@ -51,12 +40,12 @@ First of all, you need to [create slack application](https://api.slack.com/apps)
 
 4. Install application to your team on **Intall App page**.
 
-5. Then you should collect all nessesary tokens and secrets for your bot:
+5. Then you should collect all necessary tokens and secrets for your bot:
 
 * **Bot User OAuth Access Token** on **Install App** page
-* **Cliend ID**, **Cliend Secret** and **Redirect URL** on **OAuth & Permissions** page
+* **Client ID**, **Client Secret** and **Redirect URL** on **OAuth & Permissions** page
 
-5. Enabling Interactive Messages will be possible **ONLE** after running your application on server (see server section). Once application on your server runs successfully, it'll create endpoint for slack interactive messages on path https://_yousite.com_/slack/receive. You should specify this URL as Request URL for your application on **Interactive Messages** page.
+5. Enabling Interactive Messages will be possible **ONLY** after running your application on server (see server section). Once application on your server runs successfully, it'll create endpoint for slack interactive messages on path https://_yousite.com_/slack/receive. You should specify this URL as Request URL for your application on **Interactive Messages** page.
 
 ## Server
 

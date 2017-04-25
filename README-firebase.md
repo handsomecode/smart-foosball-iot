@@ -1,5 +1,7 @@
 # Firebase for Smart Foosball IoT
 
+![scheme](firebaselogo.png)
+
 Firebase database and storage are used in this project. Firebase project could be created in [firebase console](https://console.firebase.google.com).
 
 You have to add a node with all players to the database manually.
@@ -54,7 +56,7 @@ Data scheme:
 
 }</code></pre>
 
-Also set access to read to all by setting ".read" to true:
+Also, it's necessary to set access to read to all by setting ".read" to true:
 
 ```json
 {

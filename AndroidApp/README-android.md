@@ -1,5 +1,7 @@
 # Android application for Smart foosball IoT
 
+![screen](androidapp.png)
+
 The Android application helps to choose players for the current match, display score, and start the countdown before the beginning of the round. Also, it has countdown activation by voice using code phrase "Let's go". Information about players are loaded from Firebase database, and then match results are saved to Firebase. So, this Firebase integration is necessary for our needs.
 
 For adding Firebase to your application you have to go to [firebase console](https://console.firebase.google.com) and add the Android application on Firebase project setup page. After that, you will be able to download google-service.json file. This file should be placed into *AndroidApp/app* directory.

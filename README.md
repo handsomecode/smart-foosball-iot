@@ -1,62 +1,16 @@
 # Smart Foosbal IoT
 
-Smart Foosball IoT is project about automatisation of foosball table. With help of that you are able to automatically calculate score while playing, save statistics about games and find games in Slack.
+![scheme](foosball.jpg)
 
-It consist from following parts:
-- Arduino based devices
-- Android application
-- Slackbot based (node.js)
-- Firebase (database and storage)
+Our Handsome team passionately loves foosball, mobile technology, and IoT. And it was a question of time when this project will be born. Smart Foosball IoT is inspired by [Smart Foosball Handsome project](https://github.com/handsomecode/smart-foosball), but has another approach and implementation that's why it can't be named "smart foosball v2".
 
-You have to set permissions to write for you android application to follow directories in Firebase database: /players and /games. It is necessary to manualy create players like that:
-```
-players : {
-    "-KRSZAE9wjacS4BUTw0M" : { //uniq playerID
-        "nick": "Vasya"
-        "slackID": "U04TQG0DD" //user slackID for your team
-    }
-    "-KRS_YxauyWzz361O8Fj" : { //uniq playerID
-        "nick": "Petya"
-        "slackID": "U04DQK0MD" //user slackID for your team
-    }
-}
-```
-Also you may save avatars for players in Firebase datastorage in /avatars/ It must be named as nick_in_lower_case and be jpg files. 
- 
-For deploying android application you have to add file **data** (named "data" without extention) to /AndroidApp/app/src/main/res/raw with structure like this (one line - one string):
-```
-firebase_login
-firebase_password
-yandex API
-```
+An article with a video about the old project could be found [here](http://handsome.is/smart-foosball-is-keeping-score/).
 
-For deploying SlackBot you have to add config.json file to slackbot/app/config with structure like that:
-```
-{
-  "settings": {
-    "maxPlayers": 4
-  },
-  "slack": {
-    "token": "", //bot token you can get after adding bot to you slack with help of Slack API
-    "clientId": "", //clientId for slack app
-    "redirectUri": "", //server url
-    "clientSecret": "" //clientsecret for slack app
-  },
-  "firebase": {
-    "apiKey": "",
-    "authDomain": "",
-    "databaseURL": "",
-    "storageBucket": ""
-  }
-}
-```
-Also it is necessary to have ssl-cert for you server, path to certificates can be changed in /SlackBot/app/services/https.js in 7 and 8 lines:
-```
-var privateKey  = fs.readFileSync('path_to_private_part');
-var certificate = fs.readFileSync('path_to_public_part');
-```
-After slackbot run you have to go to https://servername/login for add application to you Slack.
+The whole project consists of three parts which depend on each other:
 
-Bot have two main mention commands:
-@foosbot play - for looking for players with help of interactive messages with buttons
-@foosbot stats - for showing this week statistic
+* [Firebase](/README-firebase.md) is used as a backend to collect information about matches and players.
+* [Android part](/AndroidApp/README-android.md) is for routing players and goal counting. Android UI is a simple and effective way to display information of all players and their statistic. Touch gestures allow choosing players conveniently for the current game.
+* [Hardware part](/Arduino/README-arduino.md) is for fixing goals. This part is based on Arduino Uno-like board and has been implemented in C++.
+* [Slack bot](/SlackBot/README-slackbot.md) is for looking for players and reporting results. Slack is a common way of communication in our team and it's really simple to use slack bot and application for such type of purposes.
+
+Firebase and Android are required, hardware part and slack bot are optional.

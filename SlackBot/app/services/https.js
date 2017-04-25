@@ -4,8 +4,10 @@ var fs = require('fs');
 var https = require('https');
 var bodyParser = require('body-parser');
 
-var privateKey  = fs.readFileSync('/home/cert/foosbot.cf.private.decrypted.key');
-var certificate = fs.readFileSync('/home/cert/all.crt');
+var sslConfig = require(__app + 'config')('ssl');
+
+var privateKey  = fs.readFileSync(sslConfig.privateKey);
+var certificate = fs.readFileSync(sslConfig.certificate);
 
 var credentials = {key: privateKey, cert: certificate};
 var express = require('express');

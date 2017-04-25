@@ -1,5 +1,7 @@
 # Slackbot for Smart foosball IoT
 
+![bot](slackbot.gif)
+
 Slackbot is aimed to help you to find players for matches. It works with help of Slack interactive messages and doesn't flood a lot. So it's really easy way to start a game. Also, it reports games results and could show statistics on request. It is written on Node.js as a server application.
 [Botkit](https://github.com/howdyai/botkit) is used as a basis for the bot to communicate with users. Match's results and statistics are based on the information from Firebase datastorage.
 
@@ -83,4 +85,5 @@ Then you will be able to start the application, turn on Slack Interactive Messag
 The bot has two main commands, mentioned above:
 
 **@foosbot play** - for looking for players with help of interactive messages with buttons
+
 **@foosbot stats** - for displaying week's statistics

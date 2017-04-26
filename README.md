@@ -6,7 +6,7 @@ Our Handsome team passionately loves foosball, mobile technology, and IoT. And i
 
 An article with a video about the old project could be found [here](http://handsome.is/smart-foosball-is-keeping-score/).
 
-The whole project consists of three parts which depend on each other:
+The whole project consists of four parts which depend on each other:
 
 * [Firebase](/README-firebase.md) is used as a backend to collect information about matches and players.
 * [Android part](/AndroidApp/README-android.md) is for routing players and goal counting. Android UI is a simple and effective way to display information of all players and their statistic. Touch gestures allow choosing players conveniently for the current game.

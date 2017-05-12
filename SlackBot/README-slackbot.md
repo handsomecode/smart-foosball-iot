@@ -32,29 +32,29 @@ Please, save this config information, it'll be needed later.
 First of all, you need to [create slack application](https://api.slack.com/apps) and:
 
 1. Give our application the following permission in **Features -> OAuth & Permissions**:
-* Confirm user’s identity.
-* Access user’s profile and team profile fields.
-* View email addresses of people on this team.
+    * Confirm user’s identity.
+    * Access user’s profile and team profile fields.
+    * View email addresses of people on this team.
 
-2. And specify Redirect URL on the same page. Redirect URL should point to https://_yousite.com_/oauth
+2. And specify Redirect URL on the same page. Redirect URL should point to *https://_yousite.com_/oauth*.
 
-3. Go to **Bot users** and add Bot User, named, for example, _foosbot_ to the application.
+3. Go to **Bot users** and add Bot User, named, for example, *_foosbot_* to the application.
 
 4. Install the application to your team on **Intall App page**.
 
 5. Then you should collect all necessary tokens and secrets for your bot:
 
-* **Bot User OAuth Access Token** on **Install App** page
-* **Client ID**, **Client Secret** and **Redirect URL** on **OAuth & Permissions** page
+    * **Bot User OAuth Access Token** on **Install App** page.
+    * **Client ID**, **Client Secret** and **Redirect URL** on **OAuth & Permissions** page.
 
-5. Enabling Interactive Messages will be possible **ONLY** after running your application on the server (see server section). Once application on your server runs successfully, it'll create an endpoint for slack interactive messages on path https://_yousite.com_/slack/receive. You should specify this URL as Request URL for your application on **Interactive Messages** page.
+5. Enabling Interactive Messages will be possible **ONLY** after running your application on the server (see server section). Once application on your server runs successfully, it'll create an endpoint for slack interactive messages on path *https://_yousite.com_/slack/receive*. You should specify this URL as *Request URL* for your application on **Interactive Messages** page.
 
 ## Server
 
-To deploy the application to your server you need Node.Js 7.7.4 or higher and npm 4.4.1 or higher. The application could add all necessary node_modules with help of `npm install` command.
+To deploy the application to your server you need Node.Js 7.7.4 or higher and npm 4.4.1 or higher. The application could add all necessary *node_modules* with help of `npm install` command.
 Slack demands to have SSL certificate on your server for using Interactive messages. You can get it, for example, from [Let's Encrypt provider](letsencrypt.org). Please, save public key and merged certificate somewhere on your server.
 
-After that you have to create file named **config.json** in SlackBot/app/config/ directory with config for Slackbot and Firebase
+After that you have to create file named **config.json** in *SlackBot/app/config/* directory with config for Slackbot and Firebase
 
 ```json
 {
@@ -80,9 +80,9 @@ After that you have to create file named **config.json** in SlackBot/app/config/
 }
 ```
 
-Then you will be able to start the application, turn on Slack Interactive Messages, invite bot to general channel and start to use it.
+Then you will be able to start the application, turn on Slack Interactive Messages, invite bot to general channel, and start to use it.
 
-The bot has two main commands, mentioned above:
+The bot has two main commands mentioned above:
 
 **@foosbot play** - for looking for players with help of interactive messages with buttons
 

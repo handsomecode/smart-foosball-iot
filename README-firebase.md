@@ -2,7 +2,7 @@
 
 ![scheme](firebaselogo.png)
 
-Firebase database and storage are used in this project. Firebase project could be created in [firebase console](https://console.firebase.google.com).
+Firebase database and storage are an integral part of this project. Firebase project could be created in [firebase console](https://console.firebase.google.com).
 
 You have to add a node with all players to the database manually.
 
@@ -22,9 +22,9 @@ Data scheme:
 
 }</code></pre>
 
-Players avatars should be stored in Firebase storage directory *avatars/* and named in lowercase with a jpg extension. (e.g. nick Player1 - avatar avatars/player1.jpg).
+Players avatars should be stored in Firebase storage directory *avatars/* and named in lowercase with a jpg extension. (e.g. for nick *Player1* avatar is *avatars/player1.jpg*).
 
-Games will be saved in the node named *games* by the android application.
+Games will be saved in the node, named *games*, by the android application.
 
 Data scheme:
 <pre><code>json
@@ -56,7 +56,7 @@ Data scheme:
 
 }</code></pre>
 
-Also, it's necessary to set access to read to all by setting ".read" to true:
+Also, it's necessary to set access to read to all by setting *.read* to true:
 
 ```json
 {

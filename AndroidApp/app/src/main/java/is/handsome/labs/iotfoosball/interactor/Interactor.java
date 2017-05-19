@@ -49,15 +49,15 @@ public class Interactor implements InterfaceInteractorFromPresenter, InterfaceFi
                 
         this.interfacePresentorFromInteractor = interfacePresentorFromInteractor;
 
+        authDataReaderService =
+                new AuthDataReaderService(activityProvider.getActivity().getApplicationContext(),
+                        R.raw.data);
+
         firebaseStorageLinkService =
                 new FirebaseStorageLinkService(activityProvider
                         .getActivity()
                         .getApplicationContext(),
-                "gs://handsomefoosball.appspot.com", this);
-
-        authDataReaderService =
-                new AuthDataReaderService(activityProvider.getActivity().getApplicationContext(),
-                        R.raw.data);
+                authDataReaderService.getFirebaseStorageLink(), this);
 
         fbAuthService = new FirebaseAuthService(activityProvider.getActivity(),
                 authDataReaderService.getFbLogin(),

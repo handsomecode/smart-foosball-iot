@@ -13,6 +13,7 @@ public class AuthDataReaderService {
     private String fbLogin;
     private String fbPassword;
     private String yandexApi;
+    private String firebaseStorageLink;
 
     public AuthDataReaderService(Context context, int dataId) {
         InputStream data = context.getResources().openRawResource(dataId);
@@ -20,11 +21,15 @@ public class AuthDataReaderService {
         fbLogin = "login";
         fbPassword = "password";
         yandexApi = "yandexAPI";
+        firebaseStorageLink = "firebaseStorageLink";
+
         try {
             fbLogin = bData.readLine();
             Timber.d("Login " + fbLogin);
             fbPassword = bData.readLine();
             Timber.d("Password " + fbPassword);
+            firebaseStorageLink = bData.readLine();
+            Timber.d("Firebase storage link " + firebaseStorageLink);
             yandexApi = bData.readLine();
             Timber.d("Yandex API " + yandexApi);
         } catch (IOException e) {
@@ -43,5 +48,9 @@ public class AuthDataReaderService {
 
     public String getYandexApi() {
         return yandexApi;
+    }
+
+    public String getFirebaseStorageLink() {
+        return firebaseStorageLink;
     }
 }

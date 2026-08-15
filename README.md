@@ -2,7 +2,7 @@
 
 ![scheme](foosball.jpg)
 
-Our Handsome team passionately loves foosball, mobile technology, and IoT. And it was a question of time, when this project will be born. Smart Foosball IoT is inspired by [Smart Foosball Handsome project](https://github.com/handsomecode/smart-foosball), but has another approach and implementation. That's why it can't be named "smart foosball v2".
+Our Handsome team passionately loves foosball, mobile technology, and IoT. And it was a question of time, when this project will be born. Smart Foosball IoT is inspired by [Smart Foosball Handsome project](https://github.com/raw-materials/smart-foosball), but has another approach and implementation. That's why it can't be named "smart foosball v2".
 
 An article with the video about the previous project could be found [here](http://handsome.is/smart-foosball-is-keeping-score/).
 
